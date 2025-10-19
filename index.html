@@ -2069,7 +2069,7 @@
   <!-- ==================== JavaScript ==================== -->
   <script>
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbzV4Pt385AyoOrZ7ziPdO1kCoh8EFnlSimpRg-Vvm2zU85fE52ErDXTxvJ1ZY4nSINyQg/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbxVgJHLgQ6fnkGEdEAV1PodkjfGc8qJERNsqiJAv599PAKf4MgbmJxq8P4hP29YMMeAoA/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2120,33 +2120,51 @@ async function callAPI(action, data = {}) {
   showLoading();
   
   try {
-    const payload = {
+    // ✅ 使用 JSONP
+    const params = new URLSearchParams({
       action: action,
-      data: data
-    };
-    
-    // ✅ 如果有 sessionToken，加入 payload
-    if (sessionToken) {
-      payload.sessionToken = sessionToken;
-    }
-    
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',  // ✅ 改為 JSON
-      },
-      body: JSON.stringify(payload)  // ✅ 直接傳送 JSON
+      callback: 'handleResponse',
+      ...data
     });
-
-    const result = await response.json();
-    hideLoading();
-
-    if (!result.success && result.message === 'Session 無效') {
-      logout();
-      return null;
+    
+    if (sessionToken) {
+      params.append('sessionToken', sessionToken);
     }
-
-    return result;
+    
+    const url = `${API_URL}?${params.toString()}`;
+    
+    return new Promise((resolve, reject) => {
+      // 建立 callback 函數
+      window.handleResponse = function(response) {
+        hideLoading();
+        
+        if (!response.success && response.message === 'Session 無效') {
+          logout();
+          resolve(null);
+        } else {
+          resolve(response);
+        }
+        
+        // 清理
+        delete window.handleResponse;
+        document.body.removeChild(script);
+      };
+      
+      // 建立 script 標籤
+      const script = document.createElement('script');
+      script.src = url;
+      script.onerror = function() {
+        hideLoading();
+        console.error('API Error: Failed to load script');
+        showAlert('系統錯誤,請稍後再試', 'error');
+        reject(new Error('Failed to load script'));
+        delete window.handleResponse;
+        document.body.removeChild(script);
+      };
+      
+      document.body.appendChild(script);
+    });
+    
   } catch (error) {
     hideLoading();
     console.error('API Error:', error);
@@ -2154,6 +2172,7 @@ async function callAPI(action, data = {}) {
     return null;
   }
 }
+
 
 
     // ==================== 登入相關 ==================== 
