@@ -2371,41 +2371,74 @@ function showApp() {
       `).join('');
     }
 
-    function displayRequiredCourses(courses) {
-      const container = document.getElementById('requiredCoursesList');
-      
-      if (courses.length === 0) {
-        container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 20px;">太棒了!您已完成所有必修課程 🎉</p>';
-        return;
-      }
+function displayRequiredCourses(courses) {
+  const container = document.getElementById('requiredCoursesList');
+  
+  if (courses.length === 0) {
+    container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 20px;">太棒了!您已完成所有必修課程 🎉</p>';
+    return;
+  }
 
-      container.innerHTML = courses.map(course => {
-        const isExpired = course.isExpired;
-        const daysLeft = course.daysLeft;
-        
-        return `
-          <div class="course-card" onclick="viewCourse('${course.courseId}')">
-            <div class="course-card-header required">
-              <span class="course-badge">必修</span>
-              <h3 class="course-title">${course.courseName}</h3>
-              <p class="course-id">${course.courseId}</p>
-            </div>
-            <div class="course-card-body">
-              <div class="course-deadline ${isExpired ? 'danger' : daysLeft <= 5 ? 'warning' : ''}">
-                <i class="fas fa-calendar-alt"></i>
-                截止日期: ${course.deadline}
-                ${!isExpired ? ` (剩餘 ${daysLeft} 天)` : ' (已逾期)'}
-              </div>
-              <div class="course-actions">
-                <button class="btn btn-primary" onclick="event.stopPropagation(); startLearning('${course.courseId}')">
-                  <i class="fas fa-play"></i> 開始學習
-                </button>
-              </div>
-            </div>
+  container.innerHTML = courses.map(course => {
+    const isExpired = course.isExpired;
+    const daysLeft = course.daysLeft;
+    
+    return `
+      <div class="course-card">
+        <div class="course-card-header required">
+          <span class="course-badge">必修</span>
+          <h3 class="course-title">${course.courseName}</h3>
+          <p class="course-id">${course.courseId}</p>
+        </div>
+        <div class="course-card-body">
+          <div class="course-deadline ${isExpired ? 'danger' : daysLeft <= 5 ? 'warning' : ''}">
+            <i class="fas fa-calendar-alt"></i>
+            截止日期: ${course.deadline}
+            ${!isExpired ? ` (剩餘 ${daysLeft} 天)` : ' (已逾期)'}
           </div>
-        `;
-      }).join('');
-    }
+          <div class="course-actions">
+            <button class="btn btn-primary" onclick="startLearning('${course.courseId}')">
+              <i class="fas fa-play"></i> 開始學習
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function displayInProgressCourses(courses) {
+  const container = document.getElementById('inProgressCoursesList');
+  
+  if (courses.length === 0) {
+    container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); padding: 20px;">目前沒有進行中的課程</p>';
+    return;
+  }
+
+  container.innerHTML = courses.map(course => `
+    <div class="course-card">
+      <div class="course-card-header">
+        <span class="course-badge">進行中</span>
+        <h3 class="course-title">${course.courseName}</h3>
+        <p class="course-id">${course.courseId}</p>
+      </div>
+      <div class="course-card-body">
+        <div class="course-meta">
+          <span class="course-meta-item">
+            <i class="fas fa-clock"></i>
+            上次觀看: ${new Date(course.lastWatchTime).toLocaleDateString()}
+          </span>
+        </div>
+        <div class="course-actions">
+          <button class="btn btn-primary" onclick="continueLearning('${course.courseId}')">
+            <i class="fas fa-play"></i> 繼續學習
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
 
     function displayInProgressCourses(courses) {
       const container = document.getElementById('inProgressCoursesList');
@@ -2496,65 +2529,66 @@ function showApp() {
       displayCourses(filtered);
     }
 
-    function displayCourses(courses) {
-      const container = document.getElementById('coursesList');
-      
-      if (courses.length === 0) {
-        container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); grid-column: 1/-1;">找不到符合條件的課程</p>';
-        return;
-      }
+function displayCourses(courses) {
+  const container = document.getElementById('coursesList');
+  
+  if (courses.length === 0) {
+    container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); grid-column: 1/-1;">找不到符合條件的課程</p>';
+    return;
+  }
 
-      container.innerHTML = courses.map(course => {
-        const headerClass = course.isCompleted ? 'completed' : course.isRequired ? 'required' : '';
-        const badgeText = course.isCompleted ? '已完成' : course.isRequired ? '必修' : '選修';
-        
-        let deadlineHTML = '';
-        if (course.deadline) {
-          const daysLeft = calculateDaysLeft(course.deadline);
-          const deadlineClass = course.isExpired ? 'danger' : daysLeft <= 5 ? 'warning' : '';
-          deadlineHTML = `
-            <div class="course-deadline ${deadlineClass}">
-              <i class="fas fa-calendar-alt"></i>
-              截止日期: ${course.deadline}
-              ${!course.isExpired && daysLeft !== null ? ` (剩餘 ${daysLeft} 天)` : ''}
-              ${course.isExpired ? ' (已逾期)' : ''}
-            </div>
-          `;
-        }
-
-        return `
-          <div class="course-card" onclick="viewCourse('${course.courseId}')">
-            <div class="course-card-header ${headerClass}">
-              <span class="course-badge">${badgeText}</span>
-              <h3 class="course-title">${course.courseName}</h3>
-              <p class="course-id">${course.courseId}</p>
-            </div>
-            <div class="course-card-body">
-              <p class="course-desc">${course.courseDesc || '暫無說明'}</p>
-              <div class="course-meta">
-                <span class="course-meta-item">
-                  <i class="fas fa-folder"></i>
-                  ${course.courseGroup} - ${course.courseCategory}
-                </span>
-                <span class="course-meta-item">
-                  <i class="fas fa-star"></i>
-                  ${course.points} 點
-                </span>
-              </div>
-              ${deadlineHTML}
-              <div class="course-actions">
-                ${course.isCompleted 
-                  ? '<button class="btn btn-success" disabled><i class="fas fa-check"></i> 已完成</button>'
-                  : course.hasStarted
-                    ? `<button class="btn btn-primary" onclick="event.stopPropagation(); continueLearning('${course.courseId}')"><i class="fas fa-play"></i> 繼續學習</button>`
-                    : `<button class="btn btn-primary" onclick="event.stopPropagation(); startLearning('${course.courseId}')"><i class="fas fa-play"></i> 開始學習</button>`
-                }
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
+  container.innerHTML = courses.map(course => {
+    const headerClass = course.isCompleted ? 'completed' : course.isRequired ? 'required' : '';
+    const badgeText = course.isCompleted ? '已完成' : course.isRequired ? '必修' : '選修';
+    
+    let deadlineHTML = '';
+    if (course.deadline) {
+      const daysLeft = calculateDaysLeft(course.deadline);
+      const deadlineClass = course.isExpired ? 'danger' : daysLeft <= 5 ? 'warning' : '';
+      deadlineHTML = `
+        <div class="course-deadline ${deadlineClass}">
+          <i class="fas fa-calendar-alt"></i>
+          截止日期: ${course.deadline}
+          ${!course.isExpired && daysLeft !== null ? ` (剩餘 ${daysLeft} 天)` : ''}
+          ${course.isExpired ? ' (已逾期)' : ''}
+        </div>
+      `;
     }
+
+    return `
+      <div class="course-card">
+        <div class="course-card-header ${headerClass}">
+          <span class="course-badge">${badgeText}</span>
+          <h3 class="course-title">${course.courseName}</h3>
+          <p class="course-id">${course.courseId}</p>
+        </div>
+        <div class="course-card-body">
+          <p class="course-desc">${course.courseDesc || '暫無說明'}</p>
+          <div class="course-meta">
+            <span class="course-meta-item">
+              <i class="fas fa-folder"></i>
+              ${course.courseGroup} - ${course.courseCategory}
+            </span>
+            <span class="course-meta-item">
+              <i class="fas fa-star"></i>
+              ${course.points} 點
+            </span>
+          </div>
+          ${deadlineHTML}
+          <div class="course-actions">
+            ${course.isCompleted 
+              ? '<button class="btn btn-success" disabled><i class="fas fa-check"></i> 已完成</button>'
+              : course.hasStarted
+                ? `<button class="btn btn-primary" onclick="startLearning('${course.courseId}')"><i class="fas fa-play"></i> 繼續學習</button>`
+                : `<button class="btn btn-primary" onclick="startLearning('${course.courseId}')"><i class="fas fa-play"></i> 開始學習</button>`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
 
     function calculateDaysLeft(deadline) {
       if (!deadline) return null;
@@ -2569,39 +2603,56 @@ function showApp() {
       return diffDays > 0 ? diffDays : 0;
     }
 
-    async function viewCourse(courseId) {
-      const result = await callAPI('getCourseDetail', { courseId });
+/**
+ * 查看課程詳細資料 (從課程卡片點選進入)
+ */
+async function viewCourse(courseId) {
+  console.log('=== viewCourse 開始 ===');
+  console.log('courseId:', courseId);
+  
+  const result = await callAPI('getCourseDetail', { courseId });
 
-      if (result && result.success) {
-        currentCourse = result.data;
-        
-        // 檢查前置課程
-        if (!currentCourse.prerequisiteCompleted) {
-          showAlert(`請先完成前置課程: ${currentCourse.prerequisiteCourseId}`, 'warning');
-          return;
-        }
-
-        // 如果已完成,直接顯示完成訊息
-        if (currentCourse.isCompleted) {
-          showAlert('您已完成此課程!', 'info');
-          return;
-        }
-
-        // 導航到播放頁面
-        navigateToPage('player');
-        displayPlayer();
-      }
+  if (result && result.success) {
+    currentCourse = result.data;
+    
+    console.log('✅ 課程資料:', currentCourse);
+    
+    // ✅ 檢查前置課程
+    if (!currentCourse.prerequisiteCompleted) {
+      showAlert(`請先完成前置課程: ${currentCourse.prerequisiteCourseId}`, 'warning');
+      return;
     }
 
+    // ✅ 如果已完成,直接顯示完成訊息
+    if (currentCourse.isCompleted) {
+      showAlert('您已完成此課程!', 'info');
+      return;
+    }
+
+    // ⚠️ 注意: viewCourse() 不會建立學習紀錄
+    // 使用者需要點選【開始學習】按鈕
+    console.log('⚠️ 尚未建立學習紀錄,請點選【開始學習】');
+    
+    // ✅ 導航到播放頁面
+    navigateToPage('player');
+    displayPlayer();
+  }
+}
+
+/**
+ * 開始學習 (建立學習紀錄)
+ */
 async function startLearning(courseId) {
   console.log('=== startLearning 開始 ===');
   console.log('courseId:', courseId);
   
+  showLoading();
+  
   const result = await callAPI('startLearning', { courseId });
 
   console.log('✅ API 完整回應:', result);
-  console.log('✅ result.success:', result.success);
-  console.log('✅ result.data:', result.data);
+
+  hideLoading();
 
   if (result && result.success) {
     // ✅ 檢查 data 結構
@@ -2613,14 +2664,12 @@ async function startLearning(courseId) {
     
     if (!result.data.recordId) {
       console.error('❌ result.data.recordId 不存在');
-      console.log('result.data:', result.data);
       showAlert('系統錯誤: 無法取得紀錄ID', 'error');
       return;
     }
     
     if (!result.data.courseDetail) {
       console.error('❌ result.data.courseDetail 不存在');
-      console.log('result.data:', result.data);
       showAlert('系統錯誤: 無法取得課程詳細資料', 'error');
       return;
     }
@@ -2637,17 +2686,25 @@ async function startLearning(courseId) {
     displayPlayer();
   } else {
     console.error('❌ 開始學習失敗');
-    console.log('錯誤訊息:', result?.message);
     showAlert(result?.message || '開始學習失敗', 'error');
   }
 }
 
+/**
+ * 繼續學習 (重新開始學習)
+ */
+async function continueLearning(courseId) {
+  console.log('=== continueLearning 開始 ===');
+  console.log('courseId:', courseId);
+  
+  // ✅ 直接呼叫 startLearning()
+  await startLearning(courseId);
+}
 
 
-    async function continueLearning(courseId) {
-      await startLearning(courseId);
-    }
-
+/**
+ * 顯示課程播放器
+ */
 function displayPlayer() {
   console.log('=== displayPlayer 開始 ===');
   console.log('currentCourse:', currentCourse);
@@ -2666,7 +2723,6 @@ function displayPlayer() {
   for (const field of requiredFields) {
     if (!currentCourse[field]) {
       console.error(`❌ currentCourse.${field} 未定義`);
-      console.log('currentCourse:', currentCourse);
       showAlert(`課程資料不完整: 缺少 ${field}`, 'error');
       backToCourses();
       return;
@@ -2674,8 +2730,6 @@ function displayPlayer() {
   }
   
   // ✅ 顯示課程資訊
-  console.log('✅ 開始顯示課程資訊');
-  
   document.getElementById('playerCourseTitle').textContent = currentCourse.courseName;
   document.getElementById('playerCourseId').textContent = currentCourse.courseId;
   document.getElementById('playerCoursePoints').textContent = currentCourse.points || 0;
@@ -2683,11 +2737,7 @@ function displayPlayer() {
   document.getElementById('playerCourseDesc').textContent = currentCourse.courseDesc || '暫無說明';
 
   // ✅ 載入影片
-  console.log('✅ 原始影片連結:', currentCourse.videoUrl);
-  
   const videoUrl = convertDriveUrl(currentCourse.videoUrl);
-  
-  console.log('✅ 轉換後影片連結:', videoUrl);
   
   if (!videoUrl) {
     console.error('❌ 影片連結轉換失敗');
@@ -2697,7 +2747,25 @@ function displayPlayer() {
   
   document.getElementById('videoPlayer').src = videoUrl;
 
-  // ✅ 開始追蹤觀看時間
+  // ✅ 檢查是否有學習紀錄
+  const btnStartExam = document.getElementById('btnStartExam');
+  
+  if (!currentRecordId) {
+    console.log('⚠️ 尚未建立學習紀錄');
+    
+    // ✅ 隱藏【開始測驗】按鈕,顯示提示
+    btnStartExam.disabled = true;
+    btnStartExam.textContent = '請先點選【開始學習】';
+    
+    // ✅ 顯示提示訊息
+    showAlert('請先點選【開始學習】按鈕以建立學習紀錄', 'info');
+    
+    return;
+  }
+  
+  // ✅ 有學習紀錄,啟動影片追蹤
+  console.log('✅ 學習紀錄ID: ' + currentRecordId);
+  
   videoStartTime = new Date();
   watchedSeconds = 0;
 
@@ -2711,12 +2779,14 @@ function displayPlayer() {
 
   // 假設30秒後可以測驗
   setTimeout(() => {
-    document.getElementById('btnStartExam').disabled = false;
+    btnStartExam.disabled = false;
+    btnStartExam.textContent = '開始測驗';
     showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
   }, 30000);
   
   console.log('✅ displayPlayer 完成');
 }
+
 
 
 
