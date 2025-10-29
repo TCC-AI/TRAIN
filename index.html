@@ -2069,7 +2069,7 @@
   <!-- ==================== JavaScript ==================== -->
   <script>
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbxJoWVjy4ngC2o5bEQX1GONhTKdYeditaDoHpc6EY5xvTHUwp8JSRFG7Q2g-MhUhdzDVA/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwlHrwAqlp0LeRAAIZHyG8eRM4zeNo9vx4FW_8grgeC_elGZuLLJxYpbUcmGopDdrHRhQ/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2576,22 +2576,49 @@ async function startLearning(courseId) {
   
   const result = await callAPI('startLearning', { courseId });
 
-  console.log('✅ API 回應:', result);
+  console.log('✅ API 完整回應:', result);
+  console.log('✅ result.success:', result.success);
+  console.log('✅ result.data:', result.data);
 
   if (result && result.success) {
+    // ✅ 檢查 data 結構
+    if (!result.data) {
+      console.error('❌ result.data 不存在');
+      showAlert('系統錯誤: 無法取得課程資料', 'error');
+      return;
+    }
+    
+    if (!result.data.recordId) {
+      console.error('❌ result.data.recordId 不存在');
+      console.log('result.data:', result.data);
+      showAlert('系統錯誤: 無法取得紀錄ID', 'error');
+      return;
+    }
+    
+    if (!result.data.courseDetail) {
+      console.error('❌ result.data.courseDetail 不存在');
+      console.log('result.data:', result.data);
+      showAlert('系統錯誤: 無法取得課程詳細資料', 'error');
+      return;
+    }
+    
+    // ✅ 設定全域變數
     currentRecordId = result.data.recordId;
     currentCourse = result.data.courseDetail;
     
     console.log('✅ currentRecordId:', currentRecordId);
     console.log('✅ currentCourse:', currentCourse);
     
+    // ✅ 導航到播放頁面
     navigateToPage('player');
     displayPlayer();
   } else {
     console.error('❌ 開始學習失敗');
+    console.log('錯誤訊息:', result?.message);
     showAlert(result?.message || '開始學習失敗', 'error');
   }
 }
+
 
 
     async function continueLearning(courseId) {
@@ -2601,46 +2628,53 @@ async function startLearning(courseId) {
 function displayPlayer() {
   console.log('=== displayPlayer 開始 ===');
   console.log('currentCourse:', currentCourse);
+  console.log('currentRecordId:', currentRecordId);
   
-  // ✅ 加入防呆檢查
+  // ✅ 防呆檢查 1: currentCourse 是否存在
   if (!currentCourse) {
     console.error('❌ currentCourse 未定義');
-    showAlert('課程資料載入失敗', 'error');
+    showAlert('課程資料載入失敗,請重新開始學習', 'error');
     backToCourses();
     return;
   }
   
-  if (!currentCourse.courseName) {
-    console.error('❌ currentCourse.courseName 未定義');
-    console.log('currentCourse:', currentCourse);
-    showAlert('課程名稱載入失敗', 'error');
-    backToCourses();
-    return;
+  // ✅ 防呆檢查 2: 必要欄位是否存在
+  const requiredFields = ['courseName', 'courseId', 'videoUrl'];
+  for (const field of requiredFields) {
+    if (!currentCourse[field]) {
+      console.error(`❌ currentCourse.${field} 未定義`);
+      console.log('currentCourse:', currentCourse);
+      showAlert(`課程資料不完整: 缺少 ${field}`, 'error');
+      backToCourses();
+      return;
+    }
   }
   
   // ✅ 顯示課程資訊
+  console.log('✅ 開始顯示課程資訊');
+  
   document.getElementById('playerCourseTitle').textContent = currentCourse.courseName;
-  document.getElementById('playerCourseId').textContent = currentCourse.courseId || '未知ID';
+  document.getElementById('playerCourseId').textContent = currentCourse.courseId;
   document.getElementById('playerCoursePoints').textContent = currentCourse.points || 0;
   document.getElementById('playerDeadline').textContent = currentCourse.deadline || '無期限';
   document.getElementById('playerCourseDesc').textContent = currentCourse.courseDesc || '暫無說明';
 
   // ✅ 載入影片
-  if (!currentCourse.videoUrl) {
-    console.error('❌ videoUrl 未定義');
-    showAlert('影片連結不存在', 'error');
-    return;
-  }
-  
-  console.log('原始影片連結:', currentCourse.videoUrl);
+  console.log('✅ 原始影片連結:', currentCourse.videoUrl);
   
   const videoUrl = convertDriveUrl(currentCourse.videoUrl);
   
-  console.log('轉換後影片連結:', videoUrl);
+  console.log('✅ 轉換後影片連結:', videoUrl);
+  
+  if (!videoUrl) {
+    console.error('❌ 影片連結轉換失敗');
+    showAlert('影片連結無效', 'error');
+    return;
+  }
   
   document.getElementById('videoPlayer').src = videoUrl;
 
-  // 開始追蹤觀看時間
+  // ✅ 開始追蹤觀看時間
   videoStartTime = new Date();
   watchedSeconds = 0;
 
@@ -2652,7 +2686,7 @@ function displayPlayer() {
     updateProgress();
   }, 10000);
 
-  // ✅ 假設30秒後可以測驗
+  // 假設30秒後可以測驗
   setTimeout(() => {
     document.getElementById('btnStartExam').disabled = false;
     showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
@@ -2660,6 +2694,7 @@ function displayPlayer() {
   
   console.log('✅ displayPlayer 完成');
 }
+
 
 
 function convertDriveUrl(url) {
