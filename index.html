@@ -2799,130 +2799,236 @@ function convertDriveUrl(url) {
       navigateToPage('courses');
     }
 
-    // ==================== 測驗 ==================== 
-    async function startExam() {
-      if (!currentCourse) return;
+// ==================== 測驗 ==================== 
 
-      const result = await callAPI('getRandomQuestions', {
-        courseId: currentCourse.courseId
-      });
-
-      if (result && result.success) {
-        currentExamQuestions = result.data;
-        
-        if (currentExamQuestions.length === 0) {
-          showAlert('此課程尚無測驗題目', 'warning');
-          return;
-        }
-
-        navigateToPage('exam');
-        displayExam();
-      }
-    }
-
-    function displayExam() {
-      document.getElementById('examCourseTitle').textContent = currentCourse.courseName + ' - 測驗';
+/**
+ * 開始測驗
+ */
+async function startExam() {
+  console.log('=== startExam 開始 ===');
+  console.log('currentCourse:', currentCourse);
+  console.log('currentRecordId:', currentRecordId);
+  
+  // ✅ 防呆檢查 1: currentCourse 是否存在
+  if (!currentCourse) {
+    console.error('❌ currentCourse 未定義');
+    showAlert('課程資料遺失,請重新開始學習', 'error');
+    backToCourses();
+    return;
+  }
+  
+  // ✅ 防呆檢查 2: currentRecordId 是否存在
+  if (!currentRecordId) {
+    console.error('❌ currentRecordId 未定義');
+    showAlert('學習紀錄遺失,請重新開始學習', 'error');
+    backToCourses();
+    return;
+  }
+  
+  console.log('✅ 檢查通過,開始取得測驗題目');
+  
+  showLoading();
+  
+  try {
+    // ✅ 呼叫 API 取得隨機題目
+    const result = await callAPI('getRandomQuestions', {
+      courseId: currentCourse.courseId
+    });
+    
+    console.log('API 回應:', result);
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      currentExamQuestions = result.data;
       
-      const questionsHTML = currentExamQuestions.map((q, index) => `
-        <div class="question-card">
-          <span class="question-number">第 ${index + 1} 題</span>
-          <div class="question-text">${q.questionText}</div>
-          <div class="options-list">
-            <div class="option-item">
-              <input type="radio" name="question_${q.questionId}" value="A" id="q${index}_a">
-              <label for="q${index}_a">${q.optionA}</label>
-            </div>
-            <div class="option-item">
-              <input type="radio" name="question_${q.questionId}" value="B" id="q${index}_b">
-              <label for="q${index}_b">${q.optionB}</label>
-            </div>
-            <div class="option-item">
-              <input type="radio" name="question_${q.questionId}" value="C" id="q${index}_c">
-              <label for="q${index}_c">${q.optionC}</label>
-            </div>
-            <div class="option-item">
-              <input type="radio" name="question_${q.questionId}" value="D" id="q${index}_d">
-              <label for="q${index}_d">${q.optionD}</label>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      document.getElementById('examQuestions').innerHTML = questionsHTML;
-    }
-
-    async function submitExam() {
-      // 收集答案
-      const answers = {};
-      let allAnswered = true;
-
-            currentExamQuestions.forEach(q => {
-        const selected = document.querySelector(`input[name="question_${q.questionId}"]:checked`);
-        if (selected) {
-          answers[q.questionId] = selected.value;
-        } else {
-          allAnswered = false;
-        }
-      });
-
-      if (!allAnswered) {
-        showAlert('請回答所有題目', 'warning');
+      console.log('✅ 成功取得 ' + currentExamQuestions.length + ' 筆題目');
+      
+      if (currentExamQuestions.length === 0) {
+        showAlert('此課程尚無測驗題目', 'warning');
         return;
       }
-
-      // 提交測驗
-      const result = await callAPI('submitExam', {
-        recordId: currentRecordId,
-        answers: answers
-      });
-
-      if (result && result.success) {
-        displayExamResult(result.data);
-      } else {
-        showAlert(result?.message || '提交失敗', 'error');
-      }
-    }
-
-    function displayExamResult(resultData) {
-      const modal = document.getElementById('examResultModal');
-      const isPassed = resultData.isPassed;
-
-      // 更新圖示和標題
-      const icon = document.getElementById('resultIcon');
-      const title = document.getElementById('resultTitle');
       
-      if (isPassed) {
-        icon.className = 'result-icon pass';
-        icon.innerHTML = '<i class="fas fa-check-circle"></i>';
-        title.textContent = '恭喜通過測驗!';
-      } else {
-        icon.className = 'result-icon fail';
-        icon.innerHTML = '<i class="fas fa-times-circle"></i>';
-        title.textContent = '測驗未通過';
-      }
-
-      // 更新分數
-      document.getElementById('resultScore').textContent = resultData.score + ' 分';
-      document.getElementById('resultCorrect').textContent = resultData.correctCount;
-      document.getElementById('resultTotal').textContent = resultData.totalQuestions;
-      document.getElementById('resultPassScore').textContent = resultData.passScore;
-
-      // 顯示獲得點數
-      const pointsRow = document.getElementById('resultPointsRow');
-      if (isPassed) {
-        pointsRow.style.display = 'flex';
-        document.getElementById('resultPoints').textContent = resultData.earnedPoints;
-      } else {
-        pointsRow.style.display = 'none';
-      }
-
-      modal.classList.add('active');
-
-      // 如果通過,更新當前課程狀態
-      if (isPassed) {
-        currentCourse.isCompleted = true;
-      }
+      // ✅ 導航到測驗頁面
+      navigateToPage('exam');
+      displayExam();
+    } else {
+      console.error('❌ API 回應失敗:', result?.message);
+      showAlert(result?.message || '取得測驗題目失敗', 'error');
     }
+  } catch (error) {
+    console.error('❌ startExam 失敗:', error);
+    hideLoading();
+    showAlert('取得測驗題目失敗', 'error');
+  }
+}
+
+/**
+ * 顯示測驗題目
+ */
+function displayExam() {
+  console.log('=== displayExam 開始 ===');
+  console.log('currentExamQuestions:', currentExamQuestions);
+  
+  document.getElementById('examCourseTitle').textContent = currentCourse.courseName + ' - 測驗';
+  
+  const questionsHTML = currentExamQuestions.map((q, index) => `
+    <div class="question-card">
+      <span class="question-number">第 ${index + 1} 題</span>
+      <div class="question-text">${q.questionText}</div>
+      <div class="options-list">
+        <div class="option-item">
+          <input type="radio" name="question_${q.questionId}" value="A" id="q${index}_a">
+          <label for="q${index}_a">${q.optionA}</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="question_${q.questionId}" value="B" id="q${index}_b">
+          <label for="q${index}_b">${q.optionB}</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="question_${q.questionId}" value="C" id="q${index}_c">
+          <label for="q${index}_c">${q.optionC}</label>
+        </div>
+        <div class="option-item">
+          <input type="radio" name="question_${q.questionId}" value="D" id="q${index}_d">
+          <label for="q${index}_d">${q.optionD}</label>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('examQuestions').innerHTML = questionsHTML;
+  
+  console.log('✅ 測驗題目顯示完成');
+}
+
+/**
+ * 提交測驗
+ */
+async function submitExam() {
+  console.log('=== submitExam 開始 ===');
+  console.log('currentRecordId:', currentRecordId);
+  console.log('currentExamQuestions:', currentExamQuestions);
+  
+  // ✅ 收集答案
+  const answers = {};
+  let allAnswered = true;
+
+  currentExamQuestions.forEach(q => {
+    const selected = document.querySelector(`input[name="question_${q.questionId}"]:checked`);
+    if (selected) {
+      answers[q.questionId] = selected.value;
+      console.log(`題目 ${q.questionId}: 選擇 ${selected.value}`);
+    } else {
+      allAnswered = false;
+      console.log(`題目 ${q.questionId}: 未作答`);
+    }
+  });
+
+  if (!allAnswered) {
+    showAlert('請回答所有題目', 'warning');
+    return;
+  }
+  
+  console.log('✅ 所有題目已作答');
+  console.log('答案:', answers);
+  
+  showLoading();
+  
+  try {
+    // ✅ 提交測驗
+    const result = await callAPI('submitExam', {
+      courseId: currentCourse.courseId,
+      recordId: currentRecordId,
+      answers: JSON.stringify(answers)
+    });
+    
+    console.log('API 回應:', result);
+    
+    hideLoading();
+
+    if (result && result.success) {
+      console.log('✅ 測驗提交成功');
+      displayExamResult(result.data);
+    } else {
+      console.error('❌ 測驗提交失敗:', result?.message);
+      showAlert(result?.message || '提交失敗', 'error');
+    }
+  } catch (error) {
+    console.error('❌ submitExam 失敗:', error);
+    hideLoading();
+    showAlert('提交失敗', 'error');
+  }
+}
+
+/**
+ * 顯示測驗結果
+ */
+function displayExamResult(resultData) {
+  console.log('=== displayExamResult ===');
+  console.log('resultData:', resultData);
+  
+  const modal = document.getElementById('examResultModal');
+  const isPassed = resultData.isPassed;
+
+  // 更新圖示和標題
+  const icon = document.getElementById('resultIcon');
+  const title = document.getElementById('resultTitle');
+  
+  if (isPassed) {
+    icon.className = 'result-icon pass';
+    icon.innerHTML = '<i class="fas fa-check-circle"></i>';
+    title.textContent = '恭喜通過測驗!';
+  } else {
+    icon.className = 'result-icon fail';
+    icon.innerHTML = '<i class="fas fa-times-circle"></i>';
+    title.textContent = '測驗未通過';
+  }
+
+  // 更新分數
+  document.getElementById('resultScore').textContent = resultData.score + ' 分';
+  document.getElementById('resultCorrect').textContent = resultData.correctCount;
+  document.getElementById('resultTotal').textContent = resultData.totalQuestions;
+  document.getElementById('resultPassScore').textContent = resultData.passScore;
+
+  // 顯示獲得點數
+  const pointsRow = document.getElementById('resultPointsRow');
+  if (isPassed) {
+    pointsRow.style.display = 'flex';
+    document.getElementById('resultPoints').textContent = resultData.earnedPoints || 0;
+  } else {
+    pointsRow.style.display = 'none';
+  }
+
+  modal.classList.add('active');
+
+  // 如果通過,更新當前課程狀態
+  if (isPassed) {
+    currentCourse.isCompleted = true;
+  }
+  
+  console.log('✅ 測驗結果顯示完成');
+}
+
+/**
+ * 關閉測驗結果 Modal
+ */
+function closeExamResultModal() {
+  document.getElementById('examResultModal').classList.remove('active');
+  
+  // 返回課程列表
+  if (videoCheckInterval) clearInterval(videoCheckInterval);
+  navigateToPage('courses');
+  loadCourses();
+}
+
+/**
+ * 返回課程播放頁面
+ */
+function backToPlayer() {
+  navigateToPage('player');
+}
+
 
     function closeExamResultModal() {
       document.getElementById('examResultModal').classList.remove('active');
