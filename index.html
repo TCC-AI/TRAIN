@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -2091,7 +2092,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbxxYIZHl8EJLlhW59q434AEdumUFIdGB7n4VGIhScNkcmnGFbmNUvZzL-WGwC1gDMQ0zQ/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwxYNRXcm-PNA2InzhkOxB7KPUybFTfKHj12rdF-OrVIexJw7QJ8Jm3xQyEkyrw2M3FxQ/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2798,7 +2799,26 @@ function convertDriveUrl(url) {
       navigateToPage('courses');
     }
 
-async function startExam() 
+    // ==================== 測驗 ==================== 
+    async function startExam() {
+      if (!currentCourse) return;
+
+      const result = await callAPI('getRandomQuestions', {
+        courseId: currentCourse.courseId
+      });
+
+      if (result && result.success) {
+        currentExamQuestions = result.data;
+        
+        if (currentExamQuestions.length === 0) {
+          showAlert('此課程尚無測驗題目', 'warning');
+          return;
+        }
+
+        navigateToPage('exam');
+        displayExam();
+      }
+    }
 
     function displayExam() {
       document.getElementById('examCourseTitle').textContent = currentCourse.courseName + ' - 測驗';
@@ -3814,6 +3834,3 @@ function closeQuestionModal() {
   </script>
 </body>
 </html>
-
-
-
