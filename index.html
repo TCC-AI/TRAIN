@@ -1628,38 +1628,40 @@
 </div>
 
 
-        <!-- 題目管理面板 -->
-        <div id="adminQuestionsPanel" class="admin-panel">
-          <div class="admin-card">
-            <div class="admin-card-header">
-              <h3 class="admin-card-title">題目列表</h3>
-              <div>
-                <select id="adminQuestionCourseFilter" onchange="loadAdminQuestions()">
-                  <option value="">選擇課程</option>
-                </select>
-                <button class="btn btn-primary btn-sm" onclick="showAddQuestionModal()">
-                  <i class="fas fa-plus"></i> 新增題目
-                </button>
-              </div>
-            </div>
-            
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>題目ID</th>
-                  <th>題目內容</th>
-                  <th>正確答案</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="adminQuestionsList">
-                <tr>
-                  <td colspan="4" class="text-center">請選擇課程</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+<!-- 題目管理面板 -->
+<div id="adminQuestionsPanel" class="admin-panel">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">題目列表</h3>
+      <div>
+        <!-- ✅ 修正: onchange 事件呼叫 loadAdminQuestionsByCourse() -->
+        <select id="adminQuestionCourseFilter" onchange="loadAdminQuestionsByCourse()">
+          <option value="">選擇課程</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="showAddQuestionModal()">
+          <i class="fas fa-plus"></i> 新增題目
+        </button>
+      </div>
+    </div>
+    
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>題目ID</th>
+          <th>題目內容</th>
+          <th>正確答案</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="adminQuestionsList">
+        <tr>
+          <td colspan="4" class="text-center">請選擇課程</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
         <!-- 帳號管理面板 -->
         <div id="adminAccountsPanel" class="admin-panel">
@@ -3165,22 +3167,251 @@ function displayAdminCourses(courses) {
     }
 
     // ==================== 題目管理 ==================== 
-    async function loadAdminQuestions() {
-      // 載入課程選項
-      const coursesResult = await callAPI('getAllCourses');
+// ==================== 題目管理 ==================== 
+
+/**
+ * 載入題目管理的課程選單
+ */
+async function loadAdminQuestions() {
+  console.log('=== loadAdminQuestions ===');
+  
+  // ✅ 載入課程選項
+  const coursesResult = await callAPI('getAllCourses', {});
+  
+  if (coursesResult && coursesResult.success) {
+    const select1 = document.getElementById('adminQuestionCourseFilter');
+    const select2 = document.getElementById('questionFormCourse');
+    
+    const options = coursesResult.data.map(c => 
+      `<option value="${c.courseId}">${c.courseId} - ${c.courseName}</option>`
+    ).join('');
+    
+    select1.innerHTML = '<option value="">選擇課程</option>' + options;
+    select2.innerHTML = '<option value="">請選擇課程</option>' + options;
+    
+    console.log('✅ 課程選單載入完成,共 ' + coursesResult.data.length + ' 筆課程');
+  } else {
+    console.error('❌ 載入課程失敗');
+  }
+  
+  // ✅ 清空題目列表
+  displayAdminQuestions([]);
+}
+
+/**
+ * 當選擇課程時,載入該課程的題目
+ */
+async function loadAdminQuestionsByCourse() {
+  const courseSelect = document.getElementById('adminQuestionCourseFilter');
+  const selectedCourseId = courseSelect.value;
+  
+  console.log('=== loadAdminQuestionsByCourse ===');
+  console.log('選擇的課程ID:', selectedCourseId);
+  
+  if (!selectedCourseId) {
+    console.log('⚠️ 未選擇課程');
+    displayAdminQuestions([]);
+    return;
+  }
+  
+  showLoading();
+  
+  try {
+    // ✅ 呼叫 getQuestionList API
+    const result = await callAPI('getQuestionList', { 
+      courseId: selectedCourseId 
+    });
+    
+    console.log('API 回應:', result);
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      console.log('✅ 成功取得 ' + result.data.length + ' 筆題目');
+      displayAdminQuestions(result.data);
       
-      if (coursesResult && coursesResult.success) {
-        const select1 = document.getElementById('adminQuestionCourseFilter');
-        const select2 = document.getElementById('questionFormCourse');
-        
-        const options = coursesResult.data.map(c => 
-          `<option value="${c.courseId}">${c.courseId} - ${c.courseName}</option>`
-        ).join('');
-        
-        select1.innerHTML = '<option value="">選擇課程</option>' + options;
-        select2.innerHTML = '<option value="">請選擇課程</option>' + options;
+      if (result.data.length === 0) {
+        showAlert('此課程尚無題目', 'info');
       }
+    } else {
+      console.error('❌ API 回應失敗:', result?.message);
+      showAlert(result?.message || '載入題目失敗', 'error');
+      displayAdminQuestions([]);
     }
+  } catch (error) {
+    console.error('❌ 載入題目失敗:', error);
+    hideLoading();
+    showAlert('載入題目失敗', 'error');
+    displayAdminQuestions([]);
+  }
+}
+
+/**
+ * 顯示題目列表
+ */
+function displayAdminQuestions(questions) {
+  const tbody = document.getElementById('adminQuestionsList');
+  
+  if (questions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-center">請選擇課程</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = questions.map(q => `
+    <tr>
+      <td>${q.questionId}</td>
+      <td>${q.questionText}</td>
+      <td>${q.correctAnswer}</td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn-icon btn-primary" onclick="editQuestion('${q.questionId}')" title="編輯">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-icon btn-danger" onclick="deleteQuestion('${q.questionId}')" title="刪除">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/**
+ * 顯示新增題目 Modal
+ */
+function showAddQuestionModal() {
+  const courseId = document.getElementById('adminQuestionCourseFilter').value;
+  
+  if (!courseId) {
+    showAlert('請先選擇課程', 'warning');
+    return;
+  }
+
+  document.getElementById('questionModalTitle').textContent = '新增題目';
+  document.getElementById('questionForm').reset();
+  document.getElementById('questionFormId').value = '';
+  document.getElementById('questionFormCourse').value = courseId;
+  document.getElementById('questionModal').classList.add('active');
+}
+
+/**
+ * 編輯題目
+ */
+async function editQuestion(questionId) {
+  showLoading();
+  
+  try {
+    const result = await callAPI('getQuestionDetail', { questionId });
+
+    hideLoading();
+
+    if (result && result.success) {
+      const q = result.data;
+      
+      document.getElementById('questionModalTitle').textContent = '編輯題目';
+      document.getElementById('questionFormId').value = q.questionId;
+      document.getElementById('questionFormCourse').value = q.courseId;
+      document.getElementById('questionFormText').value = q.questionText;
+      document.getElementById('questionFormOptionA').value = q.optionA;
+      document.getElementById('questionFormOptionB').value = q.optionB;
+      document.getElementById('questionFormOptionC').value = q.optionC;
+      document.getElementById('questionFormOptionD').value = q.optionD;
+      document.getElementById('questionFormAnswer').value = q.correctAnswer;
+      
+      document.getElementById('questionModal').classList.add('active');
+    } else {
+      showAlert(result?.message || '載入題目失敗', 'error');
+    }
+  } catch (error) {
+    console.error('編輯題目失敗:', error);
+    hideLoading();
+    showAlert('載入題目失敗', 'error');
+  }
+}
+
+/**
+ * 儲存題目
+ */
+async function saveQuestion() {
+  const questionId = document.getElementById('questionFormId').value;
+  const questionData = {
+    courseId: document.getElementById('questionFormCourse').value,
+    questionText: document.getElementById('questionFormText').value,
+    optionA: document.getElementById('questionFormOptionA').value,
+    optionB: document.getElementById('questionFormOptionB').value,
+    optionC: document.getElementById('questionFormOptionC').value,
+    optionD: document.getElementById('questionFormOptionD').value,
+    correctAnswer: document.getElementById('questionFormAnswer').value
+  };
+
+  // ✅ 驗證必填欄位
+  if (!questionData.courseId || !questionData.questionText || 
+      !questionData.optionA || !questionData.optionB || 
+      !questionData.optionC || !questionData.optionD || 
+      !questionData.correctAnswer) {
+    showAlert('請填寫所有欄位', 'warning');
+    return;
+  }
+
+  showLoading();
+
+  try {
+    const action = questionId ? 'updateQuestion' : 'createQuestion';
+    const data = questionId 
+      ? { questionId, questionData: JSON.stringify(questionData) } 
+      : { questionData: JSON.stringify(questionData) };
+
+    const result = await callAPI(action, data);
+
+    hideLoading();
+
+    if (result && result.success) {
+      showAlert(questionId ? '題目更新成功' : '題目新增成功', 'success');
+      closeQuestionModal();
+      loadAdminQuestionsByCourse(); // ✅ 重新載入題目列表
+    } else {
+      showAlert(result?.message || '操作失敗', 'error');
+    }
+  } catch (error) {
+    console.error('儲存題目失敗:', error);
+    hideLoading();
+    showAlert('操作失敗', 'error');
+  }
+}
+
+/**
+ * 刪除題目
+ */
+async function deleteQuestion(questionId) {
+  if (!confirm('確定要刪除此題目嗎?')) return;
+
+  showLoading();
+
+  try {
+    const result = await callAPI('deleteQuestion', { questionId });
+
+    hideLoading();
+
+    if (result && result.success) {
+      showAlert('題目刪除成功', 'success');
+      loadAdminQuestionsByCourse(); // ✅ 重新載入題目列表
+    } else {
+      showAlert(result?.message || '刪除失敗', 'error');
+    }
+  } catch (error) {
+    console.error('刪除題目失敗:', error);
+    hideLoading();
+    showAlert('刪除失敗', 'error');
+  }
+}
+
+/**
+ * 關閉題目 Modal
+ */
+function closeQuestionModal() {
+  document.getElementById('questionModal').classList.remove('active');
+}
+
 
     async function loadAdminQuestionsByCourse() {
       const courseId = document.getElementById('adminQuestionCourseFilter').value;
