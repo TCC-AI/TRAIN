@@ -1595,37 +1595,38 @@
           </button>
         </div>
 
-        <!-- 課程管理面板 -->
-        <div id="adminCoursesPanel" class="admin-panel active">
-          <div class="admin-card">
-            <div class="admin-card-header">
-              <h3 class="admin-card-title">課程列表</h3>
-              <button class="btn btn-primary btn-sm" onclick="showAddCourseModal()">
-                <i class="fas fa-plus"></i> 新增課程
-              </button>
-            </div>
-            
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>課程ID</th>
-                  <th>課程名稱</th>
-                  <th>課群</th>
-                  <th>課門</th>
-                  <th>點數</th>
-                  <th>截止日期</th>
-                  <th>狀態</th>
-                  <th>操作</th>
-                </tr>
-              </thead>
-              <tbody id="adminCoursesList">
-                <tr>
-                  <td colspan="8" class="text-center">載入中...</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+<!-- 課程管理面板 -->
+<div id="adminCoursesPanel" class="admin-panel active">
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h3 class="admin-card-title">課程列表</h3>
+      <button class="btn btn-primary btn-sm" onclick="showAddCourseModal()">
+        <i class="fas fa-plus"></i> 新增課程
+      </button>
+    </div>
+    
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>課程ID</th>
+          <th>課群</th>           <!-- ✅ 修正: 第2欄 -->
+          <th>課門</th>           <!-- ✅ 修正: 第3欄 -->
+          <th>課程名稱</th>       <!-- ✅ 修正: 第4欄 -->
+          <th>點數</th>
+          <th>截止日期</th>
+          <th>狀態</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="adminCoursesList">
+        <tr>
+          <td colspan="8" class="text-center">載入中...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
         <!-- 題目管理面板 -->
         <div id="adminQuestionsPanel" class="admin-panel">
@@ -3049,40 +3050,41 @@ function convertDriveUrl(url) {
       }
     }
 
-    function displayAdminCourses(courses) {
-      const tbody = document.getElementById('adminCoursesList');
-      
-      if (courses.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="text-center">尚無課程</td></tr>';
-        return;
-      }
+function displayAdminCourses(courses) {
+  const tbody = document.getElementById('adminCoursesList');
+  
+  if (courses.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center">尚無課程</td></tr>';
+    return;
+  }
 
-      tbody.innerHTML = courses.map(course => `
-        <tr>
-          <td>${course.courseId}</td>
-          <td>${course.courseName}</td>
-          <td>${course.courseGroup}</td>
-          <td>${course.courseCategory}</td>
-          <td>${course.points}</td>
-          <td>${course.deadline || '-'}</td>
-          <td>
-            <span class="status-badge ${course.status === '啟用' ? 'active' : 'inactive'}">
-              ${course.status}
-            </span>
-          </td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn-icon btn-primary" onclick="editCourse('${course.courseId}')" title="編輯">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn-icon btn-danger" onclick="deleteCourse('${course.courseId}')" title="刪除">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
+  tbody.innerHTML = courses.map(course => `
+    <tr>
+      <td>${course.courseId}</td>
+      <td>${course.courseGroup}</td>        <!-- ✅ 已修正 -->
+      <td>${course.courseCategory}</td>     <!-- ✅ 已修正 -->
+      <td>${course.courseName}</td>         <!-- ✅ 已修正 -->
+      <td>${course.points}</td>
+      <td>${course.deadline || '-'}</td>
+      <td>
+        <span class="status-badge ${course.status === '啟用' ? 'active' : 'inactive'}">
+          ${course.status}
+        </span>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="btn-icon btn-primary" onclick="editCourse('${course.courseId}')" title="編輯">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button class="btn-icon btn-danger" onclick="deleteCourse('${course.courseId}')" title="刪除">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
 
     function showAddCourseModal() {
       document.getElementById('courseModalTitle').textContent = '新增課程';
