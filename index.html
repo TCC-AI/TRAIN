@@ -2069,7 +2069,7 @@
   <!-- ==================== JavaScript ==================== -->
   <script>
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbz6xDMVYWVuULshXaWt_Pq-JmKAjcf6JLUVrnRq1DIzV_6Tc8wKHIfJ8vaxq6W25NA2GQ/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbxJoWVjy4ngC2o5bEQX1GONhTKdYeditaDoHpc6EY5xvTHUwp8JSRFG7Q2g-MhUhdzDVA/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2202,16 +2202,24 @@ async function callAPI(action, data = {}) {
       }
     }
 
-    async function validateSession() {
-      const result = await callAPI('validateSession');
-      
-      if (result && result.success) {
-        currentUser = result.data;
-        showApp();
-      } else {
-        logout();
-      }
-    }
+async function validateSession() {
+  const result = await callAPI('validateSession');
+  
+  console.log('✅ validateSession 結果:', result);
+  
+  if (result && result.success) {
+    // ✅ 修正: 直接使用 result.data
+    currentUser = result.data;
+    
+    console.log('✅ currentUser 已設定:', currentUser);
+    
+    showApp();
+  } else {
+    console.log('❌ Session 驗證失敗');
+    logout();
+  }
+}
+
 
     function logout() {
       sessionToken = null;
@@ -2224,26 +2232,41 @@ async function callAPI(action, data = {}) {
       showAlert('已登出', 'info');
     }
 
-    function showApp() {
-      document.getElementById('loginPage').style.display = 'none';
-      document.getElementById('appContainer').classList.add('active');
-      
-      // 更新使用者資訊
-      document.getElementById('userName').textContent = currentUser.name;
-      document.getElementById('userDept').textContent = currentUser.department;
-      document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
-      document.getElementById('welcomeName').textContent = currentUser.name;
+function showApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('appContainer').classList.add('active');
+  
+  // ✅ 加入防呆檢查
+  if (!currentUser) {
+    console.error('❌ currentUser 未定義');
+    logout();
+    return;
+  }
+  
+  if (!currentUser.name) {
+    console.error('❌ currentUser.name 未定義');
+    console.log('currentUser:', currentUser);
+    logout();
+    return;
+  }
+  
+  // 更新使用者資訊
+  document.getElementById('userName').textContent = currentUser.name;
+  document.getElementById('userDept').textContent = currentUser.department || '未知部門';
+  document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+  document.getElementById('welcomeName').textContent = currentUser.name;
 
-      // 顯示/隱藏管理選單
-      if (currentUser.permission === 's4' || currentUser.permission === 's3') {
-        document.querySelectorAll('.admin-only').forEach(el => {
-          el.classList.remove('hidden');
-        });
-      }
+  // 顯示/隱藏管理選單
+  if (currentUser.permission === 's4' || currentUser.permission === 's3') {
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.classList.remove('hidden');
+    });
+  }
 
-      // 載入儀錶板
-      loadDashboard();
-    }
+  // 載入儀錶板
+  loadDashboard();
+}
+
 
     // ==================== 頁面導航 ==================== 
     function navigateToPage(pageName) {
@@ -2547,66 +2570,137 @@ async function callAPI(action, data = {}) {
       }
     }
 
-    async function startLearning(courseId) {
-      const result = await callAPI('startLearning', { courseId });
+async function startLearning(courseId) {
+  console.log('=== startLearning 開始 ===');
+  console.log('courseId:', courseId);
+  
+  const result = await callAPI('startLearning', { courseId });
 
-      if (result && result.success) {
-        currentRecordId = result.data.recordId;
-        currentCourse = result.data.courseDetail;
-        
-        navigateToPage('player');
-        displayPlayer();
-      } else {
-        showAlert(result?.message || '開始學習失敗', 'error');
-      }
-    }
+  console.log('✅ API 回應:', result);
+
+  if (result && result.success) {
+    currentRecordId = result.data.recordId;
+    currentCourse = result.data.courseDetail;
+    
+    console.log('✅ currentRecordId:', currentRecordId);
+    console.log('✅ currentCourse:', currentCourse);
+    
+    navigateToPage('player');
+    displayPlayer();
+  } else {
+    console.error('❌ 開始學習失敗');
+    showAlert(result?.message || '開始學習失敗', 'error');
+  }
+}
+
 
     async function continueLearning(courseId) {
       await startLearning(courseId);
     }
 
-    // ==================== 課程播放器 ==================== 
-    function displayPlayer() {
-      document.getElementById('playerCourseTitle').textContent = currentCourse.courseName;
-      document.getElementById('playerCourseId').textContent = currentCourse.courseId;
-      document.getElementById('playerCoursePoints').textContent = currentCourse.points;
-      document.getElementById('playerDeadline').textContent = currentCourse.deadline || '無期限';
-      document.getElementById('playerCourseDesc').textContent = currentCourse.courseDesc || '暫無說明';
+function displayPlayer() {
+  console.log('=== displayPlayer 開始 ===');
+  console.log('currentCourse:', currentCourse);
+  
+  // ✅ 加入防呆檢查
+  if (!currentCourse) {
+    console.error('❌ currentCourse 未定義');
+    showAlert('課程資料載入失敗', 'error');
+    backToCourses();
+    return;
+  }
+  
+  if (!currentCourse.courseName) {
+    console.error('❌ currentCourse.courseName 未定義');
+    console.log('currentCourse:', currentCourse);
+    showAlert('課程名稱載入失敗', 'error');
+    backToCourses();
+    return;
+  }
+  
+  // ✅ 顯示課程資訊
+  document.getElementById('playerCourseTitle').textContent = currentCourse.courseName;
+  document.getElementById('playerCourseId').textContent = currentCourse.courseId || '未知ID';
+  document.getElementById('playerCoursePoints').textContent = currentCourse.points || 0;
+  document.getElementById('playerDeadline').textContent = currentCourse.deadline || '無期限';
+  document.getElementById('playerCourseDesc').textContent = currentCourse.courseDesc || '暫無說明';
 
-      // 載入影片
-      const videoUrl = convertDriveUrl(currentCourse.videoLink);
-      document.getElementById('videoPlayer').src = videoUrl;
+  // ✅ 載入影片
+  if (!currentCourse.videoUrl) {
+    console.error('❌ videoUrl 未定義');
+    showAlert('影片連結不存在', 'error');
+    return;
+  }
+  
+  console.log('原始影片連結:', currentCourse.videoUrl);
+  
+  const videoUrl = convertDriveUrl(currentCourse.videoUrl);
+  
+  console.log('轉換後影片連結:', videoUrl);
+  
+  document.getElementById('videoPlayer').src = videoUrl;
 
-      // 開始追蹤觀看時間
-      videoStartTime = new Date();
-      watchedSeconds = 0;
+  // 開始追蹤觀看時間
+  videoStartTime = new Date();
+  watchedSeconds = 0;
 
-      // 每10秒更新一次進度
-      if (videoCheckInterval) clearInterval(videoCheckInterval);
-      
-      videoCheckInterval = setInterval(() => {
-        watchedSeconds += 10;
-        updateProgress();
-      }, 10000);
+  // 每10秒更新一次進度
+  if (videoCheckInterval) clearInterval(videoCheckInterval);
+  
+  videoCheckInterval = setInterval(() => {
+    watchedSeconds += 10;
+    updateProgress();
+  }, 10000);
 
-      // 監聽影片結束事件(需要使用 YouTube API 或其他方式)
-      // 這裡簡化處理,假設觀看一定時間後即可測驗
-      setTimeout(() => {
-        document.getElementById('btnStartExam').disabled = false;
-        showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
-      }, 30000); // 假設30秒後可以測驗
+  // ✅ 假設30秒後可以測驗
+  setTimeout(() => {
+    document.getElementById('btnStartExam').disabled = false;
+    showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
+  }, 30000);
+  
+  console.log('✅ displayPlayer 完成');
+}
+
+
+function convertDriveUrl(url) {
+  console.log('=== convertDriveUrl ===');
+  console.log('輸入 URL:', url);
+  
+  if (!url) {
+    console.error('❌ URL 為空');
+    return '';
+  }
+  
+  // ✅ 方法 1: 從分享連結提取 File ID
+  if (url.includes('drive.google.com/file/d/')) {
+    const match = url.match(/\/file\/d\/([^\/]+)/);
+    if (match && match[1]) {
+      const fileId = match[1];
+      const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+      console.log('✅ 轉換成功 (方法1):', embedUrl);
+      return embedUrl;
     }
+  }
+  
+  // ✅ 方法 2: 從任何 Drive 連結提取 File ID
+  const fileIdMatch = url.match(/[-\w]{25,}/);
+  if (fileIdMatch) {
+    const fileId = fileIdMatch[0];
+    const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+    console.log('✅ 轉換成功 (方法2):', embedUrl);
+    return embedUrl;
+  }
+  
+  // ✅ 方法 3: 如果已經是嵌入式連結
+  if (url.includes('/preview')) {
+    console.log('✅ 已是嵌入式連結');
+    return url;
+  }
+  
+  console.warn('⚠️ 無法轉換 URL,返回原始連結');
+  return url;
+}
 
-    function convertDriveUrl(url) {
-      // 將 Google Drive 分享連結轉換為嵌入式連結
-      if (url.includes('drive.google.com')) {
-        const fileId = url.match(/[-\w]{25,}/);
-        if (fileId) {
-          return `https://drive.google.com/file/d/${fileId[0]}/preview`;
-        }
-      }
-      return url;
-    }
 
     async function updateProgress() {
       if (!currentRecordId) return;
