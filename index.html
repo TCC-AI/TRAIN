@@ -2092,7 +2092,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbwxYNRXcm-PNA2InzhkOxB7KPUybFTfKHj12rdF-OrVIexJw7QJ8Jm3xQyEkyrw2M3FxQ/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbxTFQyLc0ubSCM-4CI-zs5ibudPGQ_-G7ugBcvgSw33-ERd_O3M0xZmUf5Csp-5N2OKlw/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2139,62 +2139,131 @@
     });
 
     // ==================== API 呼叫函數 ==================== 
+/**
+ * 呼叫後端 API (使用 JSONP)
+ */
 async function callAPI(action, data = {}) {
+  console.log('=== callAPI 開始 ===');
+  console.log('action:', action);
+  console.log('data:', data);
+  
   showLoading();
   
   try {
-    // ✅ 使用 JSONP
+    // ✅ 建立唯一的 callback 名稱
+    const callbackName = 'apiCallback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    console.log('✅ Callback 名稱:', callbackName);
+    
+    // ✅ 建立參數
     const params = new URLSearchParams({
       action: action,
-      callback: 'handleResponse',
-      ...data
+      callback: callbackName
     });
     
     if (sessionToken) {
       params.append('sessionToken', sessionToken);
     }
     
+    // ✅ 加入其他參數
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
+        params.append(key, data[key]);
+      }
+    }
+    
     const url = `${API_URL}?${params.toString()}`;
     
+    console.log('✅ 完整 URL:', url);
+    
     return new Promise((resolve, reject) => {
-      // 建立 callback 函數
-      window.handleResponse = function(response) {
+      // ✅ 設定超時計時器 (30秒)
+      const timeoutId = setTimeout(() => {
+        console.error('❌ API 請求超時');
+        cleanup();
+        hideLoading();
+        showAlert('請求超時，請稍後再試', 'error');
+        reject(new Error('Request timeout'));
+      }, 30000);
+      
+      // ✅ 建立 callback 函數
+      window[callbackName] = function(response) {
+        console.log('✅ 收到 API 回應:', response);
+        
+        clearTimeout(timeoutId);
+        cleanup();
         hideLoading();
         
+        // ✅ 檢查 Session 是否無效
         if (!response.success && response.message === 'Session 無效') {
+          console.log('❌ Session 無效，登出');
           logout();
           resolve(null);
         } else {
           resolve(response);
         }
-        
-        // 清理
-        delete window.handleResponse;
-        document.body.removeChild(script);
       };
       
-      // 建立 script 標籤
+      // ✅ 建立 script 標籤
       const script = document.createElement('script');
       script.src = url;
-      script.onerror = function() {
+      script.id = callbackName;
+      
+      // ✅ 錯誤處理 (修正版)
+      script.onerror = function(error) {
+        console.error('❌ Script 載入失敗:', error);
+        console.error('URL:', url);
+        
+        clearTimeout(timeoutId);
+        cleanup();
         hideLoading();
-        console.error('API Error: Failed to load script');
-        showAlert('系統錯誤,請稍後再試', 'error');
-        reject(new Error('Failed to load script'));
-        delete window.handleResponse;
-        document.body.removeChild(script);
+        
+        // ✅ 不要立即 reject，因為可能是 CORS 問題
+        // 給 callback 一點時間執行
+        setTimeout(() => {
+          if (window[callbackName]) {
+            console.error('❌ Callback 未被呼叫，確認為載入失敗');
+            showAlert('系統錯誤，請稍後再試', 'error');
+            reject(new Error('Failed to load script'));
+          }
+        }, 1000);
       };
       
+      // ✅ 載入成功處理
+      script.onload = function() {
+        console.log('✅ Script 載入成功');
+      };
+      
+      // ✅ 清理函數
+      function cleanup() {
+        try {
+          if (window[callbackName]) {
+            delete window[callbackName];
+          }
+          
+          const scriptElement = document.getElementById(callbackName);
+          if (scriptElement && scriptElement.parentNode) {
+            scriptElement.parentNode.removeChild(scriptElement);
+          }
+        } catch(e) {
+          console.error('清理失敗:', e);
+        }
+      }
+      
+      // ✅ 加入 script 標籤到 DOM
       document.body.appendChild(script);
+      
+      console.log('✅ Script 標籤已加入 DOM');
     });
     
   } catch (error) {
+    console.error('❌ callAPI 錯誤:', error);
     hideLoading();
-    console.error('API Error:', error);
-    showAlert('系統錯誤,請稍後再試', 'error');
+    showAlert('系統錯誤，請稍後再試', 'error');
     return null;
   }
 }
+
 
 
 
