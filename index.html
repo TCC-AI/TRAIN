@@ -2068,6 +2068,25 @@
 
   <!-- ==================== JavaScript ==================== -->
   <script>
+    // ==================== 過濾 Chrome 擴充功能錯誤 ====================
+(function() {
+  const originalError = console.error;
+  console.error = function(...args) {
+    const errorMessage = args[0];
+    
+    // ✅ 過濾掉 Chrome 擴充功能的錯誤
+    if (typeof errorMessage === 'string') {
+      if (errorMessage.includes('message channel closed') ||
+          errorMessage.includes('listener indicated an asynchronous response')) {
+        return; // 不顯示此錯誤
+      }
+    }
+    
+    // ✅ 其他錯誤正常顯示
+    originalError.apply(console, args);
+  };
+})();
+
     // ==================== 全域變數 ==================== 
     let API_URL = 'https://script.google.com/macros/s/AKfycbwxYNRXcm-PNA2InzhkOxB7KPUybFTfKHj12rdF-OrVIexJw7QJ8Jm3xQyEkyrw2M3FxQ/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
@@ -2706,9 +2725,12 @@ function convertDriveUrl(url) {
     return '';
   }
   
+  // ✅ 移除空白和換行
+  url = String(url).trim();
+  
   // ✅ 方法 1: 從分享連結提取 File ID
   if (url.includes('drive.google.com/file/d/')) {
-    const match = url.match(/\/file\/d\/([^\/]+)/);
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (match && match[1]) {
       const fileId = match[1];
       const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
@@ -2717,24 +2739,36 @@ function convertDriveUrl(url) {
     }
   }
   
-  // ✅ 方法 2: 從任何 Drive 連結提取 File ID
+  // ✅ 方法 2: 從 open?id= 格式提取
+  if (url.includes('drive.google.com/open?id=')) {
+    const match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      const fileId = match[1];
+      const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+      console.log('✅ 轉換成功 (方法2):', embedUrl);
+      return embedUrl;
+    }
+  }
+  
+  // ✅ 方法 3: 從任何 Drive 連結提取 File ID
   const fileIdMatch = url.match(/[-\w]{25,}/);
   if (fileIdMatch) {
     const fileId = fileIdMatch[0];
     const embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
-    console.log('✅ 轉換成功 (方法2):', embedUrl);
+    console.log('✅ 轉換成功 (方法3):', embedUrl);
     return embedUrl;
   }
   
-  // ✅ 方法 3: 如果已經是嵌入式連結
+  // ✅ 方法 4: 如果已經是嵌入式連結
   if (url.includes('/preview')) {
     console.log('✅ 已是嵌入式連結');
     return url;
   }
   
-  console.warn('⚠️ 無法轉換 URL,返回原始連結');
-  return url;
+  console.error('❌ 無法轉換 URL');
+  return '';
 }
+
 
 
     async function updateProgress() {
