@@ -1401,7 +1401,7 @@
           <div class="filter-row">
              <div class="form-group">
             <label>課群 *</label>
-            <select id="courseFormCategory" required>
+            <select id="filterCourseGroup">
               <option value="">請選擇</option>
               <!-- 動態載入選項 -->
             </select>
@@ -1409,7 +1409,7 @@
             
             <div class="form-group">
             <label>課門 *</label>
-            <select id="courseFormSubject" required>
+             <select id="filterCourseCategory">
               <option value="">請選擇</option>
               <!-- 動態載入選項 -->
             </select>
@@ -2565,26 +2565,44 @@ function displayInProgressCourses(courses) {
     }
 
     // ==================== 課程瀏覽 ==================== 
-    async function loadCourses() {
-      const result = await callAPI('getCourseList');
+async function loadCourses() {
+  const result = await callAPI('getCourseList');
 
-      if (result && result.success) {
-        allCourses = result.data;
-        displayCourses(allCourses);
-        
-        // 填充課門選項
-        populateCourseCategoryFilter();
-      }
-    }
+  if (result && result.success) {
+    allCourses = result.data;
+    displayCourses(allCourses);
+    
+    // ✅ 為課程瀏覽頁面的下拉選單載入選項
+    populateCourseCategoryFilter();
+    populateCourseGroupFilter();
+  }
+}
 
-    function populateCourseCategoryFilter() {
-      const categories = [...new Set(allCourses.map(c => c.courseCategory))];
-      const select = document.getElementById('filterCourseCategory');
-      
-      select.innerHTML = '<option value="">全部</option>' + 
-        categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
-    }
+    /**
+ * 填充課程瀏覽頁面的課群選項
+ */
+function populateCourseGroupFilter() {
+  const groups = [...new Set(allCourses.map(c => c.courseGroup))];
+  const select = document.getElementById('filterCourseGroup');
+  
+  if (select) {
+    select.innerHTML = '<option value="">全部</option>' + 
+      groups.map(group => `<option value="${group}">${group}</option>`).join('');
+  }
+}
 
+/**
+ * 填充課程瀏覽頁面的課門選項
+ */
+function populateCourseCategoryFilter() {
+  const categories = [...new Set(allCourses.map(c => c.courseCategory))];
+  const select = document.getElementById('filterCourseCategory');
+  
+  if (select) {
+    select.innerHTML = '<option value="">全部</option>' + 
+      categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+  }
+}
     function applyCourseFilters() {
       const groupFilter = document.getElementById('filterCourseGroup').value;
       const categoryFilter = document.getElementById('filterCourseCategory').value;
