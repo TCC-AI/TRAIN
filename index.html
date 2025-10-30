@@ -3271,14 +3271,14 @@ function backToPlayer() {
 /**
  * 載入課群選項
  */
-async function loadCategoryOptions() {
+async function loadSubjectOptions() {
   try {
-    console.log('=== loadCategoryOptions ===');  // ✅ 改為 console.log
+    console.log('=== loadSubjectOptions ===');  // ✅ 改為 console.log
     
-    const result = await callAPI('getCategoryOptions', {});
+    const result = await callAPI('getSubjectOptions', {});
     
     if (result && result.success) {
-      const select = document.getElementById('courseFormCategory');
+      const select = document.getElementById('courseFormSubject');
       
       // 清空現有選項 (保留第一個 "請選擇")
       select.innerHTML = '<option value="">請選擇</option>';
@@ -3305,14 +3305,14 @@ async function loadCategoryOptions() {
 /**
  * 載入課群選項
  */
-async function loadCategoryOptions() {
+async function loadSubjectOptions() {
   try {
-    console.log('=== loadCategoryOptions ===');  // ✅ 改為 console.log
+    console.log('=== loadSubjectOptions ===');  // ✅ 改為 console.log
     
-    const result = await callAPI('getCategoryOptions', {});
+    const result = await callAPI('getSubjectOptions', {});
     
     if (result && result.success) {
-      const select = document.getElementById('courseFormCategory');
+      const select = document.getElementById('courseFormSubject');
       
       // 清空現有選項 (保留第一個 "請選擇")
       select.innerHTML = '<option value="">請選擇</option>';
@@ -3453,7 +3453,7 @@ function displayAdminCourses(courses) {
         
         document.getElementById('courseModalTitle').textContent = '編輯課程';
         document.getElementById('courseFormId').value = course.courseId;
-        document.getElementById('courseFormCategory').value = course.courseGroup;  // ✅ 課群代號
+        document.getElementById('courseFormSubject').value = course.courseGroup;  // ✅ 課群代號
         document.getElementById('courseFormSubject').value = course.courseCategory; // ✅ 課門代號
         document.getElementById('courseFormName').value = course.courseName;
         document.getElementById('courseFormDesc').value = course.courseDesc || '';
@@ -3473,7 +3473,7 @@ function displayAdminCourses(courses) {
     async function saveCourse() {
       const courseId = document.getElementById('courseFormId').value;
       const courseData = {
-        categoryCode: document.getElementById('courseFormCategory').value,  // ✅ 改為課群代號
+        categoryCode: document.getElementById('courseFormSubject').value,  // ✅ 改為課群代號
         subjectCode: document.getElementById('courseFormSubject').value,    // ✅ 改為課門代號
         courseName: document.getElementById('courseFormName').value,
         courseDesc: document.getElementById('courseFormDesc').value,
