@@ -2820,7 +2820,7 @@ function displayPlayer() {
   console.log('currentCourse:', currentCourse);
   console.log('currentRecordId:', currentRecordId);
   
-  // ✅ 防呆檢查 1: currentCourse 是否存在
+  // ✅ 防呆檢查
   if (!currentCourse) {
     console.error('❌ currentCourse 未定義');
     showAlert('課程資料載入失敗,請重新開始學習', 'error');
@@ -2828,7 +2828,6 @@ function displayPlayer() {
     return;
   }
   
-  // ✅ 防呆檢查 2: 必要欄位是否存在
   const requiredFields = ['courseName', 'courseId', 'videoUrl'];
   for (const field of requiredFields) {
     if (!currentCourse[field]) {
@@ -2862,14 +2861,9 @@ function displayPlayer() {
   
   if (!currentRecordId) {
     console.log('⚠️ 尚未建立學習紀錄');
-    
-    // ✅ 隱藏【開始測驗】按鈕,顯示提示
     btnStartExam.disabled = true;
     btnStartExam.textContent = '請先點選【開始學習】';
-    
-    // ✅ 顯示提示訊息
     showAlert('請先點選【開始學習】按鈕以建立學習紀錄', 'info');
-    
     return;
   }
   
@@ -2879,23 +2873,108 @@ function displayPlayer() {
   videoStartTime = new Date();
   watchedSeconds = 0;
 
-  // 每10秒更新一次進度
-  if (videoCheckInterval) clearInterval(videoCheckInterval);
+  // ✅ 清除舊的計時器
+  if (videoCheckInterval) {
+    clearInterval(videoCheckInterval);
+  }
   
-  videoCheckInterval = setInterval(() => {
-    watchedSeconds += 10;
-    updateProgress();
-  }, 10000);
+// ✅ 修改後
+videoCheckInterval = setInterval(() => {
+  watchedSeconds += 30;
+  updateProgressBar();  // ✅ 只更新前端進度條
+}, 30000);
 
-  // 假設30秒後可以測驗
+  // ✅ 假設影片 3 分鐘 (180 秒)
+  // 實際應該從影片播放器取得影片長度
+  const videoDuration = 180;
+  
+  // ✅ 影片播放完畢後,啟用測驗按鈕
   setTimeout(() => {
+    if (videoCheckInterval) {
+      clearInterval(videoCheckInterval);
+    }
+    
+    // ✅ 最後一次更新進度 (標記為完成)
+    watchedSeconds = videoDuration;
+    updateProgressBar();
+    updateProgressToServer(true);  // ✅ 標記為完成
+    
     btnStartExam.disabled = false;
     btnStartExam.textContent = '開始測驗';
     showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
-  }, 30000);
+  }, videoDuration * 1000);
   
   console.log('✅ displayPlayer 完成');
 }
+
+/**
+ * 更新前端進度條 (不呼叫 API)
+ */
+function updateProgressBar() {
+  const videoDuration = 180;  // 假設影片 3 分鐘
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressFill = document.getElementById('progressFill');
+  if (progressFill) {
+    progressFill.style.width = progressPercent + '%';
+    progressFill.textContent = progressPercent + '%';
+  }
+  
+  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
+}
+
+/**
+ * 更新進度到伺服器 (只在必要時呼叫)
+ */
+async function updateProgressToServer(isComplete = false) {
+  if (!currentRecordId) return;
+
+  const videoDuration = 180;
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressData = {
+    watchedSeconds: watchedSeconds,
+    progress: progressPercent,
+    isComplete: isComplete || progressPercent >= 100
+  };
+
+  console.log('更新進度到伺服器:', progressData);
+
+  try {
+    const result = await callAPI('updateProgress', {
+      recordId: currentRecordId,
+      progressData: JSON.stringify(progressData)  // ✅ 轉換成 JSON 字串
+    });
+
+    if (result && result.success) {
+      console.log('✅ 進度更新成功');
+    } else {
+      console.error('❌ 進度更新失敗:', result?.message);
+    }
+  } catch (error) {
+    console.error('❌ 更新進度失敗:', error);
+  }
+}
+
+/**
+ * 返回課程列表
+ */
+function backToCourses() {
+  // ✅ 清除計時器
+  if (videoCheckInterval) {
+    clearInterval(videoCheckInterval);
+  }
+  
+  // ✅ 最後一次更新進度
+  if (currentRecordId && watchedSeconds > 0) {
+    updateProgressToServer(false);  // ✅ 離開時更新一次
+  }
+  
+  navigateToPage('courses');
+}
+
+
+
 
 
 
@@ -2955,24 +3034,92 @@ function convertDriveUrl(url) {
 
 
 
-    async function updateProgress() {
-      if (!currentRecordId) return;
+/**
+ * 更新前端進度條 (不呼叫 API)
+ */
+function updateProgressBar() {
+  if (!currentRecordId) return;
 
-      const progressPercent = Math.min(100, Math.round((watchedSeconds / 180) * 100)); // 假設影片3分鐘
-      
-      document.getElementById('progressFill').style.width = progressPercent + '%';
-      document.getElementById('progressFill').textContent = progressPercent + '%';
+  const videoDuration = 180;  // 假設影片 3 分鐘
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  // ✅ 更新前端進度條
+  const progressFill = document.getElementById('progressFill');
+  if (progressFill) {
+    progressFill.style.width = progressPercent + '%';
+    progressFill.textContent = progressPercent + '%';
+  }
+  
+  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
+}
 
-      // 更新後端進度
-      await callAPI('updateProgress', {
-        recordId: currentRecordId,
-        progressData: {
-          watchedSeconds: watchedSeconds,
-          progress: progressPercent,
-          isComplete: progressPercent >= 100
-        }
-      });
+/**
+ * 更新進度到伺服器 (只在必要時呼叫)
+ */
+async function updateProgressToServer(isComplete = false) {
+  if (!currentRecordId) return;
+
+  const videoDuration = 180;
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressData = {
+    watchedSeconds: watchedSeconds,
+    progress: progressPercent,
+    isComplete: isComplete || progressPercent >= 100
+  };
+
+  console.log('更新進度到伺服器:', progressData);
+
+  try {
+    const result = await callAPI('updateProgress', {
+      recordId: currentRecordId,
+      progressData: JSON.stringify(progressData)
+    });
+
+    if (result && result.success) {
+      console.log('✅ 進度更新成功');
+    } else {
+      console.error('❌ 進度更新失敗:', result?.message);
     }
+  } catch (error) {
+    console.error('❌ 更新進度失敗:', error);
+  }
+}
+
+/**
+ * 更新進度到伺服器 (只在必要時呼叫)
+ */
+async function updateProgressToServer(isComplete = false) {
+  if (!currentRecordId) return;
+
+  const videoDuration = 180;
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressData = {
+    watchedSeconds: watchedSeconds,
+    progress: progressPercent,
+    isComplete: isComplete || progressPercent >= 100
+  };
+
+  console.log('更新進度到伺服器:', progressData);
+
+  try {
+    const result = await callAPI('updateProgress', {
+      recordId: currentRecordId,
+      progressData: JSON.stringify(progressData)  // ✅ 轉換成 JSON 字串
+    });
+
+    if (result && result.success) {
+      console.log('✅ 進度更新成功');
+    } else {
+      console.error('❌ 進度更新失敗:', result?.message);
+    }
+  } catch (error) {
+    console.error('❌ 更新進度失敗:', error);
+  }
+}
+
+
 
     function backToCourses() {
       if (videoCheckInterval) clearInterval(videoCheckInterval);
