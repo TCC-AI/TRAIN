@@ -3268,68 +3268,73 @@ function backToPlayer() {
     /**
      * 載入課群選項
      */
-    async function loadCategoryOptions() {
-      try {
-        Logger.log('=== loadCategoryOptions ===');
-        
-        const result = await callAPI('getCategoryOptions', {});
-        
-        if (result && result.success) {
-          const select = document.getElementById('courseFormCategory');
-          
-          // 清空現有選項 (保留第一個 "請選擇")
-          select.innerHTML = '<option value="">請選擇</option>';
-          
-          // 新增選項
-          result.data.forEach(option => {
-            const opt = document.createElement('option');
-            opt.value = option.value;        // 代號 (例如: RR)
-            opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
-            select.appendChild(opt);
-          });
-          
-          console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
-        } else {
-          showAlert(result?.message || '載入課群選項失敗', 'error');
-        }
-      } catch (error) {
-        console.error('❌ 載入課群選項失敗:', error);
-        showAlert('載入課群選項失敗', 'error');
-      }
+/**
+ * 載入課群選項
+ */
+async function loadCategoryOptions() {
+  try {
+    console.log('=== loadCategoryOptions ===');  // ✅ 改為 console.log
+    
+    const result = await callAPI('getCategoryOptions', {});
+    
+    if (result && result.success) {
+      const select = document.getElementById('courseFormCategory');
+      
+      // 清空現有選項 (保留第一個 "請選擇")
+      select.innerHTML = '<option value="">請選擇</option>';
+      
+      // 新增選項
+      result.data.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option.value;        // 代號 (例如: RR)
+        opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
+        select.appendChild(opt);
+      });
+      
+      console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
+    } else {
+      showAlert(result?.message || '載入課群選項失敗', 'error');
     }
+  } catch (error) {
+    console.error('❌ 載入課群選項失敗:', error);
+    showAlert('載入課群選項失敗', 'error');
+  }
+}
 
-    /**
-     * 載入課門選項
-     */
-    async function loadSubjectOptions() {
-      try {
-        console.log('=== loadSubjectOptions ===');
-        
-        const result = await callAPI('getSubjectOptions', {});
-        
-        if (result && result.success) {
-          const select = document.getElementById('courseFormSubject');
-          
-          // 清空現有選項 (保留第一個 "請選擇")
-          select.innerHTML = '<option value="">請選擇</option>';
-          
-          // 新增選項
-          result.data.forEach(option => {
-            const opt = document.createElement('option');
-            opt.value = option.value;        // 代號 (例如: doc)
-            opt.textContent = option.label;  // 顯示名稱 (例如: 文書工具)
-            select.appendChild(opt);
-          });
-          
-          console.log('✅ 課門選項載入成功,共 ' + result.data.length + ' 個');
-        } else {
-          showAlert(result?.message || '載入課門選項失敗', 'error');
-        }
-      } catch (error) {
-        console.error('❌ 載入課門選項失敗:', error);
-        showAlert('載入課門選項失敗', 'error');
-      }
+
+/**
+ * 載入課群選項
+ */
+async function loadCategoryOptions() {
+  try {
+    console.log('=== loadCategoryOptions ===');  // ✅ 改為 console.log
+    
+    const result = await callAPI('getCategoryOptions', {});
+    
+    if (result && result.success) {
+      const select = document.getElementById('courseFormCategory');
+      
+      // 清空現有選項 (保留第一個 "請選擇")
+      select.innerHTML = '<option value="">請選擇</option>';
+      
+      // 新增選項
+      result.data.forEach(option => {
+        const opt = document.createElement('option');
+        opt.value = option.value;        // 代號 (例如: RR)
+        opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
+        select.appendChild(opt);
+      });
+      
+      console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
+    } else {
+      showAlert(result?.message || '載入課群選項失敗', 'error');
     }
+  } catch (error) {
+    console.error('❌ 載入課群選項失敗:', error);
+    showAlert('載入課群選項失敗', 'error');
+  }
+}
+
 
     // ==================== 管理後台 ==================== 
     function switchAdminTab(tabName) {
