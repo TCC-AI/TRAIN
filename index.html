@@ -2761,6 +2761,14 @@ async function startLearning(courseId) {
   const result = await callAPI('startLearning', { courseId });
 
   console.log('✅ API 完整回應:', result);
+  // ✅ 加入詳細檢查
+  if (result && result.data && result.data.courseDetail) {
+    console.log('=== courseDetail 內容 ===');
+    console.log('完整 courseDetail:', result.data.courseDetail);
+    console.log('videoDuration 值:', result.data.courseDetail.videoDuration);
+    console.log('videoDuration 型別:', typeof result.data.courseDetail.videoDuration);
+    console.log('videoDuration 是否存在:', 'videoDuration' in result.data.courseDetail);
+  }
 
   hideLoading();
 
@@ -2812,15 +2820,12 @@ async function continueLearning(courseId) {
 }
 
 
-/**
- * 顯示課程播放器
- */
 function displayPlayer() {
   console.log('=== displayPlayer 開始 ===');
   console.log('currentCourse:', currentCourse);
   console.log('currentRecordId:', currentRecordId);
   
-  // ✅ 防呆檢查
+  // 防呆檢查
   if (!currentCourse) {
     console.error('❌ currentCourse 未定義');
     showAlert('課程資料載入失敗,請重新開始學習', 'error');
@@ -2838,14 +2843,14 @@ function displayPlayer() {
     }
   }
   
-  // ✅ 顯示課程資訊
+  // 顯示課程資訊
   document.getElementById('playerCourseTitle').textContent = currentCourse.courseName;
   document.getElementById('playerCourseId').textContent = currentCourse.courseId;
   document.getElementById('playerCoursePoints').textContent = currentCourse.points || 0;
   document.getElementById('playerDeadline').textContent = currentCourse.deadline || '無期限';
   document.getElementById('playerCourseDesc').textContent = currentCourse.courseDesc || '暫無說明';
 
-  // ✅ 載入影片
+  // 載入影片
   const videoUrl = convertDriveUrl(currentCourse.videoUrl);
   
   if (!videoUrl) {
@@ -2856,7 +2861,7 @@ function displayPlayer() {
   
   document.getElementById('videoPlayer').src = videoUrl;
 
-  // ✅ 檢查是否有學習紀錄
+  // 檢查是否有學習紀錄
   const btnStartExam = document.getElementById('btnStartExam');
   
   if (!currentRecordId) {
@@ -2867,38 +2872,55 @@ function displayPlayer() {
     return;
   }
   
-  // ✅ 有學習紀錄,啟動影片追蹤
   console.log('✅ 學習紀錄ID: ' + currentRecordId);
   
   videoStartTime = new Date();
   watchedSeconds = 0;
 
-  // ✅ 清除舊的計時器
   if (videoCheckInterval) {
     clearInterval(videoCheckInterval);
   }
   
-  // ✅ 從 currentCourse 取得影片長度
-  const videoDuration = currentCourse.videoDuration || 180;  // 預設 180 秒
+  // ✅ 取得影片長度 (修正版)
+  let videoDuration = 180;  // 預設值
   
-  console.log('✅ 影片長度:', videoDuration, '秒 (' + Math.floor(videoDuration / 60) + ' 分鐘)');
+  console.log('=== 檢查 videoDuration ===');
+  console.log('currentCourse.videoDuration:', currentCourse.videoDuration);
+  console.log('型別:', typeof currentCourse.videoDuration);
   
-  // ✅ 每 30 秒更新一次前端進度條
+  if (currentCourse.videoDuration !== undefined && 
+      currentCourse.videoDuration !== null && 
+      currentCourse.videoDuration !== '') {
+    
+    const parsed = parseInt(currentCourse.videoDuration);
+    
+    if (!isNaN(parsed) && parsed > 0) {
+      videoDuration = parsed;
+      console.log('✅ 使用課程設定的影片長度:', videoDuration, '秒');
+    } else {
+      console.log('⚠️ 解析失敗,使用預設值:', videoDuration, '秒');
+    }
+  } else {
+    console.log('⚠️ videoDuration 不存在,使用預設值:', videoDuration, '秒');
+  }
+  
+  console.log('✅ 最終影片長度:', videoDuration, '秒 (' + Math.floor(videoDuration / 60) + ' 分鐘)');
+  
+  // 每 30 秒更新一次進度條
   videoCheckInterval = setInterval(() => {
     watchedSeconds += 30;
-    updateProgressBar(videoDuration);  // ✅ 傳入影片長度
+    updateProgressBar(videoDuration);
   }, 30000);
 
-  // ✅ 影片播放完畢後,更新後端並啟用測驗按鈕
+  // 影片播放完畢
   setTimeout(() => {
     if (videoCheckInterval) {
       clearInterval(videoCheckInterval);
     }
     
-    // ✅ 最後一次更新進度 (標記為完成)
     watchedSeconds = videoDuration;
     updateProgressBar(videoDuration);
-    updateProgressToServer(videoDuration, true);  // ✅ 標記為完成
+    updateProgressToServer(videoDuration, true);
     
     btnStartExam.disabled = false;
     btnStartExam.textContent = '開始測驗';
@@ -2907,6 +2929,7 @@ function displayPlayer() {
   
   console.log('✅ displayPlayer 完成');
 }
+
 
 
 /**
