@@ -2090,7 +2090,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycby_Vt_HVdaGVMbUa9mRPl8w9d8YbTTCCop4hK_TrrriEqb1k3M96wrDZGXctICpP_unhw/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbw9p6Fi4Buob6AGP-JeCSe_tf3smVfBdTIWgxEw-zeM8aoorKES3ogM_RhsRwFZ21ABsw/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -3268,73 +3268,68 @@ function backToPlayer() {
     /**
      * 載入課群選項
      */
-/**
- * 載入課群選項
- */
-async function loadSubjectOptions() {
-  try {
-    console.log('=== loadSubjectOptions ===');  // ✅ 改為 console.log
-    
-    const result = await callAPI('getSubjectOptions', {});
-    
-    if (result && result.success) {
-      const select = document.getElementById('courseFormSubject');
-      
-      // 清空現有選項 (保留第一個 "請選擇")
-      select.innerHTML = '<option value="">請選擇</option>';
-      
-      // 新增選項
-      result.data.forEach(option => {
-        const opt = document.createElement('option');
-        opt.value = option.value;        // 代號 (例如: RR)
-        opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
-        select.appendChild(opt);
-      });
-      
-      console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
-    } else {
-      showAlert(result?.message || '載入課群選項失敗', 'error');
+    async function loadCategoryOptions() {
+      try {
+        Logger.log('=== loadCategoryOptions ===');
+        
+        const result = await callAPI('getCategoryOptions', {});
+        
+        if (result && result.success) {
+          const select = document.getElementById('courseFormCategory');
+          
+          // 清空現有選項 (保留第一個 "請選擇")
+          select.innerHTML = '<option value="">請選擇</option>';
+          
+          // 新增選項
+          result.data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.value;        // 代號 (例如: RR)
+            opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
+            select.appendChild(opt);
+          });
+          
+          console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
+        } else {
+          showAlert(result?.message || '載入課群選項失敗', 'error');
+        }
+      } catch (error) {
+        console.error('❌ 載入課群選項失敗:', error);
+        showAlert('載入課群選項失敗', 'error');
+      }
     }
-  } catch (error) {
-    console.error('❌ 載入課群選項失敗:', error);
-    showAlert('載入課群選項失敗', 'error');
-  }
-}
 
-
-/**
- * 載入課群選項
- */
-async function loadSubjectOptions() {
-  try {
-    console.log('=== loadSubjectOptions ===');  // ✅ 改為 console.log
-    
-    const result = await callAPI('getSubjectOptions', {});
-    
-    if (result && result.success) {
-      const select = document.getElementById('courseFormSubject');
-      
-      // 清空現有選項 (保留第一個 "請選擇")
-      select.innerHTML = '<option value="">請選擇</option>';
-      
-      // 新增選項
-      result.data.forEach(option => {
-        const opt = document.createElement('option');
-        opt.value = option.value;        // 代號 (例如: RR)
-        opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
-        select.appendChild(opt);
-      });
-      
-      console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
-    } else {
-      showAlert(result?.message || '載入課群選項失敗', 'error');
+    /**
+     * 載入課門選項
+     */
+    async function loadSubjectOptions() {
+      try {
+        console.log('=== loadSubjectOptions ===');
+        
+        const result = await callAPI('getSubjectOptions', {});
+        
+        if (result && result.success) {
+          const select = document.getElementById('courseFormSubject');
+          
+          // 清空現有選項 (保留第一個 "請選擇")
+          select.innerHTML = '<option value="">請選擇</option>';
+          
+          // 新增選項
+          result.data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.value;        // 代號 (例如: doc)
+            opt.textContent = option.label;  // 顯示名稱 (例如: 文書工具)
+            select.appendChild(opt);
+          });
+          
+          console.log('✅ 課門選項載入成功,共 ' + result.data.length + ' 個');
+        } else {
+          showAlert(result?.message || '載入課門選項失敗', 'error');
+        }
+      } catch (error) {
+        console.error('❌ 載入課門選項失敗:', error);
+        showAlert('載入課門選項失敗', 'error');
+      }
     }
-  } catch (error) {
-    console.error('❌ 載入課群選項失敗:', error);
-    showAlert('載入課群選項失敗', 'error');
-  }
-}
-
 
     // ==================== 管理後台 ==================== 
     function switchAdminTab(tabName) {
@@ -3453,7 +3448,7 @@ function displayAdminCourses(courses) {
         
         document.getElementById('courseModalTitle').textContent = '編輯課程';
         document.getElementById('courseFormId').value = course.courseId;
-        document.getElementById('courseFormSubject').value = course.courseGroup;  // ✅ 課群代號
+        document.getElementById('courseFormCategory').value = course.courseGroup;  // ✅ 課群代號
         document.getElementById('courseFormSubject').value = course.courseCategory; // ✅ 課門代號
         document.getElementById('courseFormName').value = course.courseName;
         document.getElementById('courseFormDesc').value = course.courseDesc || '';
@@ -3473,7 +3468,7 @@ function displayAdminCourses(courses) {
     async function saveCourse() {
       const courseId = document.getElementById('courseFormId').value;
       const courseData = {
-        categoryCode: document.getElementById('courseFormSubject').value,  // ✅ 改為課群代號
+        categoryCode: document.getElementById('courseFormCategory').value,  // ✅ 改為課群代號
         subjectCode: document.getElementById('courseFormSubject').value,    // ✅ 改為課門代號
         courseName: document.getElementById('courseFormName').value,
         courseDesc: document.getElementById('courseFormDesc').value,
