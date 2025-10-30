@@ -1399,23 +1399,21 @@
         <!-- 篩選器 -->
         <div class="course-filters">
           <div class="filter-row">
-            <div class="filter-group">
-              <label>課群</label>
-              <select id="filterCourseGroup">
-                <option value="">全部</option>
-                <option value="A">A - 新人訓練</option>
-                <option value="B">B - 專業技能</option>
-                <option value="C">C - 管理課程</option>
-                <option value="D">D - 法規遵循</option>
-              </select>
-            </div>
+             <div class="form-group">
+            <label>課群 *</label>
+            <select id="courseFormCategory" required>
+              <option value="">請選擇</option>
+              <!-- 動態載入選項 -->
+            </select>
+          </div>
             
-            <div class="filter-group">
-              <label>課門</label>
-              <select id="filterCourseCategory">
-                <option value="">全部</option>
-              </select>
-            </div>
+            <div class="form-group">
+            <label>課門 *</label>
+            <select id="courseFormSubject" required>
+              <option value="">請選擇</option>
+              <!-- 動態載入選項 -->
+            </select>
+          </div>
             
             <div class="filter-group">
               <label>課程類型</label>
