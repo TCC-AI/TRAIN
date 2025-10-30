@@ -2091,7 +2091,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycby_Vt_HVdaGVMbUa9mRPl8w9d8YbTTCCop4hK_TrrriEqb1k3M96wrDZGXctICpP_unhw/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwkA9T4C5WuTvOll2T1Znfy3Klnsk224MFoqJk_UTac-AeGC5o238HAu8l0E-HmIHNfUg/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2878,17 +2878,18 @@ function displayPlayer() {
     clearInterval(videoCheckInterval);
   }
   
-// ✅ 修改後
-videoCheckInterval = setInterval(() => {
-  watchedSeconds += 30;
-  updateProgressBar();  // ✅ 只更新前端進度條
-}, 30000);
-
-  // ✅ 假設影片 3 分鐘 (180 秒)
-  // 實際應該從影片播放器取得影片長度
-  const videoDuration = 180;
+  // ✅ 從 currentCourse 取得影片長度
+  const videoDuration = currentCourse.videoDuration || 180;  // 預設 180 秒
   
-  // ✅ 影片播放完畢後,啟用測驗按鈕
+  console.log('✅ 影片長度:', videoDuration, '秒 (' + Math.floor(videoDuration / 60) + ' 分鐘)');
+  
+  // ✅ 每 30 秒更新一次前端進度條
+  videoCheckInterval = setInterval(() => {
+    watchedSeconds += 30;
+    updateProgressBar(videoDuration);  // ✅ 傳入影片長度
+  }, 30000);
+
+  // ✅ 影片播放完畢後,更新後端並啟用測驗按鈕
   setTimeout(() => {
     if (videoCheckInterval) {
       clearInterval(videoCheckInterval);
@@ -2896,8 +2897,8 @@ videoCheckInterval = setInterval(() => {
     
     // ✅ 最後一次更新進度 (標記為完成)
     watchedSeconds = videoDuration;
-    updateProgressBar();
-    updateProgressToServer(true);  // ✅ 標記為完成
+    updateProgressBar(videoDuration);
+    updateProgressToServer(videoDuration, true);  // ✅ 標記為完成
     
     btnStartExam.disabled = false;
     btnStartExam.textContent = '開始測驗';
@@ -2906,6 +2907,87 @@ videoCheckInterval = setInterval(() => {
   
   console.log('✅ displayPlayer 完成');
 }
+
+
+/**
+ * 開始影片追蹤
+ */
+function startVideoTracking(videoDuration) {
+  console.log('=== startVideoTracking ===');
+  console.log('影片長度:', videoDuration, '秒');
+  
+  // ✅ 每 30 秒更新一次前端進度條
+  videoCheckInterval = setInterval(() => {
+    watchedSeconds += 30;
+    updateProgressBar(videoDuration);
+  }, 30000);
+
+  // ✅ 影片播放完畢後,更新後端並啟用測驗按鈕
+  setTimeout(() => {
+    if (videoCheckInterval) {
+      clearInterval(videoCheckInterval);
+    }
+    
+    // ✅ 最後一次更新進度 (標記為完成)
+    watchedSeconds = videoDuration;
+    updateProgressBar(videoDuration);
+    updateProgressToServer(videoDuration, true);
+    
+    const btnStartExam = document.getElementById('btnStartExam');
+    btnStartExam.disabled = false;
+    btnStartExam.textContent = '開始測驗';
+    showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
+  }, videoDuration * 1000);
+}
+
+/**
+ * 更新前端進度條
+ */
+function updateProgressBar(videoDuration) {
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressFill = document.getElementById('progressFill');
+  if (progressFill) {
+    progressFill.style.width = progressPercent + '%';
+    progressFill.textContent = progressPercent + '%';
+  }
+  
+  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
+}
+
+/**
+ * 更新進度到伺服器
+ */
+async function updateProgressToServer(videoDuration, isComplete = false) {
+  if (!currentRecordId) return;
+
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  
+  const progressData = {
+    watchedSeconds: watchedSeconds,
+    videoDuration: videoDuration,  // ✅ 加入影片長度
+    progress: progressPercent,
+    isComplete: isComplete || progressPercent >= 100
+  };
+
+  console.log('更新進度到伺服器:', progressData);
+
+  try {
+    const result = await callAPI('updateProgress', {
+      recordId: currentRecordId,
+      progressData: JSON.stringify(progressData)
+    });
+
+    if (result && result.success) {
+      console.log('✅ 進度更新成功');
+    } else {
+      console.error('❌ 進度更新失敗:', result?.message);
+    }
+  } catch (error) {
+    console.error('❌ 更新進度失敗:', error);
+  }
+}
+
 
 /**
  * 更新前端進度條 (不呼叫 API)
