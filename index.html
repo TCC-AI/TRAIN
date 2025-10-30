@@ -1806,20 +1806,21 @@
           <input type="hidden" id="courseFormId">
           
           <div class="form-group">
-            <label>課群 *</label>
-            <select id="courseFormGroup" required>
-              <option value="">請選擇</option>
-              <option value="A">A - 新人訓練</option>
-              <option value="B">B - 專業技能</option>
-              <option value="C">C - 管理課程</option>
-              <option value="D">D - 法規遵循</option>
-            </select>
-          </div>
-          
-          <div class="form-group">
-            <label>課門 *</label>
-            <input type="text" id="courseFormCategory" placeholder="例如: 資訊安全" required>
-          </div>
+  <label>課群 *</label>
+  <select id="courseFormCategory" required>  <!-- ✅ 改為 courseFormCategory -->
+    <option value="">請選擇</option>
+    <!-- 動態載入選項 -->
+  </select>
+</div>
+
+<div class="form-group">
+  <label>課門 *</label>
+  <select id="courseFormSubject" required>  <!-- ✅ 改為 select -->
+    <option value="">請選擇</option>
+    <!-- 動態載入選項 -->
+  </select>
+</div>
+
           
           <div class="form-group">
             <label>課程名稱 *</label>
