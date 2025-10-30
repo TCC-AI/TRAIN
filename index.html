@@ -3263,6 +3263,73 @@ function backToPlayer() {
         </tr>
       `).join('');
     }
+    // ==================== 載入下拉選單選項 ====================
+
+    /**
+     * 載入課群選項
+     */
+    async function loadCategoryOptions() {
+      try {
+        Logger.log('=== loadCategoryOptions ===');
+        
+        const result = await callAPI('getCategoryOptions', {});
+        
+        if (result && result.success) {
+          const select = document.getElementById('courseFormCategory');
+          
+          // 清空現有選項 (保留第一個 "請選擇")
+          select.innerHTML = '<option value="">請選擇</option>';
+          
+          // 新增選項
+          result.data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.value;        // 代號 (例如: RR)
+            opt.textContent = option.label;  // 顯示名稱 (例如: 【新人訓練】)
+            select.appendChild(opt);
+          });
+          
+          console.log('✅ 課群選項載入成功,共 ' + result.data.length + ' 個');
+        } else {
+          showAlert(result?.message || '載入課群選項失敗', 'error');
+        }
+      } catch (error) {
+        console.error('❌ 載入課群選項失敗:', error);
+        showAlert('載入課群選項失敗', 'error');
+      }
+    }
+
+    /**
+     * 載入課門選項
+     */
+    async function loadSubjectOptions() {
+      try {
+        console.log('=== loadSubjectOptions ===');
+        
+        const result = await callAPI('getSubjectOptions', {});
+        
+        if (result && result.success) {
+          const select = document.getElementById('courseFormSubject');
+          
+          // 清空現有選項 (保留第一個 "請選擇")
+          select.innerHTML = '<option value="">請選擇</option>';
+          
+          // 新增選項
+          result.data.forEach(option => {
+            const opt = document.createElement('option');
+            opt.value = option.value;        // 代號 (例如: doc)
+            opt.textContent = option.label;  // 顯示名稱 (例如: 文書工具)
+            select.appendChild(opt);
+          });
+          
+          console.log('✅ 課門選項載入成功,共 ' + result.data.length + ' 個');
+        } else {
+          showAlert(result?.message || '載入課門選項失敗', 'error');
+        }
+      } catch (error) {
+        console.error('❌ 載入課門選項失敗:', error);
+        showAlert('載入課門選項失敗', 'error');
+      }
+    }
 
     // ==================== 管理後台 ==================== 
     function switchAdminTab(tabName) {
@@ -3356,14 +3423,24 @@ function displayAdminCourses(courses) {
 }
 
 
-    function showAddCourseModal() {
+        async function showAddCourseModal() {
       document.getElementById('courseModalTitle').textContent = '新增課程';
       document.getElementById('courseForm').reset();
       document.getElementById('courseFormId').value = '';
+      
+      // ✅ 載入下拉選單選項
+      await loadCategoryOptions();
+      await loadSubjectOptions();
+      
       document.getElementById('courseModal').classList.add('active');
     }
 
+
     async function editCourse(courseId) {
+      // ✅ 先載入下拉選單選項
+      await loadCategoryOptions();
+      await loadSubjectOptions();
+      
       const result = await callAPI('getCourseDetail', { courseId });
 
       if (result && result.success) {
@@ -3371,14 +3448,14 @@ function displayAdminCourses(courses) {
         
         document.getElementById('courseModalTitle').textContent = '編輯課程';
         document.getElementById('courseFormId').value = course.courseId;
-        document.getElementById('courseFormGroup').value = course.courseGroup;
-        document.getElementById('courseFormCategory').value = course.courseCategory;
+        document.getElementById('courseFormCategory').value = course.courseGroup;  // ✅ 課群代號
+        document.getElementById('courseFormSubject').value = course.courseCategory; // ✅ 課門代號
         document.getElementById('courseFormName').value = course.courseName;
         document.getElementById('courseFormDesc').value = course.courseDesc || '';
-        document.getElementById('courseFormVideo').value = course.videoLink;
+        document.getElementById('courseFormVideo').value = course.videoUrl;
         document.getElementById('courseFormRequired').value = course.requiredDepts || '';
         document.getElementById('courseFormOptional').value = course.optionalDepts || '';
-        document.getElementById('courseFormStart').value = course.startTime ? course.startTime.split(' ')[0] : '';
+        document.getElementById('courseFormStart').value = course.startDate ? course.startDate.split(' ')[0] : '';
         document.getElementById('courseFormDeadline').value = course.deadline ? course.deadline.split(' ')[0] : '';
         document.getElementById('courseFormPoints').value = course.points;
         document.getElementById('courseFormPrerequisite').value = course.prerequisiteCourseId || '';
@@ -3387,24 +3464,25 @@ function displayAdminCourses(courses) {
       }
     }
 
+
     async function saveCourse() {
       const courseId = document.getElementById('courseFormId').value;
       const courseData = {
-        courseGroup: document.getElementById('courseFormGroup').value,
-        courseCategory: document.getElementById('courseFormCategory').value,
+        categoryCode: document.getElementById('courseFormCategory').value,  // ✅ 改為課群代號
+        subjectCode: document.getElementById('courseFormSubject').value,    // ✅ 改為課門代號
         courseName: document.getElementById('courseFormName').value,
         courseDesc: document.getElementById('courseFormDesc').value,
-        videoLink: document.getElementById('courseFormVideo').value,
+        videoUrl: document.getElementById('courseFormVideo').value,
         requiredDepts: document.getElementById('courseFormRequired').value,
         optionalDepts: document.getElementById('courseFormOptional').value,
-        startTime: document.getElementById('courseFormStart').value,
+        startDate: document.getElementById('courseFormStart').value,
         deadline: document.getElementById('courseFormDeadline').value,
         points: parseInt(document.getElementById('courseFormPoints').value),
         prerequisiteCourseId: document.getElementById('courseFormPrerequisite').value
       };
 
       const action = courseId ? 'updateCourse' : 'createCourse';
-      const data = courseId ? { courseId, courseData } : { courseData };
+      const data = courseId ? { courseId, courseData: JSON.stringify(courseData) } : { courseData: JSON.stringify(courseData) };
 
       const result = await callAPI(action, data);
 
@@ -3416,6 +3494,7 @@ function displayAdminCourses(courses) {
         showAlert(result?.message || '操作失敗', 'error');
       }
     }
+
 
     async function deleteCourse(courseId) {
       if (!confirm('確定要刪除此課程嗎?此操作無法復原!')) return;
