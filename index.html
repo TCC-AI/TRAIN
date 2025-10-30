@@ -2092,7 +2092,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbxTFQyLc0ubSCM-4CI-zs5ibudPGQ_-G7ugBcvgSw33-ERd_O3M0xZmUf5Csp-5N2OKlw/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbw9p6Fi4Buob6AGP-JeCSe_tf3smVfBdTIWgxEw-zeM8aoorKES3ogM_RhsRwFZ21ABsw/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2348,10 +2348,18 @@ function showApp() {
   document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
   document.getElementById('welcomeName').textContent = currentUser.name;
 
-  // 顯示/隱藏管理選單
-  if (currentUser.permission === 's4' || currentUser.permission === 's3') {
+  // ✅ 修正: 只有 s4 才能看到管理後台
+  console.log('使用者權限: ' + currentUser.permission);
+  
+  if (currentUser.permission === 's4') {
+    console.log('✅ 顯示管理後台選單 (s4)');
     document.querySelectorAll('.admin-only').forEach(el => {
       el.classList.remove('hidden');
+    });
+  } else {
+    console.log('⚠️ 隱藏管理後台選單 (非 s4)');
+    document.querySelectorAll('.admin-only').forEach(el => {
+      el.classList.add('hidden');
     });
   }
 
@@ -2360,42 +2368,58 @@ function showApp() {
 }
 
 
+
     // ==================== 頁面導航 ==================== 
-    function navigateToPage(pageName) {
-      // 更新導航選單
-      document.querySelectorAll('.navbar-item').forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.page === pageName) {
-          item.classList.add('active');
-        }
-      });
-
-      // 切換頁面
-      document.querySelectorAll('.page-section').forEach(section => {
-        section.classList.remove('active');
-      });
-
-      const targetPage = document.getElementById(pageName + 'Page');
-      if (targetPage) {
-        targetPage.classList.add('active');
-      }
-
-      // 載入對應頁面資料
-      switch(pageName) {
-        case 'dashboard':
-          loadDashboard();
-          break;
-        case 'courses':
-          loadCourses();
-          break;
-        case 'mylearning':
-          loadMyLearning();
-          break;
-        case 'admin':
-          loadAdminData();
-          break;
-      }
+ function navigateToPage(pageName) {
+  console.log('=== navigateToPage ===');
+  console.log('目標頁面: ' + pageName);
+  console.log('使用者權限: ' + (currentUser ? currentUser.permission : '未登入'));
+  
+  // ✅ 權限檢查: 只有 s4 才能進入管理後台
+  if (pageName === 'admin') {
+    if (!currentUser || currentUser.permission !== 's4') {
+      console.log('❌ 權限不足,無法進入管理後台');
+      showAlert('您沒有權限進入管理後台', 'error');
+      return;
     }
+    console.log('✅ 權限檢查通過 (s4)');
+  }
+  
+  // 更新導航選單
+  document.querySelectorAll('.navbar-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.page === pageName) {
+      item.classList.add('active');
+    }
+  });
+
+  // 切換頁面
+  document.querySelectorAll('.page-section').forEach(section => {
+    section.classList.remove('active');
+  });
+
+  const targetPage = document.getElementById(pageName + 'Page');
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+
+  // 載入對應頁面資料
+  switch(pageName) {
+    case 'dashboard':
+      loadDashboard();
+      break;
+    case 'courses':
+      loadCourses();
+      break;
+    case 'mylearning':
+      loadMyLearning();
+      break;
+    case 'admin':
+      loadAdminData();
+      break;
+  }
+}
+
 
     // ==================== 儀錶板 ==================== 
     async function loadDashboard() {
