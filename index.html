@@ -2876,14 +2876,14 @@ function displayPlayer() {
   console.log('✅ 學習紀錄ID: ' + currentRecordId);
   
   videoStartTime = new Date();
-  watchedSeconds = 0;
+  watchedSeconds = 0;  // ✅ 重置為 0
 
   if (videoCheckInterval) {
     clearInterval(videoCheckInterval);
   }
   
-  // ✅ 取得影片長度並設定為全域變數
-  let videoDuration = 180;  // 預設值
+  // ✅ 取得影片長度
+  let videoDuration = 180;
   
   console.log('=== 檢查 videoDuration ===');
   console.log('currentCourse.videoDuration:', currentCourse.videoDuration);
@@ -2910,29 +2910,35 @@ function displayPlayer() {
   
   console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
   
-  // 每 30 秒更新一次進度條
+  // ✅ 改為每秒更新一次進度條
   videoCheckInterval = setInterval(() => {
-    watchedSeconds += 30;
-    updateProgressBar();  // ✅ 不需要傳參數
-  }, 30000);
+    watchedSeconds += 1;  // ✅ 每秒加 1
+    updateProgressBar();
+    
+    // ✅ 每 30 秒更新一次後端
+    if (watchedSeconds % 30 === 0) {
+      updateProgressToServer(false);
+    }
+  }, 1000);  // ✅ 改為 1000 毫秒 (1 秒)
 
-  // 影片播放完畢
+  // ✅ 影片播放完畢
   setTimeout(() => {
     if (videoCheckInterval) {
       clearInterval(videoCheckInterval);
     }
     
-    watchedSeconds = currentVideoDuration;  // ✅ 使用全域變數
+    watchedSeconds = currentVideoDuration;
     updateProgressBar();
     updateProgressToServer(true);
     
     btnStartExam.disabled = false;
     btnStartExam.textContent = '開始測驗';
     showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
-  }, currentVideoDuration * 1000);  // ✅ 使用全域變數
+  }, currentVideoDuration * 1000);
   
   console.log('✅ displayPlayer 完成');
 }
+
 
 
 
@@ -2968,20 +2974,6 @@ function startVideoTracking(videoDuration) {
   }, videoDuration * 1000);
 }
 
-/**
- * 更新前端進度條
- */
-function updateProgressBar(videoDuration) {
-  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
-  
-  const progressFill = document.getElementById('progressFill');
-  if (progressFill) {
-    progressFill.style.width = progressPercent + '%';
-    progressFill.textContent = progressPercent + '%';
-  }
-  
-  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
-}
 
 /**
  * 更新進度到伺服器
@@ -3018,14 +3010,14 @@ async function updateProgressToServer(videoDuration, isComplete = false) {
 
 
 /**
- * 更新前端進度條 (使用全域變數 currentVideoDuration)
+ * 更新前端進度條
  */
 function updateProgressBar() {
   if (!currentRecordId) return;
 
+  // ✅ 確保不會超過 100%
   const progressPercent = Math.min(100, Math.round((watchedSeconds / currentVideoDuration) * 100));
   
-  // ✅ 更新前端進度條
   const progressFill = document.getElementById('progressFill');
   if (progressFill) {
     progressFill.style.width = progressPercent + '%';
@@ -3034,6 +3026,7 @@ function updateProgressBar() {
   
   console.log(`進度更新: ${watchedSeconds}/${currentVideoDuration} 秒 (${progressPercent}%)`);
 }
+
 
 
 /**
@@ -3077,6 +3070,7 @@ function backToCourses() {
   // ✅ 清除計時器
   if (videoCheckInterval) {
     clearInterval(videoCheckInterval);
+    videoCheckInterval = null;  // ✅ 設為 null
   }
   
   // ✅ 最後一次更新進度
@@ -3084,8 +3078,13 @@ function backToCourses() {
     updateProgressToServer(false);
   }
   
+  // ✅ 重置變數
+  watchedSeconds = 0;
+  currentVideoDuration = 180;
+  
   navigateToPage('courses');
 }
+
 
 
 
