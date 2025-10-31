@@ -1468,15 +1468,7 @@
                       allowfullscreen>
               </iframe>
             </div>
-            <!-- ✅ 新增: 播放控制按鈕 -->
-  <div class="video-controls" style="text-align: center; margin-bottom: 20px;">
-    <button class="btn btn-success" id="btnPlayVideo" onclick="playVideo()">
-      <i class="fas fa-play"></i> 開始播放
-    </button>
-    <button class="btn btn-warning" id="btnPauseVideo" onclick="pauseVideo()" style="display: none;">
-      <i class="fas fa-pause"></i> 暫停
-    </button>
-  </div>
+            
             <!-- 進度條 -->
             <div class="progress-bar">
               <div class="progress-fill" id="progressFill" style="width: 0%">
@@ -2110,7 +2102,6 @@
     let videoCheckInterval = null;
     let allCourses = [];
     let currentExamQuestions = [];
-    let isPageVisible = true;  // ✅ 新增: 頁面是否可見
     
 
     // ==================== 初始化 ==================== 
@@ -2147,94 +2138,6 @@
         saveSystemSettings();
       });
     });
-    // ✅ 新增: 監聽頁面可見性變化
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-});
-    /**
- * 處理頁面可見性變化
- */
-function handleVisibilityChange() {
-  if (document.hidden) {
-    // ✅ 頁面不可見 (切換到其他頁面)
-    console.log('⚠️ 頁面不可見,暫停計時器');
-    isPageVisible = false;
-    
-    if (videoCheckInterval) {
-      clearInterval(videoCheckInterval);
-      videoCheckInterval = null;
-    }
-  } else {
-    // ✅ 頁面可見 (切換回來)
-    console.log('✅ 頁面可見,恢復計時器');
-    isPageVisible = true;
-    
-    // ✅ 只有在播放頁面才恢復計時器
-    const playerPage = document.getElementById('playerPage');
-    if (playerPage && playerPage.classList.contains('active') && currentRecordId) {
-      startVideoTimer();
-    }
-  }
-}
-
-/**
- * 啟動影片計時器
- */
-function startVideoTimer() {
-  console.log('=== startVideoTimer ===');
-  
-  // ✅ 防止重複啟動
-  if (videoCheckInterval) {
-    clearInterval(videoCheckInterval);
-  }
-  
-  videoCheckInterval = setInterval(() => {
-    // ✅ 只有在頁面可見時才計時
-    if (!isPageVisible) {
-      console.log('⚠️ 頁面不可見,跳過計時');
-      return;
-    }
-    
-    watchedSeconds += 1;
-    updateProgressBar();
-    
-    // ✅ 每 30 秒更新一次後端
-    if (watchedSeconds % 30 === 0) {
-      updateProgressToServer(false);
-    }
-    
-    // ✅ 達到影片長度時停止
-    if (watchedSeconds >= currentVideoDuration) {
-      console.log('✅ 影片播放完畢');
-      stopVideoTimer();
-      
-      const btnStartExam = document.getElementById('btnStartExam');
-      btnStartExam.disabled = false;
-      btnStartExam.textContent = '開始測驗';
-      showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
-    }
-  }, 1000);
-  
-  console.log('✅ 計時器已啟動');
-}
-
-/**
- * 停止影片計時器
- */
-function stopVideoTimer() {
-  console.log('=== stopVideoTimer ===');
-  
-  if (videoCheckInterval) {
-    clearInterval(videoCheckInterval);
-    videoCheckInterval = null;
-  }
-  
-  // ✅ 最後一次更新進度
-  if (currentRecordId && watchedSeconds > 0) {
-    updateProgressToServer(true);
-  }
-  
-  console.log('✅ 計時器已停止');
-}
 
     // ==================== API 呼叫函數 ==================== 
 /**
@@ -2472,12 +2375,6 @@ function showApp() {
   console.log('=== navigateToPage ===');
   console.log('目標頁面: ' + pageName);
   console.log('使用者權限: ' + (currentUser ? currentUser.permission : '未登入'));
-   // ✅ 如果離開播放頁面,停止計時器
-  const currentPage = document.querySelector('.page-section.active')?.id.replace('Page', '');
-   if (currentPage === 'player' && pageName !== 'player') {
-    console.log('✅ 離開播放頁面,停止計時器');
-    stopVideoTimer();
-  }
   
   // ✅ 權限檢查: 只有 s4 才能進入管理後台
   if (pageName === 'admin') {
@@ -2982,10 +2879,8 @@ function displayPlayer() {
   videoStartTime = new Date();
   watchedSeconds = 0;  // ✅ 重置為 0
 
-  // ✅ 停止舊的計時器
   if (videoCheckInterval) {
     clearInterval(videoCheckInterval);
-    videoCheckInterval = null;
   }
   
   // ✅ 取得影片長度
@@ -3175,17 +3070,36 @@ async function updateProgressToServer(isComplete = false) {
 
 
 /**
- * 修改 backToCourses() 函數
+ * 返回課程列表
  */
 function backToCourses() {
-  // ✅ 停止計時器
-  stopVideoTimer();
+  // ✅ 清除計時器
+  if (videoCheckInterval) {
+    clearInterval(videoCheckInterval);
+    videoCheckInterval = null;
+  }
   
-  // ✅ 重置變數
+  // ✅ 最後一次更新進度
+  if (currentRecordId && watchedSeconds > 0) {
+    updateProgressToServer(false);
+  }
+  
+  // ✅ 只重置 watchedSeconds (不重置 currentVideoDuration)
   watchedSeconds = 0;
+  
+  // ❌ 移除這行 (如果有的話)
+  // currentVideoDuration = 180;
   
   navigateToPage('courses');
 }
+
+
+
+
+
+
+
+
 
 
 function convertDriveUrl(url) {
@@ -3582,50 +3496,6 @@ function backToPlayer() {
     function backToPlayer() {
       navigateToPage('player');
     }
-/**
- * 播放影片
- */
-function playVideo() {
-  console.log('=== playVideo ===');
-  
-  if (!currentRecordId) {
-    showAlert('請先點選【開始學習】', 'warning');
-    return;
-  }
-  
-  // ✅ 切換按鈕
-  document.getElementById('btnPlayVideo').style.display = 'none';
-  document.getElementById('btnPauseVideo').style.display = 'inline-block';
-  
-  // ✅ 啟動計時器
-  startVideoTimer();
-  
-  showAlert('影片播放中...', 'info');
-}
-
-/**
- * 暫停影片
- */
-function pauseVideo() {
-  console.log('=== pauseVideo ===');
-  
-  // ✅ 切換按鈕
-  document.getElementById('btnPlayVideo').style.display = 'inline-block';
-  document.getElementById('btnPauseVideo').style.display = 'none';
-  
-  // ✅ 停止計時器
-  if (videoCheckInterval) {
-    clearInterval(videoCheckInterval);
-    videoCheckInterval = null;
-  }
-  
-  // ✅ 更新進度到後端
-  if (currentRecordId && watchedSeconds > 0) {
-    updateProgressToServer(false);
-  }
-  
-  showAlert('影片已暫停', 'info');
-}
 
     // ==================== 我的學習 ==================== 
     async function loadMyLearning() {
@@ -3936,7 +3806,7 @@ function displayAdminCourses(courses) {
       document.getElementById('courseModal').classList.remove('active');
     }
 
-    
+    // ==================== 題目管理 ==================== 
 // ==================== 題目管理 ==================== 
 
 /**
