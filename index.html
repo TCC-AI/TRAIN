@@ -1459,15 +1459,26 @@
           </div>
           
           <div class="player-body">
-            <!-- 影片播放器 -->
-            <div class="video-wrapper" id="videoWrapper">
-              <iframe id="videoPlayer" 
-                      src="" 
-                      frameborder="0" 
-                      allow="autoplay; encrypted-media" 
-                      allowfullscreen>
-              </iframe>
+          <!-- 影片播放器 -->
+          <div class="video-wrapper" id="videoWrapper">
+            <iframe id="videoPlayer" 
+                    src="" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen>
+            </iframe>
+          </div>
+          
+          <!-- ✅ 新增：開始播放按鈕 -->
+          <div id="videoControlPanel" style="margin-top: 15px; text-align: center;">
+            <button id="btnStartWatching" class="btn btn-primary" style="padding: 10px 30px; font-size: 16px;">
+              ▶️ 開始播放並計時
+            </button>
+            <div id="videoStatus" style="margin-top: 10px; color: #666; font-size: 14px;">
+              請點擊上方按鈕開始觀看影片
             </div>
+          </div>
+
             
             <!-- 進度條 -->
             <div class="progress-bar">
@@ -2195,18 +2206,37 @@ function startVideoTimer() {
   console.log('影片總長度:', currentVideoDuration);
   
   // ✅ 檢查是否已經看完
-  if (watchedSeconds >= currentVideoDuration) {
-    console.log('⚠️ 影片已看完,不啟動計時器');
-    
-    // ✅ 確保測驗按鈕已啟用
-    const btnStartExam = document.getElementById('btnStartExam');
-    if (btnStartExam) {
-      btnStartExam.disabled = false;
-      btnStartExam.textContent = '開始測驗';
-    }
-    
-    return;
+if (watchedSeconds >= currentVideoDuration) {
+  console.log('✅ 影片播放完畢');
+  stopVideoTimer();
+  
+  // ✅ 啟用測驗按鈕
+  const btnStartExam = document.getElementById('btnStartExam');
+  if (btnStartExam) {
+    btnStartExam.disabled = false;
+    btnStartExam.textContent = '開始測驗';
   }
+  
+  // ✅ 更新「開始播放」按鈕狀態
+  const btnStartWatching = document.getElementById('btnStartWatching');
+  const videoStatus = document.getElementById('videoStatus');
+  
+  if (btnStartWatching) {
+    btnStartWatching.disabled = true;
+    btnStartWatching.textContent = '✅ 已觀看完畢';
+    btnStartWatching.style.backgroundColor = '#28a745';
+  }
+  
+  if (videoStatus) {
+    videoStatus.textContent = '影片已觀看完畢，可以開始測驗了！';
+    videoStatus.style.color = '#28a745';
+  }
+  
+  showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
+  
+  return;
+}
+
   
   // ✅ 如果計時器已經啟動,不要重複啟動
   if (videoCheckInterval) {
@@ -3067,74 +3097,95 @@ function displayPlayer() {
   // ✅ 設定全域變數
   currentVideoDuration = videoDuration;
   
-  console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
-  
-  // ❌ 不要在這裡啟動計時器!
-  // startVideoTimer();  // ← 刪除這行
-  
-  // ✅ 監聽 iframe 的播放事件
-  setupVideoPlayListener();
-  
-  console.log('✅ displayPlayer 完成 (等待使用者播放影片)');
+console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
+
+// ✅ 設定「開始播放」按鈕
+setupStartWatchingButton();
+
+console.log('✅ displayPlayer 完成');
+
 }
 
 /**
- * 設定影片播放監聽器
+ * 設定「開始播放」按鈕
  */
-function setupVideoPlayListener() {
-  console.log('=== setupVideoPlayListener ===');
+function setupStartWatchingButton() {
+  console.log('=== setupStartWatchingButton ===');
   
-  const videoIframe = document.getElementById('videoPlayer');
+  const btnStartWatching = document.getElementById('btnStartWatching');
+  const videoStatus = document.getElementById('videoStatus');
   
-  if (!videoIframe) {
-    console.error('❌ 找不到影片 iframe');
+  if (!btnStartWatching) {
+    console.error('❌ 找不到「開始播放」按鈕');
     return;
   }
   
-  // ✅ 監聽 iframe 載入完成
-  videoIframe.onload = function() {
-    console.log('✅ 影片 iframe 載入完成');
+  // ✅ 檢查是否已經看完
+  if (watchedSeconds >= currentVideoDuration) {
+    console.log('⚠️ 影片已看完');
+    btnStartWatching.disabled = true;
+    btnStartWatching.textContent = '✅ 已觀看完畢';
+    btnStartWatching.style.backgroundColor = '#28a745';
     
-    // ✅ 嘗試監聽播放事件 (Google Drive 可能無法直接監聽)
-    try {
-      const iframeWindow = videoIframe.contentWindow;
-      
-      // ⚠️ 由於跨域限制,可能無法直接監聽
-      // 所以我們改用「使用者互動」來啟動計時器
-      console.log('⚠️ 由於跨域限制,無法直接監聽 Google Drive 影片播放事件');
-      console.log('✅ 改為監聽使用者點擊 iframe');
-      
-    } catch (error) {
-      console.log('⚠️ 跨域限制:', error.message);
+    if (videoStatus) {
+      videoStatus.textContent = '影片已觀看完畢，可以開始測驗了！';
+      videoStatus.style.color = '#28a745';
     }
-  };
-  
-  // ✅ 監聽使用者點擊 iframe (表示開始播放)
-  videoIframe.addEventListener('click', function() {
-    console.log('✅ 使用者點擊影片,開始計時');
     
-    // ✅ 檢查是否已經看完
+    return;
+  }
+  
+  // ✅ 檢查計時器是否已經啟動
+  if (videoCheckInterval) {
+    console.log('⚠️ 計時器已啟動');
+    btnStartWatching.disabled = true;
+    btnStartWatching.textContent = '⏱️ 觀看中...';
+    btnStartWatching.style.backgroundColor = '#ffc107';
+    
+    if (videoStatus) {
+      videoStatus.textContent = '正在計時中，請繼續觀看影片';
+      videoStatus.style.color = '#ffc107';
+    }
+    
+    return;
+  }
+  
+  // ✅ 設定按鈕點擊事件
+  btnStartWatching.onclick = function() {
+    console.log('✅ 使用者點擊「開始播放」按鈕');
+    
+    // ✅ 再次檢查是否已經看完
     if (watchedSeconds >= currentVideoDuration) {
-      console.log('⚠️ 影片已看完,不需要再計時');
+      console.log('⚠️ 影片已看完');
+      showAlert('影片已觀看完畢', 'info');
       return;
     }
     
-    // ✅ 檢查計時器是否已經啟動
+    // ✅ 再次檢查計時器是否已經啟動
     if (videoCheckInterval) {
-      console.log('⚠️ 計時器已經啟動,跳過');
+      console.log('⚠️ 計時器已經啟動');
+      showAlert('計時器已經啟動', 'info');
       return;
     }
     
     // ✅ 啟動計時器
     startVideoTimer();
-  });
+    
+    // ✅ 更新按鈕狀態
+    btnStartWatching.disabled = true;
+    btnStartWatching.textContent = '⏱️ 觀看中...';
+    btnStartWatching.style.backgroundColor = '#ffc107';
+    
+    if (videoStatus) {
+      videoStatus.textContent = '正在計時中，請繼續觀看影片';
+      videoStatus.style.color = '#ffc107';
+    }
+    
+    showAlert('已開始計時，請觀看影片', 'success');
+  };
   
-  console.log('✅ setupVideoPlayListener 完成');
+  console.log('✅ setupStartWatchingButton 完成');
 }
-
-
-
-
 
 /**
  * 開始影片追蹤
