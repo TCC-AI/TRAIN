@@ -11,6 +11,8 @@
   
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- ✅ 新增：Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
   <style>
     /* ==================== 全域樣式 ==================== */
@@ -1314,6 +1316,105 @@
 .wrong-answer-item .answer-icon.correct {
   color: var(--success-color);
 }
+    /* ==================== 學習進度圖表樣式 ==================== */
+.charts-section {
+  background: white;
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.chart-container {
+  background: var(--light-color);
+  border-radius: 10px;
+  padding: 20px;
+  min-height: 300px;
+}
+
+.chart-container.full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-title i {
+  color: var(--primary-color);
+}
+
+.chart-canvas {
+  position: relative;
+  height: 250px;
+}
+
+.chart-canvas canvas {
+  max-height: 250px;
+}
+
+.chart-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.chart-stat-item {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+}
+
+.chart-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.chart-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.chart-stat-value.success {
+  color: var(--success-color);
+}
+
+.chart-stat-value.warning {
+  color: var(--warning-color);
+}
+
+.chart-stat-value.danger {
+  color: var(--danger-color);
+}
+
+/* ==================== 響應式設計 ==================== */
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-container.full-width {
+    grid-column: 1;
+  }
+}
+
 
   </style>
 </head>
@@ -1419,6 +1520,7 @@
             </div>
           </div>
           
+          
           <div class="stat-card">
             <div class="stat-icon green">
               <i class="fas fa-check-circle"></i>
@@ -1479,6 +1581,63 @@
           <div id="inProgressCoursesList"></div>
         </div>
       </div>
+
+      <!-- ✅ 新增：學習進度圖表 -->
+<div class="charts-section">
+  <h2 class="section-title">
+    <i class="fas fa-chart-line"></i>
+    學習進度分析
+  </h2>
+  
+  <div class="charts-grid">
+    <!-- 每月完成課程數 -->
+    <div class="chart-container">
+      <div class="chart-title">
+        <i class="fas fa-calendar-check"></i>
+        每月完成課程數
+      </div>
+      <div class="chart-canvas">
+        <canvas id="monthlyCoursesChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- 累積點數趨勢 -->
+    <div class="chart-container">
+      <div class="chart-title">
+        <i class="fas fa-trophy"></i>
+        累積點數趨勢
+      </div>
+      <div class="chart-canvas">
+        <canvas id="pointsTrendChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- 部門完成率統計 -->
+    <div class="chart-container full-width">
+      <div class="chart-title">
+        <i class="fas fa-building"></i>
+        部門完成率統計
+      </div>
+      <div class="chart-canvas" style="height: 300px;">
+        <canvas id="departmentStatsChart"></canvas>
+      </div>
+      <div class="chart-stats">
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">平均完成率</div>
+          <div class="chart-stat-value" id="avgCompletionRate">0%</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">最高完成率</div>
+          <div class="chart-stat-value success" id="maxCompletionRate">0%</div>
+        </div>
+        <div class="chart-stat-item">
+          <div class="chart-stat-label">最低完成率</div>
+          <div class="chart-stat-value danger" id="minCompletionRate">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
       <!-- ==================== 課程瀏覽頁面 ==================== -->
       <div id="coursesPage" class="page-section">
@@ -2251,7 +2410,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbzAM75XzVHghsWFFLxPPvjoKnHFXh667qXY_w0F_Qst-8LAtVvg5oV8BEY8PRiC31d9zw/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwOzjrbdl_O9oEIF5OnbEfKQ6ye_EQ7a1gPPXQPZ5tTXSaH6Vp2G1kiTIcD8KZWKTR2Sw/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -2763,28 +2922,363 @@ function navigateToPage(pageName) {
 
 
     // ==================== 儀錶板 ==================== 
-    async function loadDashboard() {
-      const result = await callAPI('getPersonalDashboard');
+async function loadDashboard() {
+  const result = await callAPI('getPersonalDashboard');
 
-      if (result && result.success) {
-        const data = result.data;
+  if (result && result.success) {
+    const data = result.data;
 
-        // 更新統計卡片
-        document.getElementById('totalPoints').textContent = data.user.totalPoints;
-        document.getElementById('completedCount').textContent = data.completedCourses.length;
-        document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
-        document.getElementById('requiredCount').textContent = data.requiredCourses.length;
+    // 更新統計卡片
+    document.getElementById('totalPoints').textContent = data.user.totalPoints;
+    document.getElementById('completedCount').textContent = data.completedCourses.length;
+    document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
+    document.getElementById('requiredCount').textContent = data.requiredCourses.length;
 
-        // 顯示公告
-        displayAnnouncements(data.announcements);
+    // 顯示公告
+    displayAnnouncements(data.announcements);
 
-        // 顯示待完成必修課程
-        displayRequiredCourses(data.requiredCourses);
+    // 顯示待完成必修課程
+    displayRequiredCourses(data.requiredCourses);
 
-        // 顯示進行中的課程
-        displayInProgressCourses(data.inProgressCourses);
+    // 顯示進行中的課程
+    displayInProgressCourses(data.inProgressCourses);
+    
+    // ✅ 新增：載入學習進度圖表
+    loadCharts();
+  }
+}
+
+
+    // ==================== 學習進度圖表 ====================
+
+let monthlyCoursesChart = null;
+let pointsTrendChart = null;
+let departmentStatsChart = null;
+
+/**
+ * 載入學習進度圖表
+ */
+async function loadCharts() {
+  console.log('=== loadCharts 開始 ===');
+  
+  try {
+    // 取得圖表資料
+    const result = await callAPI('getChartData');
+    
+    if (result && result.success) {
+      const chartData = result.data;
+      
+      console.log('✅ 圖表資料:', chartData);
+      
+      // 繪製每月完成課程數圖表
+      drawMonthlyCoursesChart(chartData.monthlyCourses);
+      
+      // 繪製累積點數趨勢圖表
+      drawPointsTrendChart(chartData.pointsTrend);
+      
+      // 繪製部門完成率統計圖表
+      drawDepartmentStatsChart(chartData.departmentStats);
+      
+      console.log('✅ 圖表繪製完成');
+    } else {
+      console.error('❌ 取得圖表資料失敗:', result?.message);
+    }
+  } catch(error) {
+    console.error('❌ loadCharts 失敗:', error);
+  }
+}
+
+/**
+ * 繪製每月完成課程數圖表（折線圖）
+ */
+function drawMonthlyCoursesChart(data) {
+  console.log('=== drawMonthlyCoursesChart ===');
+  console.log('data:', data);
+  
+  const ctx = document.getElementById('monthlyCoursesChart');
+  if (!ctx) {
+    console.error('❌ 找不到 canvas 元素');
+    return;
+  }
+  
+  // 銷毀舊圖表
+  if (monthlyCoursesChart) {
+    monthlyCoursesChart.destroy();
+  }
+  
+  monthlyCoursesChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,  // 例如: ['1月', '2月', '3月', ...]
+      datasets: [{
+        label: '完成課程數',
+        data: data.values,  // 例如: [5, 8, 12, ...]
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#2563eb',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              return '完成課程數: ' + context.parsed.y + ' 門';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1,
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
       }
     }
+  });
+  
+  console.log('✅ 每月完成課程數圖表繪製完成');
+}
+
+/**
+ * 繪製累積點數趨勢圖表（面積圖）
+ */
+function drawPointsTrendChart(data) {
+  console.log('=== drawPointsTrendChart ===');
+  console.log('data:', data);
+  
+  const ctx = document.getElementById('pointsTrendChart');
+  if (!ctx) {
+    console.error('❌ 找不到 canvas 元素');
+    return;
+  }
+  
+  // 銷毀舊圖表
+  if (pointsTrendChart) {
+    pointsTrendChart.destroy();
+  }
+  
+  pointsTrendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,  // 例如: ['1月', '2月', '3月', ...]
+      datasets: [{
+        label: '累積點數',
+        data: data.values,  // 例如: [10, 25, 50, ...]
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: '#10b981',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              return '累積點數: ' + context.parsed.y + ' 點';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: {
+              size: 12
+            },
+            callback: function(value) {
+              return value + ' 點';
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+  
+  console.log('✅ 累積點數趨勢圖表繪製完成');
+}
+
+/**
+ * 繪製部門完成率統計圖表（長條圖）
+ */
+function drawDepartmentStatsChart(data) {
+  console.log('=== drawDepartmentStatsChart ===');
+  console.log('data:', data);
+  
+  const ctx = document.getElementById('departmentStatsChart');
+  if (!ctx) {
+    console.error('❌ 找不到 canvas 元素');
+    return;
+  }
+  
+  // 銷毀舊圖表
+  if (departmentStatsChart) {
+    departmentStatsChart.destroy();
+  }
+  
+  // 計算平均、最高、最低完成率
+  const rates = data.completionRates;
+  const avgRate = rates.length > 0 ? Math.round(rates.reduce((a, b) => a + b, 0) / rates.length) : 0;
+  const maxRate = rates.length > 0 ? Math.max(...rates) : 0;
+  const minRate = rates.length > 0 ? Math.min(...rates) : 0;
+  
+  // 更新統計資訊
+  document.getElementById('avgCompletionRate').textContent = avgRate + '%';
+  document.getElementById('maxCompletionRate').textContent = maxRate + '%';
+  document.getElementById('minCompletionRate').textContent = minRate + '%';
+  
+  departmentStatsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.departments,  // 例如: ['IT', 'HR', 'Finance', ...]
+      datasets: [{
+        label: '完成率',
+        data: data.completionRates,  // 例如: [85, 92, 78, ...]
+        backgroundColor: data.completionRates.map(rate => {
+          if (rate >= 80) return 'rgba(16, 185, 129, 0.8)';  // 綠色
+          if (rate >= 60) return 'rgba(245, 158, 11, 0.8)';  // 橙色
+          return 'rgba(239, 68, 68, 0.8)';  // 紅色
+        }),
+        borderColor: data.completionRates.map(rate => {
+          if (rate >= 80) return '#10b981';
+          if (rate >= 60) return '#f59e0b';
+          return '#ef4444';
+        }),
+        borderWidth: 2,
+        borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          padding: 12,
+          titleFont: {
+            size: 14,
+            weight: 'bold'
+          },
+          bodyFont: {
+            size: 13
+          },
+          callbacks: {
+            label: function(context) {
+              return '完成率: ' + context.parsed.y + '%';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 100,
+          ticks: {
+            font: {
+              size: 12
+            },
+            callback: function(value) {
+              return value + '%';
+            }
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 12
+            }
+          },
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+  
+  console.log('✅ 部門完成率統計圖表繪製完成');
+}
+
 
     function displayAnnouncements(announcements) {
       const container = document.getElementById('announcementsList');
