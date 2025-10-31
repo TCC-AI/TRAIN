@@ -1540,7 +1540,47 @@
               <div class="stat-value" id="inProgressCount">0</div>
             </div>
           </div>
-           <!-- ✅ 新增：學習進度圖表 -->
+          
+          <div class="stat-card">
+            <div class="stat-icon red">
+              <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">待完成必修</div>
+              <div class="stat-value" id="requiredCount">0</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 公告區塊 -->
+        <div class="announcements-section">
+          <h2 class="section-title">
+            <i class="fas fa-bullhorn"></i>
+            最新公告
+          </h2>
+          <div id="announcementsList"></div>
+        </div>
+        
+        <!-- 待完成必修課程 -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 class="admin-card-title">
+              <i class="fas fa-exclamation-triangle"></i> 待完成必修課程
+            </h3>
+          </div>
+          <div id="requiredCoursesList"></div>
+        </div>
+        
+        <!-- 進行中的課程 -->
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3 class="admin-card-title">
+              <i class="fas fa-play-circle"></i> 進行中的課程
+            </h3>
+          </div>
+          <div id="inProgressCoursesList"></div>
+        </div>
+         <!-- ✅ 新增：學習進度圖表 -->
 <div class="charts-section">
   <h2 class="section-title">
     <i class="fas fa-chart-line"></i>
@@ -1596,46 +1636,6 @@
     </div>
   </div>
 </div>
-          <div class="stat-card">
-            <div class="stat-icon red">
-              <i class="fas fa-exclamation-circle"></i>
-            </div>
-            <div class="stat-info">
-              <div class="stat-label">待完成必修</div>
-              <div class="stat-value" id="requiredCount">0</div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 公告區塊 -->
-        <div class="announcements-section">
-          <h2 class="section-title">
-            <i class="fas fa-bullhorn"></i>
-            最新公告
-          </h2>
-          <div id="announcementsList"></div>
-        </div>
-        
-        <!-- 待完成必修課程 -->
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 class="admin-card-title">
-              <i class="fas fa-exclamation-triangle"></i> 待完成必修課程
-            </h3>
-          </div>
-          <div id="requiredCoursesList"></div>
-        </div>
-        
-        <!-- 進行中的課程 -->
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <h3 class="admin-card-title">
-              <i class="fas fa-play-circle"></i> 進行中的課程
-            </h3>
-          </div>
-          <div id="inProgressCoursesList"></div>
-        </div>
-        
       </div>
 
      
