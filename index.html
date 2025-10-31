@@ -1415,6 +1415,322 @@
   }
 }
 
+    /* ==================== 手機版優化 ==================== */
+
+/* 平板 (768px - 1024px) */
+@media (max-width: 1024px) {
+  .navbar-menu {
+    gap: 10px;
+  }
+  
+  .navbar-item {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .courses-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+/* 手機 (最大 768px) */
+@media (max-width: 768px) {
+  /* 導航列 */
+  .navbar-content {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .navbar-brand {
+    font-size: 18px;
+  }
+  
+  .navbar-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .navbar-item {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  
+  .navbar-user {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px;
+  }
+  
+  .navbar-user-info {
+    text-align: left;
+  }
+  
+  /* 儀錶板 */
+  .dashboard-header {
+    padding: 20px;
+  }
+  
+  .dashboard-welcome {
+    font-size: 20px;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+  }
+  
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  /* 圖表 */
+  .charts-section {
+    padding: 20px;
+  }
+  
+  .charts-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .chart-container {
+    padding: 15px;
+  }
+  
+  .chart-canvas {
+    height: 200px !important;
+  }
+  
+  .chart-title {
+    font-size: 14px;
+  }
+  
+  .chart-stats {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .chart-stat-item {
+    padding: 12px;
+  }
+  
+  .chart-stat-value {
+    font-size: 20px;
+  }
+  
+  /* 課程列表 */
+  .courses-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .course-card-header {
+    padding: 15px;
+  }
+  
+  .course-title {
+    font-size: 16px;
+  }
+  
+  .course-card-body {
+    padding: 15px;
+  }
+  
+  /* 課程篩選 */
+  .filter-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .filter-group {
+    width: 100%;
+    min-width: auto;
+  }
+  
+  /* 播放器 */
+  .player-header {
+    padding: 20px;
+  }
+  
+  .player-title {
+    font-size: 20px;
+  }
+  
+  .player-meta {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 13px;
+  }
+  
+  .player-body {
+    padding: 20px;
+  }
+  
+  #videoTimeInfo {
+    padding: 15px;
+  }
+  
+  #videoTimeInfo > div {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  
+  /* 測驗 */
+  .exam-container {
+    padding: 20px;
+  }
+  
+  .exam-title {
+    font-size: 20px;
+  }
+  
+  .question-card {
+    padding: 20px;
+  }
+  
+  .question-text {
+    font-size: 15px;
+  }
+  
+  .option-item {
+    padding: 12px;
+  }
+  
+  /* 管理後台 */
+  .admin-tabs {
+    flex-direction: column;
+    padding: 5px;
+  }
+  
+  .admin-tab {
+    padding: 10px;
+    font-size: 13px;
+  }
+  
+  .data-table {
+    font-size: 12px;
+    display: block;
+    overflow-x: auto;
+  }
+  
+  .data-table th,
+  .data-table td {
+    padding: 8px;
+    white-space: nowrap;
+  }
+  
+  /* Modal */
+  .modal-content {
+    padding: 20px;
+    max-width: 95%;
+  }
+  
+  .modal-title {
+    font-size: 18px;
+  }
+  
+  /* 按鈕 */
+  .btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+  
+  .course-actions {
+    flex-direction: column;
+  }
+  
+  .course-actions .btn {
+    width: 100%;
+  }
+  
+  .exam-actions {
+    flex-direction: column;
+  }
+  
+  .exam-actions .btn {
+    width: 100%;
+  }
+}
+
+/* 小手機 (最大 480px) */
+@media (max-width: 480px) {
+  .navbar-brand {
+    font-size: 16px;
+  }
+  
+  .navbar-brand i {
+    font-size: 24px;
+  }
+  
+  .navbar-item {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  
+  .dashboard-welcome {
+    font-size: 18px;
+  }
+  
+  .stat-value {
+    font-size: 20px;
+  }
+  
+  .chart-canvas {
+    height: 180px !important;
+  }
+  
+  .course-title {
+    font-size: 15px;
+  }
+  
+  .player-title {
+    font-size: 18px;
+  }
+  
+  .exam-title {
+    font-size: 18px;
+  }
+  
+  .modal-content {
+    padding: 15px;
+  }
+}
+
+/* ✅ 橫向模式優化 */
+@media (max-width: 768px) and (orientation: landscape) {
+  .video-wrapper {
+    padding-bottom: 45% !important;
+  }
+  
+  .chart-canvas {
+    height: 150px !important;
+  }
+}
+
 
   </style>
 </head>
@@ -1507,7 +1823,9 @@
           <h1 class="dashboard-welcome">歡迎回來,<span id="welcomeName"></span>!</h1>
           <p class="dashboard-subtitle">繼續您的學習旅程</p>
         </div>
-        
+        <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()" title="重新整理">
+    <i class="fas fa-sync-alt"></i> 重新整理
+  </button>
         <!-- 統計卡片 -->
         <div class="stats-grid">
           <div class="stat-card">
@@ -2923,49 +3241,64 @@ function navigateToPage(pageName) {
 
 
 
-    // ==================== 儀錶板 ==================== 
-async function loadDashboard() {
-  const result = await callAPI('getPersonalDashboard');
-
-  if (result && result.success) {
-    const data = result.data;
-
-    // 更新統計卡片
-    document.getElementById('totalPoints').textContent = data.user.totalPoints;
-    document.getElementById('completedCount').textContent = data.completedCourses.length;
-    document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
-    document.getElementById('requiredCount').textContent = data.requiredCourses.length;
-
-    // 顯示公告
-    displayAnnouncements(data.announcements);
-
-    // 顯示待完成必修課程
-    displayRequiredCourses(data.requiredCourses);
-
-    // 顯示進行中的課程
-    displayInProgressCourses(data.inProgressCourses);
+/**
+ * 載入儀錶板（使用快取）
+ */
+async function loadDashboard(forceRefresh = false) {
+  try {
+    console.log('=== loadDashboard ===');
+    console.log('forceRefresh:', forceRefresh);
     
-    // ✅ 新增：載入學習進度圖表
-    loadCharts();
+    // ✅ 如果強制重新整理，清除快取
+    if (forceRefresh) {
+      CacheManager.clear('getPersonalDashboard_{}');
+    }
+    
+    const result = await callAPIWithCache('getPersonalDashboard', {}, !forceRefresh);
+
+    if (result && result.success) {
+      const data = result.data;
+
+      // 更新統計卡片
+      document.getElementById('totalPoints').textContent = data.user.totalPoints;
+      document.getElementById('completedCount').textContent = data.completedCourses.length;
+      document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
+      document.getElementById('requiredCount').textContent = data.requiredCourses.length;
+
+      // 顯示公告
+      displayAnnouncements(data.announcements);
+
+      // 顯示待完成必修課程
+      displayRequiredCourses(data.requiredCourses);
+
+      // 顯示進行中的課程
+      displayInProgressCourses(data.inProgressCourses);
+      
+      // ✅ 延遲載入圖表（避免阻塞主要內容）
+      setTimeout(() => {
+        loadCharts(forceRefresh);
+      }, 500);
+    }
+  } catch(error) {
+    console.error('❌ loadDashboard 失敗:', error);
+    showAlert('載入儀錶板失敗', 'error');
   }
 }
-
-
-    // ==================== 學習進度圖表 ====================
-
-let monthlyCoursesChart = null;
-let pointsTrendChart = null;
-let departmentStatsChart = null;
-
 /**
- * 載入學習進度圖表
+ * 載入圖表（使用快取）
  */
-async function loadCharts() {
+async function loadCharts(forceRefresh = false) {
   console.log('=== loadCharts 開始 ===');
+  console.log('forceRefresh:', forceRefresh);
   
   try {
+    // ✅ 如果強制重新整理，清除快取
+    if (forceRefresh) {
+      CacheManager.clear('getChartData_{}');
+    }
+    
     // 取得圖表資料
-    const result = await callAPI('getChartData');
+    const result = await callAPIWithCache('getChartData', {}, !forceRefresh);
     
     if (result && result.success) {
       const chartData = result.data;
@@ -2990,8 +3323,15 @@ async function loadCharts() {
   }
 }
 
+
+    // ==================== 學習進度圖表（互動版）====================
+
+let monthlyCoursesChart = null;
+let pointsTrendChart = null;
+let departmentStatsChart = null;
+
 /**
- * 繪製每月完成課程數圖表（折線圖）
+ * 繪製每月完成課程數圖表（折線圖 + 互動）
  */
 function drawMonthlyCoursesChart(data) {
   console.log('=== drawMonthlyCoursesChart ===');
@@ -3011,42 +3351,60 @@ function drawMonthlyCoursesChart(data) {
   monthlyCoursesChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.labels,  // 例如: ['1月', '2月', '3月', ...]
+      labels: data.labels,
       datasets: [{
         label: '完成課程數',
-        data: data.values,  // 例如: [5, 8, 12, ...]
+        data: data.values,
         borderColor: '#2563eb',
         backgroundColor: 'rgba(37, 99, 235, 0.1)',
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointRadius: 5,
-        pointHoverRadius: 7,
+        pointRadius: 6,
+        pointHoverRadius: 10,
         pointBackgroundColor: '#2563eb',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2
+        pointBorderWidth: 3,
+        pointHoverBackgroundColor: '#1d4ed8',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 16,
           titleFont: {
-            size: 14,
+            size: 16,
             weight: 'bold'
           },
           bodyFont: {
-            size: 13
+            size: 14
           },
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          displayColors: false,
           callbacks: {
+            title: function(context) {
+              return context[0].label;
+            },
             label: function(context) {
               return '完成課程數: ' + context.parsed.y + ' 門';
+            },
+            afterLabel: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed.y / total) * 100).toFixed(1);
+              return '佔比: ' + percentage + '%';
             }
           }
         }
@@ -3074,6 +3432,20 @@ function drawMonthlyCoursesChart(data) {
             display: false
           }
         }
+      },
+      // ✅ 新增：點擊事件
+      onClick: (event, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const month = data.labels[index];
+          const count = data.values[index];
+          
+          showAlert(`📊 ${month}完成了 ${count} 門課程`, 'info');
+        }
+      },
+      // ✅ 新增：滑鼠移動效果
+      onHover: (event, elements) => {
+        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
       }
     }
   });
@@ -3082,7 +3454,7 @@ function drawMonthlyCoursesChart(data) {
 }
 
 /**
- * 繪製累積點數趨勢圖表（面積圖）
+ * 繪製累積點數趨勢圖表（面積圖 + 互動）
  */
 function drawPointsTrendChart(data) {
   console.log('=== drawPointsTrendChart ===');
@@ -3102,42 +3474,65 @@ function drawPointsTrendChart(data) {
   pointsTrendChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: data.labels,  // 例如: ['1月', '2月', '3月', ...]
+      labels: data.labels,
       datasets: [{
         label: '累積點數',
-        data: data.values,  // 例如: [10, 25, 50, ...]
+        data: data.values,
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.2)',
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointRadius: 5,
-        pointHoverRadius: 7,
+        pointRadius: 6,
+        pointHoverRadius: 10,
         pointBackgroundColor: '#10b981',
         pointBorderColor: '#fff',
-        pointBorderWidth: 2
+        pointBorderWidth: 3,
+        pointHoverBackgroundColor: '#059669',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 4
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 16,
           titleFont: {
-            size: 14,
+            size: 16,
             weight: 'bold'
           },
           bodyFont: {
-            size: 13
+            size: 14
           },
+          borderColor: '#10b981',
+          borderWidth: 2,
+          displayColors: false,
           callbacks: {
+            title: function(context) {
+              return context[0].label;
+            },
             label: function(context) {
               return '累積點數: ' + context.parsed.y + ' 點';
+            },
+            afterLabel: function(context) {
+              const index = context.dataIndex;
+              if (index > 0) {
+                const prevValue = context.dataset.data[index - 1];
+                const currentValue = context.parsed.y;
+                const increase = currentValue - prevValue;
+                return increase > 0 ? '▲ +' + increase + ' 點' : '持平';
+              }
+              return '';
             }
           }
         }
@@ -3167,6 +3562,20 @@ function drawPointsTrendChart(data) {
             display: false
           }
         }
+      },
+      // ✅ 新增：點擊事件
+      onClick: (event, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const month = data.labels[index];
+          const points = data.values[index];
+          
+          showAlert(`🏆 ${month}累積點數: ${points} 點`, 'success');
+        }
+      },
+      // ✅ 新增：滑鼠移動效果
+      onHover: (event, elements) => {
+        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
       }
     }
   });
@@ -3175,7 +3584,7 @@ function drawPointsTrendChart(data) {
 }
 
 /**
- * 繪製部門完成率統計圖表（長條圖）
+ * 繪製部門完成率統計圖表（長條圖 + 互動）
  */
 function drawDepartmentStatsChart(data) {
   console.log('=== drawDepartmentStatsChart ===');
@@ -3206,14 +3615,14 @@ function drawDepartmentStatsChart(data) {
   departmentStatsChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: data.departments,  // 例如: ['IT', 'HR', 'Finance', ...]
+      labels: data.departments,
       datasets: [{
         label: '完成率',
-        data: data.completionRates,  // 例如: [85, 92, 78, ...]
+        data: data.completionRates,
         backgroundColor: data.completionRates.map(rate => {
-          if (rate >= 80) return 'rgba(16, 185, 129, 0.8)';  // 綠色
-          if (rate >= 60) return 'rgba(245, 158, 11, 0.8)';  // 橙色
-          return 'rgba(239, 68, 68, 0.8)';  // 紅色
+          if (rate >= 80) return 'rgba(16, 185, 129, 0.8)';
+          if (rate >= 60) return 'rgba(245, 158, 11, 0.8)';
+          return 'rgba(239, 68, 68, 0.8)';
         }),
         borderColor: data.completionRates.map(rate => {
           if (rate >= 80) return '#10b981';
@@ -3221,29 +3630,50 @@ function drawDepartmentStatsChart(data) {
           return '#ef4444';
         }),
         borderWidth: 2,
-        borderRadius: 8
+        borderRadius: 8,
+        hoverBackgroundColor: data.completionRates.map(rate => {
+          if (rate >= 80) return 'rgba(16, 185, 129, 1)';
+          if (rate >= 60) return 'rgba(245, 158, 11, 1)';
+          return 'rgba(239, 68, 68, 1)';
+        })
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: {
           display: false
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          padding: 12,
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 16,
           titleFont: {
-            size: 14,
+            size: 16,
             weight: 'bold'
           },
           bodyFont: {
-            size: 13
+            size: 14
           },
+          borderColor: '#2563eb',
+          borderWidth: 2,
+          displayColors: false,
           callbacks: {
+            title: function(context) {
+              return context[0].label + ' 部門';
+            },
             label: function(context) {
               return '完成率: ' + context.parsed.y + '%';
+            },
+            afterLabel: function(context) {
+              const rate = context.parsed.y;
+              if (rate >= 80) return '✅ 表現優異';
+              if (rate >= 60) return '⚠️ 需要加油';
+              return '❌ 需要改進';
             }
           }
         }
@@ -3274,12 +3704,39 @@ function drawDepartmentStatsChart(data) {
             display: false
           }
         }
+      },
+      // ✅ 新增：點擊事件
+      onClick: (event, elements) => {
+        if (elements.length > 0) {
+          const index = elements[0].index;
+          const dept = data.departments[index];
+          const rate = data.completionRates[index];
+          
+          let emoji = '✅';
+          let message = '表現優異';
+          
+          if (rate < 80) {
+            emoji = '⚠️';
+            message = '需要加油';
+          }
+          if (rate < 60) {
+            emoji = '❌';
+            message = '需要改進';
+          }
+          
+          showAlert(`${emoji} ${dept} 部門完成率: ${rate}% (${message})`, 'info');
+        }
+      },
+      // ✅ 新增：滑鼠移動效果
+      onHover: (event, elements) => {
+        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
       }
     }
   });
   
   console.log('✅ 部門完成率統計圖表繪製完成');
 }
+
 
 
     function displayAnnouncements(announcements) {
@@ -3402,19 +3859,37 @@ function displayInProgressCourses(courses) {
       `).join('');
     }
 
-    // ==================== 課程瀏覽 ==================== 
-async function loadCourses() {
-  const result = await callAPI('getCourseList');
+// ==================== 使用快取的函數 ====================
 
-  if (result && result.success) {
-    allCourses = result.data;
-    displayCourses(allCourses);
+/**
+ * 載入課程列表（使用快取）
+ */
+async function loadCourses(forceRefresh = false) {
+  try {
+    console.log('=== loadCourses ===');
+    console.log('forceRefresh:', forceRefresh);
     
-    // ✅ 為課程瀏覽頁面的下拉選單載入選項
-    populateCourseCategoryFilter();
-    populateCourseGroupFilter();
+    // ✅ 如果強制重新整理，清除快取
+    if (forceRefresh) {
+      CacheManager.clear('getCourseList_{}');
+    }
+    
+    const result = await callAPIWithCache('getCourseList', {}, !forceRefresh);
+
+    if (result && result.success) {
+      allCourses = result.data;
+      displayCourses(allCourses);
+      
+      // 為課程瀏覽頁面的下拉選單載入選項
+      populateCourseCategoryFilter();
+      populateCourseGroupFilter();
+    }
+  } catch(error) {
+    console.error('❌ loadCourses 失敗:', error);
+    showAlert('載入課程失敗', 'error');
   }
 }
+
 
     /**
  * 填充課程瀏覽頁面的課群選項
@@ -4619,23 +5094,40 @@ function backToPlayer() {
     }
 
     // ==================== 我的學習 ==================== 
-    async function loadMyLearning() {
-      // 載入學習紀錄
-      const recordsResult = await callAPI('getLearningRecords');
-      
-      if (recordsResult && recordsResult.success) {
-        displayMyLearningRecords(recordsResult.data);
-      }
-
-      // 載入點數紀錄
-      const pointsResult = await callAPI('getPointRecords', {
-        empId: currentUser.empId
-      });
-
-      if (pointsResult && pointsResult.success) {
-        displayMyPointRecords(pointsResult.data);
-      }
+/**
+ * 載入我的學習（使用快取）
+ */
+async function loadMyLearning(forceRefresh = false) {
+  try {
+    console.log('=== loadMyLearning ===');
+    console.log('forceRefresh:', forceRefresh);
+    
+    // ✅ 如果強制重新整理，清除快取
+    if (forceRefresh) {
+      CacheManager.clear('getLearningRecords_{}');
+      CacheManager.clear('getPointRecords_{"empId":"' + currentUser.empId + '"}');
     }
+    
+    // 載入學習紀錄
+    const recordsResult = await callAPIWithCache('getLearningRecords', {}, !forceRefresh);
+    
+    if (recordsResult && recordsResult.success) {
+      displayMyLearningRecords(recordsResult.data);
+    }
+
+    // 載入點數紀錄
+    const pointsResult = await callAPIWithCache('getPointRecords', {
+      empId: currentUser.empId
+    }, !forceRefresh);
+
+    if (pointsResult && pointsResult.success) {
+      displayMyPointRecords(pointsResult.data);
+    }
+  } catch(error) {
+    console.error('❌ loadMyLearning 失敗:', error);
+    showAlert('載入學習紀錄失敗', 'error');
+  }
+}
 
     function displayMyLearningRecords(records) {
       const tbody = document.getElementById('myLearningRecords');
@@ -5530,6 +6022,125 @@ function closeQuestionModal() {
     function closeAnnouncementModal() {
       document.getElementById('announcementModal').classList.remove('active');
     }
+    // ==================== 資料快取系統 ====================
+
+/**
+ * 快取管理器
+ */
+const CacheManager = {
+  // 快取儲存
+  cache: {},
+  
+  // 快取有效期（毫秒）
+  expiry: {
+    courses: 5 * 60 * 1000,      // 課程列表: 5 分鐘
+    dashboard: 2 * 60 * 1000,    // 儀錶板: 2 分鐘
+    charts: 5 * 60 * 1000,       // 圖表: 5 分鐘
+    mylearning: 3 * 60 * 1000,   // 我的學習: 3 分鐘
+    announcements: 10 * 60 * 1000 // 公告: 10 分鐘
+  },
+  
+  /**
+   * 設定快取
+   */
+  set: function(key, data) {
+    console.log('💾 設定快取:', key);
+    this.cache[key] = {
+      data: data,
+      timestamp: Date.now()
+    };
+  },
+  
+  /**
+   * 取得快取
+   */
+  get: function(key, expiryTime) {
+    const cached = this.cache[key];
+    
+    if (!cached) {
+      console.log('⚠️ 快取不存在:', key);
+      return null;
+    }
+    
+    const now = Date.now();
+    const age = now - cached.timestamp;
+    
+    if (age > expiryTime) {
+      console.log('⚠️ 快取已過期:', key, '(', Math.round(age / 1000), '秒)');
+      delete this.cache[key];
+      return null;
+    }
+    
+    console.log('✅ 使用快取:', key, '(剩餘', Math.round((expiryTime - age) / 1000), '秒)');
+    return cached.data;
+  },
+  
+  /**
+   * 清除特定快取
+   */
+  clear: function(key) {
+    console.log('🗑️ 清除快取:', key);
+    delete this.cache[key];
+  },
+  
+  /**
+   * 清除所有快取
+   */
+  clearAll: function() {
+    console.log('🗑️ 清除所有快取');
+    this.cache = {};
+  },
+  
+  /**
+   * 取得快取狀態
+   */
+  getStatus: function() {
+    const status = {};
+    for (const key in this.cache) {
+      const age = Date.now() - this.cache[key].timestamp;
+      status[key] = {
+        age: Math.round(age / 1000) + ' 秒',
+        size: JSON.stringify(this.cache[key].data).length + ' bytes'
+      };
+    }
+    return status;
+  }
+};
+
+/**
+ * 帶快取的 API 呼叫
+ */
+async function callAPIWithCache(action, data = {}, useCache = true) {
+  console.log('=== callAPIWithCache ===');
+  console.log('action:', action);
+  console.log('useCache:', useCache);
+  
+  // 生成快取鍵
+  const cacheKey = action + '_' + JSON.stringify(data);
+  
+  // 檢查快取
+  if (useCache) {
+    const expiryTime = CacheManager.expiry[action] || 5 * 60 * 1000;
+    const cached = CacheManager.get(cacheKey, expiryTime);
+    
+    if (cached) {
+      console.log('✅ 返回快取資料');
+      return cached;
+    }
+  }
+  
+  // 呼叫 API
+  console.log('📡 呼叫 API');
+  const result = await callAPI(action, data);
+  
+  // 儲存快取
+  if (result && result.success && useCache) {
+    CacheManager.set(cacheKey, result);
+  }
+  
+  return result;
+}
+
 
     // ==================== 系統設定 ==================== 
     async function loadSystemSettings() {
@@ -5591,6 +6202,29 @@ function closeQuestionModal() {
         e.target.classList.remove('active');
       }
     });
+
+    /**
+ * 重新整理儀錶板
+ */
+function refreshDashboard() {
+  console.log('🔄 重新整理儀錶板');
+  
+  // 顯示載入動畫
+  showLoading();
+  
+  // 清除所有快取
+  CacheManager.clearAll();
+  
+  // 重新載入
+  loadDashboard(true);
+  
+  // 隱藏載入動畫
+  setTimeout(() => {
+    hideLoading();
+    showAlert('資料已更新', 'success');
+  }, 1000);
+}
+
   </script>
 </body>
 </html>
