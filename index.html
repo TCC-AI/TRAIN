@@ -1470,14 +1470,55 @@
           </div>
           
           <!-- ✅ 新增：開始播放按鈕 -->
-          <div id="videoControlPanel" style="margin-top: 15px; text-align: center;">
-            <button id="btnStartWatching" class="btn btn-primary" style="padding: 10px 30px; font-size: 16px;">
-              ▶️ 開始播放並計時
-            </button>
-            <div id="videoStatus" style="margin-top: 10px; color: #666; font-size: 14px;">
-              請點擊上方按鈕開始觀看影片
-            </div>
-          </div>
+<div id="videoControlPanel" style="margin-top: 15px; text-align: center;">
+  <button id="btnStartWatching" class="btn btn-primary" style="padding: 10px 30px; font-size: 16px;">
+    ▶️ 開始播放並計時
+  </button>
+  <div id="videoStatus" style="margin-top: 10px; color: #666; font-size: 14px;">
+    請點擊上方按鈕開始觀看影片
+  </div>
+</div>
+
+<!-- ✅ 新增：時間資訊顯示區塊 -->
+<div id="videoTimeInfo" style="margin-top: 20px; background: #f8f9fa; border-radius: 10px; padding: 20px; display: none;">
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+    <!-- 影片總長度 -->
+    <div style="text-align: center;">
+      <div style="font-size: 12px; color: #6b7280; margin-bottom: 5px;">
+        <i class="fas fa-video"></i> 影片總長度
+      </div>
+      <div id="totalDuration" style="font-size: 24px; font-weight: 700; color: #2563eb;">
+        0:00
+      </div>
+    </div>
+    
+    <!-- 已觀看時間 -->
+    <div style="text-align: center;">
+      <div style="font-size: 12px; color: #6b7280; margin-bottom: 5px;">
+        <i class="fas fa-clock"></i> 已觀看時間
+      </div>
+      <div id="watchedTime" style="font-size: 24px; font-weight: 700; color: #10b981;">
+        0:00
+      </div>
+    </div>
+    
+    <!-- 剩餘時間 -->
+    <div style="text-align: center;">
+      <div style="font-size: 12px; color: #6b7280; margin-bottom: 5px;">
+        <i class="fas fa-hourglass-half"></i> 剩餘時間
+      </div>
+      <div id="remainingTime" style="font-size: 24px; font-weight: 700; color: #f59e0b;">
+        0:00
+      </div>
+    </div>
+  </div>
+  
+  <!-- 進度百分比 -->
+  <div style="margin-top: 15px; text-align: center; font-size: 14px; color: #6b7280;">
+    已完成 <span id="progressPercent" style="font-weight: 700; color: #2563eb;">0%</span>
+  </div>
+</div>
+
 
             
             <!-- 進度條 -->
@@ -2272,11 +2313,13 @@ if (watchedSeconds >= currentVideoDuration) {
     // ✅ 正常計時
     watchedSeconds += 1;
     updateProgressBar();
+    updateTimeInfo();  // ✅ 新增：更新時間資訊
     
     // ✅ 每 30 秒更新一次進度到後端
     if (watchedSeconds % 30 === 0) {
       updateProgressToServer(false);
     }
+
   }, 1000);
   
   console.log('✅ startVideoTimer 完成');
@@ -2297,14 +2340,18 @@ function stopVideoTimer() {
     console.log('✅ 計時器已停止');
   }
   
-  // 最後一次更新進度到後端
-  if (currentRecordId && watchedSeconds > 0) {
-    console.log('✅ 更新最後進度到後端');
-    const isComplete = watchedSeconds >= currentVideoDuration;
-    updateProgressToServer(isComplete);
-  }
-  
-  console.log('✅ stopVideoTimer 完成');
+// 最後一次更新進度到後端
+if (currentRecordId && watchedSeconds > 0) {
+  console.log('✅ 更新最後進度到後端');
+  const isComplete = watchedSeconds >= currentVideoDuration;
+  updateProgressToServer(isComplete);
+}
+
+// ✅ 最後一次更新時間資訊
+updateTimeInfo();
+
+console.log('✅ stopVideoTimer 完成');
+
 }
 
     // ==================== API 呼叫函數 ==================== 
@@ -3094,15 +3141,19 @@ function displayPlayer() {
     console.log('⚠️ videoDuration 不存在,使用預設值:', videoDuration, '秒');
   }
   
-  // ✅ 設定全域變數
-  currentVideoDuration = videoDuration;
-  
+// ✅ 設定全域變數
+currentVideoDuration = videoDuration;
+
 console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
 
 // ✅ 設定「開始播放」按鈕
 setupStartWatchingButton();
 
+// ✅ 初始化時間資訊顯示
+updateTimeInfo();
+
 console.log('✅ displayPlayer 完成');
+
 
 }
 
@@ -3168,20 +3219,30 @@ function setupStartWatchingButton() {
       return;
     }
     
-    // ✅ 啟動計時器
-    startVideoTimer();
-    
-    // ✅ 更新按鈕狀態
-    btnStartWatching.disabled = true;
-    btnStartWatching.textContent = '⏱️ 觀看中...';
-    btnStartWatching.style.backgroundColor = '#ffc107';
-    
-    if (videoStatus) {
-      videoStatus.textContent = '正在計時中，請繼續觀看影片';
-      videoStatus.style.color = '#ffc107';
-    }
-    
-    showAlert('已開始計時，請觀看影片', 'success');
+// ✅ 啟動計時器
+startVideoTimer();
+
+// ✅ 更新按鈕狀態
+btnStartWatching.disabled = true;
+btnStartWatching.textContent = '⏱️ 觀看中...';
+btnStartWatching.style.backgroundColor = '#ffc107';
+
+if (videoStatus) {
+  videoStatus.textContent = '正在計時中，請繼續觀看影片';
+  videoStatus.style.color = '#ffc107';
+}
+
+// ✅ 顯示時間資訊區塊
+const videoTimeInfo = document.getElementById('videoTimeInfo');
+if (videoTimeInfo) {
+  videoTimeInfo.style.display = 'block';
+}
+
+// ✅ 更新時間資訊
+updateTimeInfo();
+
+showAlert('已開始計時，請觀看影片', 'success');
+
   };
   
   console.log('✅ setupStartWatchingButton 完成');
@@ -3275,6 +3336,68 @@ function updateProgressBar() {
   console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
 }
 
+/**
+ * 將秒數轉換為 mm:ss 格式
+ * @param {number} seconds - 秒數
+ * @returns {string} - 格式化後的時間（例如：3:45）
+ */
+function formatTime(seconds) {
+  if (!seconds || seconds < 0) return '0:00';
+  
+  const minutes = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  
+  return `${minutes}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
+ * 更新時間資訊顯示
+ */
+function updateTimeInfo() {
+  // ✅ 防呆檢查
+  if (!currentRecordId || !currentVideoDuration) {
+    return;
+  }
+  
+  // ✅ 計算剩餘時間
+  const remainingSeconds = Math.max(0, currentVideoDuration - watchedSeconds);
+  
+  // ✅ 計算進度百分比
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / currentVideoDuration) * 100));
+  
+  // ✅ 更新 DOM
+  const totalDurationEl = document.getElementById('totalDuration');
+  const watchedTimeEl = document.getElementById('watchedTime');
+  const remainingTimeEl = document.getElementById('remainingTime');
+  const progressPercentEl = document.getElementById('progressPercent');
+  
+  if (totalDurationEl) {
+    totalDurationEl.textContent = formatTime(currentVideoDuration);
+  }
+  
+  if (watchedTimeEl) {
+    watchedTimeEl.textContent = formatTime(watchedSeconds);
+  }
+  
+  if (remainingTimeEl) {
+    remainingTimeEl.textContent = formatTime(remainingSeconds);
+  }
+  
+  if (progressPercentEl) {
+    progressPercentEl.textContent = progressPercent + '%';
+  }
+  
+  // ✅ 根據剩餘時間改變顏色
+  if (remainingTimeEl) {
+    if (remainingSeconds <= 30) {
+      remainingTimeEl.style.color = '#ef4444'; // 紅色（快結束了）
+    } else if (remainingSeconds <= 60) {
+      remainingTimeEl.style.color = '#f59e0b'; // 橙色（即將結束）
+    } else {
+      remainingTimeEl.style.color = '#f59e0b'; // 橙色（正常）
+    }
+  }
+}
 
 
 
@@ -3326,9 +3449,17 @@ function backToCourses() {
   // ✅ 重置觀看秒數
   watchedSeconds = 0;
   
+  // ✅ 隱藏時間資訊區塊
+  const videoTimeInfo = document.getElementById('videoTimeInfo');
+  if (videoTimeInfo) {
+    videoTimeInfo.style.display = 'none';
+  }
+  
   console.log('✅ 返回課程列表');
   navigateToPage('courses');
 }
+
+
 
 function convertDriveUrl(url) {
   console.log('=== convertDriveUrl ===');
