@@ -2098,6 +2098,7 @@
     let currentRecordId = null;
     let videoStartTime = null;
     let watchedSeconds = 0;
+    let currentVideoDuration = 180;  // ✅ 加入這行!
     let videoCheckInterval = null;
     let allCourses = [];
     let currentExamQuestions = [];
@@ -3015,8 +3016,12 @@ async function updateProgressToServer(videoDuration, isComplete = false) {
 function updateProgressBar() {
   if (!currentRecordId) return;
 
-  // ✅ 確保不會超過 100%
-  const progressPercent = Math.min(100, Math.round((watchedSeconds / currentVideoDuration) * 100));
+  // ✅ 防呆檢查: 如果 currentVideoDuration 無效,使用預設值
+  const videoDuration = (currentVideoDuration && currentVideoDuration > 0) 
+    ? currentVideoDuration 
+    : 180;
+  
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
   
   const progressFill = document.getElementById('progressFill');
   if (progressFill) {
@@ -3024,8 +3029,9 @@ function updateProgressBar() {
     progressFill.textContent = progressPercent + '%';
   }
   
-  console.log(`進度更新: ${watchedSeconds}/${currentVideoDuration} 秒 (${progressPercent}%)`);
+  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
 }
+
 
 
 
@@ -3070,7 +3076,7 @@ function backToCourses() {
   // ✅ 清除計時器
   if (videoCheckInterval) {
     clearInterval(videoCheckInterval);
-    videoCheckInterval = null;  // ✅ 設為 null
+    videoCheckInterval = null;
   }
   
   // ✅ 最後一次更新進度
@@ -3078,12 +3084,15 @@ function backToCourses() {
     updateProgressToServer(false);
   }
   
-  // ✅ 重置變數
+  // ✅ 只重置 watchedSeconds (不重置 currentVideoDuration)
   watchedSeconds = 0;
   
+  // ❌ 移除這行 (如果有的話)
+  // currentVideoDuration = 180;
   
   navigateToPage('courses');
 }
+
 
 
 
@@ -3149,15 +3158,18 @@ function convertDriveUrl(url) {
 
 
 /**
- * 更新前端進度條 (不呼叫 API)
+ * 更新前端進度條
  */
 function updateProgressBar() {
   if (!currentRecordId) return;
 
-  const videoDuration = 180;  // 假設影片 3 分鐘
+  // ✅ 防呆檢查: 如果 currentVideoDuration 無效,使用預設值
+  const videoDuration = (currentVideoDuration && currentVideoDuration > 0) 
+    ? currentVideoDuration 
+    : 180;
+  
   const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
   
-  // ✅ 更新前端進度條
   const progressFill = document.getElementById('progressFill');
   if (progressFill) {
     progressFill.style.width = progressPercent + '%';
@@ -3166,6 +3178,7 @@ function updateProgressBar() {
   
   console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
 }
+
 
 /**
  * 更新進度到伺服器 (只在必要時呼叫)
