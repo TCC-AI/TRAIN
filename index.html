@@ -1229,6 +1229,92 @@
     .p-10 { padding: 10px; }
     .p-20 { padding: 20px; }
     .p-30 { padding: 30px; }
+
+    /* ==================== 錯誤題目檢討樣式 ==================== */
+.wrong-answer-item {
+  background: #fff;
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+}
+
+.wrong-answer-item:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--danger-color);
+}
+
+.wrong-answer-item .question-number {
+  display: inline-block;
+  background: var(--danger-color);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.wrong-answer-item .question-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.wrong-answer-item .answer-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.wrong-answer-item .answer-row.your-answer {
+  background: #fee2e2;
+  border-left: 4px solid var(--danger-color);
+}
+
+.wrong-answer-item .answer-row.correct-answer {
+  background: #d1fae5;
+  border-left: 4px solid var(--success-color);
+}
+
+.wrong-answer-item .answer-label {
+  font-weight: 600;
+  margin-right: 10px;
+  min-width: 100px;
+}
+
+.wrong-answer-item .answer-label.wrong {
+  color: var(--danger-color);
+}
+
+.wrong-answer-item .answer-label.correct {
+  color: var(--success-color);
+}
+
+.wrong-answer-item .answer-value {
+  flex: 1;
+  color: var(--text-primary);
+}
+
+.wrong-answer-item .answer-icon {
+  font-size: 18px;
+  margin-left: 10px;
+}
+
+.wrong-answer-item .answer-icon.wrong {
+  color: var(--danger-color);
+}
+
+.wrong-answer-item .answer-icon.correct {
+  color: var(--success-color);
+}
+
   </style>
 </head>
 <body>
@@ -2080,46 +2166,68 @@
     </div>
   </div>
 
-  <!-- 測驗結果 Modal -->
-  <div id="examResultModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">測驗結果</h3>
-        <button class="modal-close" onclick="closeExamResultModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="exam-result">
-          <div class="result-icon" id="resultIcon">
-            <i class="fas fa-check-circle"></i>
+<!-- 測驗結果 Modal -->
+<div id="examResultModal" class="modal">
+  <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-header">
+      <h3 class="modal-title">測驗結果</h3>
+      <button class="modal-close" onclick="closeExamResultModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="exam-result">
+        <!-- 結果圖示和標題 -->
+        <div class="result-icon" id="resultIcon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h2 class="result-title" id="resultTitle">測驗通過!</h2>
+        <div class="result-score" id="resultScore">0</div>
+        
+        <!-- 統計資訊 -->
+        <div class="result-details">
+          <div class="result-detail-item">
+            <span>正確題數</span>
+            <strong id="resultCorrect">0</strong>
           </div>
-          <h2 class="result-title" id="resultTitle">測驗通過!</h2>
-          <div class="result-score" id="resultScore">0</div>
-          
-          <div class="result-details">
-            <div class="result-detail-item">
-              <span>正確題數</span>
-              <strong id="resultCorrect">0</strong>
-            </div>
-            <div class="result-detail-item">
-              <span>總題數</span>
-              <strong id="resultTotal">0</strong>
-            </div>
-            <div class="result-detail-item">
-              <span>及格分數</span>
-              <strong id="resultPassScore">60</strong>
-            </div>
-            <div class="result-detail-item" id="resultPointsRow">
-              <span>獲得點數</span>
-              <strong id="resultPoints">0</strong>
-            </div>
+          <div class="result-detail-item">
+            <span>總題數</span>
+            <strong id="resultTotal">0</strong>
+          </div>
+          <div class="result-detail-item">
+            <span>及格分數</span>
+            <strong id="resultPassScore">60</strong>
+          </div>
+          <div class="result-detail-item" id="resultPointsRow">
+            <span>獲得點數</span>
+            <strong id="resultPoints">0</strong>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeExamResultModal()">確定</button>
+        
+        <!-- ✅ 新增：錯誤題目檢討區塊 -->
+        <div id="wrongAnswersSection" style="display: none; margin-top: 30px; text-align: left;">
+          <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 20px; border-bottom: 2px solid var(--border-color); padding-bottom: 10px;">
+            <i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i>
+            錯誤題目檢討
+          </h3>
+          <div id="wrongAnswersList"></div>
+        </div>
       </div>
     </div>
+    <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center;">
+      <button class="btn btn-secondary" onclick="closeExamResultModal()">
+        <i class="fas fa-times"></i> 關閉
+      </button>
+      <!-- ✅ 新增：重新測驗按鈕（只在未通過時顯示）-->
+      <button id="btnRetakeExam" class="btn btn-warning" onclick="retakeExam()" style="display: none;">
+        <i class="fas fa-redo"></i> 重新測驗
+      </button>
+      <!-- ✅ 新增：返回課程列表按鈕（通過時顯示）-->
+      <button id="btnBackToCourses" class="btn btn-primary" onclick="closeExamResultAndBackToCourses()" style="display: none;">
+        <i class="fas fa-check"></i> 返回課程列表
+      </button>
+    </div>
   </div>
+</div>
+
 
   <!-- ==================== JavaScript ==================== -->
   <script>
@@ -3813,27 +3921,185 @@ function displayExamResult(resultData) {
     pointsRow.style.display = 'none';
   }
 
-  modal.classList.add('active');
+  // ✅ 新增：顯示錯誤題目檢討
+  displayWrongAnswers(resultData.answerDetails);
 
-  // 如果通過,更新當前課程狀態
+  // ✅ 新增：控制按鈕顯示
+  const btnRetakeExam = document.getElementById('btnRetakeExam');
+  const btnBackToCourses = document.getElementById('btnBackToCourses');
+  
   if (isPassed) {
+    // 通過：顯示【返回課程列表】按鈕
+    btnRetakeExam.style.display = 'none';
+    btnBackToCourses.style.display = 'inline-block';
     currentCourse.isCompleted = true;
+  } else {
+    // 未通過：顯示【重新測驗】按鈕
+    btnRetakeExam.style.display = 'inline-block';
+    btnBackToCourses.style.display = 'none';
   }
+
+  modal.classList.add('active');
   
   console.log('✅ 測驗結果顯示完成');
 }
 
 /**
- * 關閉測驗結果 Modal
+ * 顯示錯誤題目檢討
  */
-function closeExamResultModal() {
+function displayWrongAnswers(answerDetails) {
+  console.log('=== displayWrongAnswers ===');
+  console.log('answerDetails:', answerDetails);
+  
+  if (!answerDetails || answerDetails.length === 0) {
+    console.log('⚠️ 沒有答案詳情');
+    return;
+  }
+  
+  // 篩選出錯誤的題目
+  const wrongAnswers = answerDetails.filter(detail => !detail.isCorrect);
+  
+  console.log('錯誤題目數量:', wrongAnswers.length);
+  
+  const wrongAnswersSection = document.getElementById('wrongAnswersSection');
+  const wrongAnswersList = document.getElementById('wrongAnswersList');
+  
+  if (wrongAnswers.length === 0) {
+    // 全部答對，隱藏檢討區塊
+    wrongAnswersSection.style.display = 'none';
+    return;
+  }
+  
+  // 顯示檢討區塊
+  wrongAnswersSection.style.display = 'block';
+  
+  // 建立錯誤題目列表
+  wrongAnswersList.innerHTML = wrongAnswers.map((detail, index) => {
+    // 從 currentExamQuestions 找到完整題目資訊
+    const question = currentExamQuestions.find(q => q.questionId === detail.questionId);
+    
+    if (!question) {
+      console.log('⚠️ 找不到題目:', detail.questionId);
+      return '';
+    }
+    
+    // 取得選項文字
+    const yourAnswerText = question['option' + detail.userAnswer] || detail.userAnswer;
+    const correctAnswerText = question['option' + detail.correctAnswer] || detail.correctAnswer;
+    
+    return `
+      <div class="wrong-answer-item">
+        <span class="question-number">第 ${index + 1} 題</span>
+        <div class="question-text">${question.questionText}</div>
+        
+        <div class="answer-row your-answer">
+          <span class="answer-label wrong">
+            <i class="fas fa-times-circle"></i> 您的答案
+          </span>
+          <span class="answer-value">
+            <strong>${detail.userAnswer}.</strong> ${yourAnswerText}
+          </span>
+          <span class="answer-icon wrong">
+            <i class="fas fa-times"></i>
+          </span>
+        </div>
+        
+        <div class="answer-row correct-answer">
+          <span class="answer-label correct">
+            <i class="fas fa-check-circle"></i> 正確答案
+          </span>
+          <span class="answer-value">
+            <strong>${detail.correctAnswer}.</strong> ${correctAnswerText}
+          </span>
+          <span class="answer-icon correct">
+            <i class="fas fa-check"></i>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  console.log('✅ 錯誤題目檢討顯示完成');
+}
+
+/**
+ * 重新測驗
+ */
+function retakeExam() {
+  console.log('=== retakeExam ===');
+  
+  // 關閉測驗結果 Modal
   document.getElementById('examResultModal').classList.remove('active');
   
+  // 重新開始測驗
+  startExam();
+}
+
+/**
+ * 關閉測驗結果並返回課程列表
+ */
+function closeExamResultAndBackToCourses() {
+  console.log('=== closeExamResultAndBackToCourses ===');
+  
+  // 關閉測驗結果 Modal
+  document.getElementById('examResultModal').classList.remove('active');
+  
+  // 停止計時器
+  if (videoCheckInterval) {
+    clearInterval(videoCheckInterval);
+    videoCheckInterval = null;
+  }
+  
+  // 重置觀看秒數
+  watchedSeconds = 0;
+  
+  // 隱藏時間資訊區塊
+  const videoTimeInfo = document.getElementById('videoTimeInfo');
+  if (videoTimeInfo) {
+    videoTimeInfo.style.display = 'none';
+  }
+  
   // 返回課程列表
-  if (videoCheckInterval) clearInterval(videoCheckInterval);
   navigateToPage('courses');
   loadCourses();
 }
+
+
+/**
+ * 關閉測驗結果 Modal（只關閉，不返回課程列表）
+ */
+function closeExamResultModal() {
+  console.log('=== closeExamResultModal ===');
+  
+  document.getElementById('examResultModal').classList.remove('active');
+  
+  // ✅ 如果測驗通過，才返回課程列表
+  if (currentCourse && currentCourse.isCompleted) {
+    console.log('✅ 測驗通過，返回課程列表');
+    
+    // 停止計時器
+    if (videoCheckInterval) {
+      clearInterval(videoCheckInterval);
+      videoCheckInterval = null;
+    }
+    
+    // 重置觀看秒數
+    watchedSeconds = 0;
+    
+    // 隱藏時間資訊區塊
+    const videoTimeInfo = document.getElementById('videoTimeInfo');
+    if (videoTimeInfo) {
+      videoTimeInfo.style.display = 'none';
+    }
+    
+    navigateToPage('courses');
+    loadCourses();
+  } else {
+    console.log('⚠️ 測驗未通過，留在測驗頁面');
+    // 留在測驗頁面，讓使用者可以重新測驗
+  }
+}
+
 
 /**
  * 返回課程播放頁面
