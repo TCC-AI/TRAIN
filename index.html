@@ -2151,29 +2151,32 @@ function handleVisibilityChange() {
   console.log('document.hidden:', document.hidden);
   
   if (document.hidden) {
-    // 頁面不可見
+    // ✅ 頁面不可見 (切換分頁、最小化視窗等)
     console.log('⚠️ 頁面不可見,暫停計時器');
     isPageVisible = false;
     
-    if (videoCheckInterval) {
-      clearInterval(videoCheckInterval);
-      videoCheckInterval = null;
-      console.log('✅ 計時器已暫停');
-    }
   } else {
-    // 頁面可見
+    // ✅ 頁面可見
     console.log('✅ 頁面可見,檢查是否需要恢復計時器');
     isPageVisible = true;
     
+    // ✅ 檢查是否在播放頁面
     const playerPage = document.getElementById('playerPage');
-    const isPlayerPageActive = playerPage && playerPage.classList.contains('active');
+    const isPlayerActive = playerPage && playerPage.classList.contains('active');
     
-    console.log('播放頁面是否啟用:', isPlayerPageActive);
+    console.log('播放頁面是否啟用:', isPlayerActive);
     console.log('是否有學習紀錄:', !!currentRecordId);
     console.log('已觀看秒數:', watchedSeconds);
     console.log('影片總長度:', currentVideoDuration);
     
-    if (isPlayerPageActive && currentRecordId && watchedSeconds < currentVideoDuration) {
+    // ✅ 檢查是否已經看完
+    if (watchedSeconds >= currentVideoDuration) {
+      console.log('⚠️ 影片已看完,不需要恢復計時器');
+      return;
+    }
+    
+    // ✅ 如果在播放頁面、有學習紀錄、且計時器未啟動,則恢復計時器
+    if (isPlayerActive && currentRecordId && !videoCheckInterval) {
       console.log('✅ 恢復計時器');
       startVideoTimer();
     } else {
@@ -2181,6 +2184,7 @@ function handleVisibilityChange() {
     }
   }
 }
+
 
 /**
  * 啟動影片計時器
@@ -2190,51 +2194,64 @@ function startVideoTimer() {
   console.log('當前觀看秒數:', watchedSeconds);
   console.log('影片總長度:', currentVideoDuration);
   
-  // 防止重複啟動
-  if (videoCheckInterval) {
-    console.log('⚠️ 偵測到現有計時器,先停止');
-    clearInterval(videoCheckInterval);
-    videoCheckInterval = null;
+  // ✅ 檢查是否已經看完
+  if (watchedSeconds >= currentVideoDuration) {
+    console.log('⚠️ 影片已看完,不啟動計時器');
+    
+    // ✅ 確保測驗按鈕已啟用
+    const btnStartExam = document.getElementById('btnStartExam');
+    if (btnStartExam) {
+      btnStartExam.disabled = false;
+      btnStartExam.textContent = '開始測驗';
+    }
+    
+    return;
   }
   
-  // 啟動新的計時器
+  // ✅ 如果計時器已經啟動,不要重複啟動
+  if (videoCheckInterval) {
+    console.log('⚠️ 計時器已經啟動,跳過');
+    return;
+  }
+  
+  console.log('✅ 啟動計時器');
+  
   videoCheckInterval = setInterval(() => {
-    // 檢查 1: 頁面是否可見
+    // ✅ 檢查頁面是否可見
     if (!isPageVisible) {
       console.log('⚠️ 頁面不可見,跳過本次計時');
       return;
     }
     
-    // 檢查 2: 是否已經播放完畢
+    // ✅ 檢查是否播放完畢
     if (watchedSeconds >= currentVideoDuration) {
-      console.log('✅ 影片已播放完畢,停止計時器');
+      console.log('✅ 影片播放完畢');
       stopVideoTimer();
       
+      // ✅ 啟用測驗按鈕
       const btnStartExam = document.getElementById('btnStartExam');
       if (btnStartExam) {
         btnStartExam.disabled = false;
         btnStartExam.textContent = '開始測驗';
+        showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
       }
       
-      showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
       return;
     }
     
-    // 正常計時
+    // ✅ 正常計時
     watchedSeconds += 1;
     updateProgressBar();
     
-    console.log(`進度更新: ${watchedSeconds}/${currentVideoDuration} 秒 (${Math.round((watchedSeconds / currentVideoDuration) * 100)}%)`);
-    
-    // 每 30 秒更新一次後端
+    // ✅ 每 30 秒更新一次進度到後端
     if (watchedSeconds % 30 === 0) {
-      console.log('✅ 達到 30 秒,更新後端進度');
       updateProgressToServer(false);
     }
   }, 1000);
   
-  console.log('✅ 計時器已啟動 (每秒執行一次)');
+  console.log('✅ startVideoTimer 完成');
 }
+
 
 /**
  * 停止影片計時器
@@ -2999,7 +3016,8 @@ function displayPlayer() {
     return;
   }
   
-  document.getElementById('videoPlayer').src = videoUrl;
+  const videoIframe = document.getElementById('videoPlayer');
+  videoIframe.src = videoUrl;
 
   // ✅ 檢查是否有學習紀錄
   const btnStartExam = document.getElementById('btnStartExam');
@@ -3051,10 +3069,67 @@ function displayPlayer() {
   
   console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
   
-  // ✅ 使用新的計時器啟動方式
-  startVideoTimer();
+  // ❌ 不要在這裡啟動計時器!
+  // startVideoTimer();  // ← 刪除這行
   
-  console.log('✅ displayPlayer 完成');
+  // ✅ 監聽 iframe 的播放事件
+  setupVideoPlayListener();
+  
+  console.log('✅ displayPlayer 完成 (等待使用者播放影片)');
+}
+
+/**
+ * 設定影片播放監聽器
+ */
+function setupVideoPlayListener() {
+  console.log('=== setupVideoPlayListener ===');
+  
+  const videoIframe = document.getElementById('videoPlayer');
+  
+  if (!videoIframe) {
+    console.error('❌ 找不到影片 iframe');
+    return;
+  }
+  
+  // ✅ 監聽 iframe 載入完成
+  videoIframe.onload = function() {
+    console.log('✅ 影片 iframe 載入完成');
+    
+    // ✅ 嘗試監聽播放事件 (Google Drive 可能無法直接監聽)
+    try {
+      const iframeWindow = videoIframe.contentWindow;
+      
+      // ⚠️ 由於跨域限制,可能無法直接監聽
+      // 所以我們改用「使用者互動」來啟動計時器
+      console.log('⚠️ 由於跨域限制,無法直接監聽 Google Drive 影片播放事件');
+      console.log('✅ 改為監聽使用者點擊 iframe');
+      
+    } catch (error) {
+      console.log('⚠️ 跨域限制:', error.message);
+    }
+  };
+  
+  // ✅ 監聽使用者點擊 iframe (表示開始播放)
+  videoIframe.addEventListener('click', function() {
+    console.log('✅ 使用者點擊影片,開始計時');
+    
+    // ✅ 檢查是否已經看完
+    if (watchedSeconds >= currentVideoDuration) {
+      console.log('⚠️ 影片已看完,不需要再計時');
+      return;
+    }
+    
+    // ✅ 檢查計時器是否已經啟動
+    if (videoCheckInterval) {
+      console.log('⚠️ 計時器已經啟動,跳過');
+      return;
+    }
+    
+    // ✅ 啟動計時器
+    startVideoTimer();
+  });
+  
+  console.log('✅ setupVideoPlayListener 完成');
 }
 
 
