@@ -2101,6 +2101,7 @@
     let videoCheckInterval = null;
     let allCourses = [];
     let currentExamQuestions = [];
+    let currentVideoDuration = 180;  // ✅ 加入全域變數
 
     // ==================== 初始化 ==================== 
     document.addEventListener('DOMContentLoaded', function() {
@@ -2881,7 +2882,7 @@ function displayPlayer() {
     clearInterval(videoCheckInterval);
   }
   
-  // ✅ 取得影片長度 (修正版)
+  // ✅ 取得影片長度並設定為全域變數
   let videoDuration = 180;  // 預設值
   
   console.log('=== 檢查 videoDuration ===');
@@ -2904,12 +2905,15 @@ function displayPlayer() {
     console.log('⚠️ videoDuration 不存在,使用預設值:', videoDuration, '秒');
   }
   
-  console.log('✅ 最終影片長度:', videoDuration, '秒 (' + Math.floor(videoDuration / 60) + ' 分鐘)');
+  // ✅ 設定全域變數
+  currentVideoDuration = videoDuration;
+  
+  console.log('✅ 最終影片長度:', currentVideoDuration, '秒 (' + Math.floor(currentVideoDuration / 60) + ' 分鐘)');
   
   // 每 30 秒更新一次進度條
   videoCheckInterval = setInterval(() => {
     watchedSeconds += 30;
-    updateProgressBar(videoDuration);
+    updateProgressBar();  // ✅ 不需要傳參數
   }, 30000);
 
   // 影片播放完畢
@@ -2918,17 +2922,18 @@ function displayPlayer() {
       clearInterval(videoCheckInterval);
     }
     
-    watchedSeconds = videoDuration;
-    updateProgressBar(videoDuration);
-    updateProgressToServer(videoDuration, true);
+    watchedSeconds = currentVideoDuration;  // ✅ 使用全域變數
+    updateProgressBar();
+    updateProgressToServer(true);
     
     btnStartExam.disabled = false;
     btnStartExam.textContent = '開始測驗';
     showAlert('影片已觀看完畢,可以開始測驗了!', 'success');
-  }, videoDuration * 1000);
+  }, currentVideoDuration * 1000);  // ✅ 使用全域變數
   
   console.log('✅ displayPlayer 完成');
 }
+
 
 
 
@@ -3013,32 +3018,35 @@ async function updateProgressToServer(videoDuration, isComplete = false) {
 
 
 /**
- * 更新前端進度條 (不呼叫 API)
+ * 更新前端進度條 (使用全域變數 currentVideoDuration)
  */
 function updateProgressBar() {
-  const videoDuration = 180;  // 假設影片 3 分鐘
-  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  if (!currentRecordId) return;
+
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / currentVideoDuration) * 100));
   
+  // ✅ 更新前端進度條
   const progressFill = document.getElementById('progressFill');
   if (progressFill) {
     progressFill.style.width = progressPercent + '%';
     progressFill.textContent = progressPercent + '%';
   }
   
-  console.log(`進度更新: ${watchedSeconds}/${videoDuration} 秒 (${progressPercent}%)`);
+  console.log(`進度更新: ${watchedSeconds}/${currentVideoDuration} 秒 (${progressPercent}%)`);
 }
 
+
 /**
- * 更新進度到伺服器 (只在必要時呼叫)
+ * 更新進度到伺服器 (使用全域變數 currentVideoDuration)
  */
 async function updateProgressToServer(isComplete = false) {
   if (!currentRecordId) return;
 
-  const videoDuration = 180;
-  const progressPercent = Math.min(100, Math.round((watchedSeconds / videoDuration) * 100));
+  const progressPercent = Math.min(100, Math.round((watchedSeconds / currentVideoDuration) * 100));
   
   const progressData = {
     watchedSeconds: watchedSeconds,
+    videoDuration: currentVideoDuration,  // ✅ 使用全域變數
     progress: progressPercent,
     isComplete: isComplete || progressPercent >= 100
   };
@@ -3048,7 +3056,7 @@ async function updateProgressToServer(isComplete = false) {
   try {
     const result = await callAPI('updateProgress', {
       recordId: currentRecordId,
-      progressData: JSON.stringify(progressData)  // ✅ 轉換成 JSON 字串
+      progressData: JSON.stringify(progressData)
     });
 
     if (result && result.success) {
@@ -3061,6 +3069,7 @@ async function updateProgressToServer(isComplete = false) {
   }
 }
 
+
 /**
  * 返回課程列表
  */
@@ -3072,11 +3081,12 @@ function backToCourses() {
   
   // ✅ 最後一次更新進度
   if (currentRecordId && watchedSeconds > 0) {
-    updateProgressToServer(false);  // ✅ 離開時更新一次
+    updateProgressToServer(false);
   }
   
   navigateToPage('courses');
 }
+
 
 
 
