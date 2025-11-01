@@ -1060,69 +1060,72 @@
       justify-content: flex-end;
     }
     
-        /* ==================== Loading & Alert ==================== */
-    .loading {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .loading.active {
-      display: flex;
-    }
-    
-    .loading-spinner {
-      width: 60px;
-      height: 60px;
-      border: 5px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    
-    .alert {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      border-radius: 10px;
-      box-shadow: var(--shadow-lg);
-      z-index: 10000;
-      display: none;
-      animation: slideInRight 0.3s ease;
-      max-width: 400px;
-    }
-    
-    .alert.active {
-      display: block;
-    }
-    
-    .alert-success {
-      background: var(--success-color);
-      color: white;
-    }
-    
-    .alert-error {
-      background: var(--danger-color);
-      color: white;
-    }
-    
-    .alert-warning {
-      background: var(--warning-color);
-      color: white;
-    }
-    
-    .alert-info {
-      background: var(--info-color);
-      color: white;
-    }
+/* ==================== Loading & Alert ==================== */
+.loading {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent; /* ✅ 移除灰色遮罩 */
+  z-index: 99999;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* ✅ 允許點擊穿透 */
+}
+
+.loading.active {
+  display: flex;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid rgba(37, 99, 235, 0.3); /* ✅ 改為藍色系 */
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.5); /* ✅ 增加陰影 */
+}
+
+.alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10000;
+  display: none;
+  animation: slideInRight 0.3s ease;
+  max-width: 400px;
+}
+
+.alert.active {
+  display: block;
+}
+
+.alert-success {
+  background: var(--success-color);
+  color: white;
+}
+
+.alert-error {
+  background: var(--danger-color);
+  color: white;
+}
+
+.alert-warning {
+  background: var(--warning-color);
+  color: white;
+}
+
+.alert-info {
+  background: var(--info-color);
+  color: white;
+}
+
     
     /* ==================== Animations ==================== */
     @keyframes fadeIn {
