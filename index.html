@@ -2767,7 +2767,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbxg03B4-c5FFzpXNP5BW0f5eWq5eYQUByHxLhp0ucNefGvhik31bNeLJWu0hLSSYEpnMQ/exec'; // 請替換成您的 Web App URL
+    let API_URL = 'https://script.google.com/macros/s/AKfycbxfy1lh5AtAjdBgI7n3Z74Bc5NzSZU6dl9KnVa4N0sDdSUJguI2-oRSeQJQDb-KpCUDRg/exec'; // 請替換成您的 Web App URL
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -3278,15 +3278,11 @@ function navigateToPage(pageName) {
 
 
 
-/**
- * 載入儀錶板（使用快取）
- */
 async function loadDashboard(forceRefresh = false) {
   try {
     console.log('=== loadDashboard ===');
     console.log('forceRefresh:', forceRefresh);
     
-    // ✅ 如果強制重新整理，清除快取
     if (forceRefresh) {
       CacheManager.clear('getPersonalDashboard_{}');
     }
@@ -3296,7 +3292,7 @@ async function loadDashboard(forceRefresh = false) {
     if (result && result.success) {
       const data = result.data;
 
-      // 更新統計卡片
+      // ✅ 更新統計卡片（使用後端返回的 totalPoints）
       document.getElementById('totalPoints').textContent = data.user.totalPoints;
       document.getElementById('completedCount').textContent = data.completedCourses.length;
       document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
@@ -3311,7 +3307,7 @@ async function loadDashboard(forceRefresh = false) {
       // 顯示進行中的課程
       displayInProgressCourses(data.inProgressCourses);
       
-      // ✅ 延遲載入圖表（避免阻塞主要內容）
+      // 延遲載入圖表
       setTimeout(() => {
         loadCharts(forceRefresh);
       }, 500);
@@ -3321,6 +3317,7 @@ async function loadDashboard(forceRefresh = false) {
     showAlert('載入儀錶板失敗', 'error');
   }
 }
+
 /**
  * 載入圖表（使用快取）
  */
@@ -5178,7 +5175,7 @@ function displayMyLearningRecords(records) {
   const sortedRecords = records.sort((a, b) => {
     const timeA = new Date(a.startTime || 0).getTime();
     const timeB = new Date(b.startTime || 0).getTime();
-    return timeB - timeA; // 降序（最新的在前）
+    return timeB - timeA;
   });
 
   // ✅ 分割為前5筆和其餘
@@ -5216,7 +5213,7 @@ function displayMyLearningRecords(records) {
     </tr>
   `).join('');
 
-  // ✅ 建立收折按鈕（只在有超過5筆時顯示）
+  // ✅ 建立收折按鈕
   const toggleButtonHTML = hiddenRecords.length > 0 ? `
     <tr id="learningRecordToggleRow">
       <td colspan="6" style="text-align: center; padding: 15px; background: var(--light-color);">
@@ -5229,7 +5226,12 @@ function displayMyLearningRecords(records) {
 
   // ✅ 組合所有內容
   tbody.innerHTML = visibleHTML + hiddenHTML + toggleButtonHTML;
+  
+  // ❌ 移除前端自行加總的代碼
+  // const totalPoints = records.reduce((sum, r) => sum + (r.earnedPoints || 0), 0);
+  // document.getElementById('totalPoints').textContent = totalPoints;
 }
+
 
 /**
  * 切換學習紀錄顯示/隱藏
