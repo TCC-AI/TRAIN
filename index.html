@@ -2782,6 +2782,206 @@
     let allCourses = [];
     let currentExamQuestions = [];
     let isPageVisible = true;  // ✅ 新增這行!用來記錄頁面是否可見
+    // ==================== 預載入管理器 ====================
+const PreloadManager = {
+  // 預載入狀態
+  status: {
+    dashboard: false,
+    courses: false,
+    myLearning: false,
+    charts: false
+  },
+
+  // 預載入的資料
+  data: {
+    dashboard: null,
+    courses: null,
+    myLearning: null,
+    charts: null
+  },
+
+  // 階段一：登入後立即載入（2秒內）
+  async stage1() {
+    console.log('🚀 預載入階段一：儀錶板 + 課程列表');
+    
+    try {
+      // 並行載入儀錶板和課程列表
+      const [dashboardData, coursesData] = await Promise.all([
+        this.preloadDashboard(),
+        this.preloadCourses()
+      ]);
+
+      console.log('✅ 階段一載入完成');
+      return true;
+    } catch (error) {
+      console.error('❌ 階段一載入失敗:', error);
+      return false;
+    }
+  },
+
+  // 階段二：背景延遲載入（3-5秒後）
+  async stage2() {
+    console.log('🚀 預載入階段二：我的學習 + 圖表');
+    
+    // 延遲3秒後開始載入
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    try {
+      // 並行載入我的學習和圖表
+      await Promise.all([
+        this.preloadMyLearning(),
+        this.preloadCharts()
+      ]);
+
+      console.log('✅ 階段二載入完成');
+      return true;
+    } catch (error) {
+      console.error('❌ 階段二載入失敗:', error);
+      return false;
+    }
+  },
+
+  // 預載入儀錶板資料
+  async preloadDashboard() {
+    if (this.status.dashboard) {
+      console.log('⏭️ 儀錶板已預載入，跳過');
+      return this.data.dashboard;
+    }
+
+    try {
+      console.log('⏳ 預載入儀錶板...');
+      
+      const result = await callAPI('getPersonalDashboard', {});
+
+      if (result && result.success) {
+        this.data.dashboard = result.data;
+        this.status.dashboard = true;
+        console.log('✅ 儀錶板預載入完成');
+        return this.data.dashboard;
+      } else {
+        throw new Error(result?.message || '載入失敗');
+      }
+    } catch (error) {
+      console.error('❌ 儀錶板預載入失敗:', error);
+      throw error;
+    }
+  },
+
+  // 預載入課程列表
+  async preloadCourses() {
+    if (this.status.courses) {
+      console.log('⏭️ 課程列表已預載入，跳過');
+      return this.data.courses;
+    }
+
+    try {
+      console.log('⏳ 預載入課程列表...');
+      
+      const result = await callAPI('getCourseList', {});
+
+      if (result && result.success) {
+        this.data.courses = result.data;
+        this.status.courses = true;
+        console.log('✅ 課程列表預載入完成');
+        return this.data.courses;
+      } else {
+        throw new Error(result?.message || '載入失敗');
+      }
+    } catch (error) {
+      console.error('❌ 課程列表預載入失敗:', error);
+      throw error;
+    }
+  },
+
+  // 預載入我的學習紀錄
+  async preloadMyLearning() {
+    if (this.status.myLearning) {
+      console.log('⏭️ 我的學習已預載入，跳過');
+      return this.data.myLearning;
+    }
+
+    try {
+      console.log('⏳ 預載入我的學習...');
+      
+      const [learningResult, pointsResult] = await Promise.all([
+        callAPI('getLearningRecords', {}),
+        callAPI('getPointRecords', { empId: currentUser.empId })
+      ]);
+
+      if (learningResult && learningResult.success && pointsResult && pointsResult.success) {
+        this.data.myLearning = {
+          learningRecords: learningResult.data,
+          pointRecords: pointsResult.data
+        };
+        this.status.myLearning = true;
+        console.log('✅ 我的學習預載入完成');
+        return this.data.myLearning;
+      } else {
+        throw new Error('載入失敗');
+      }
+    } catch (error) {
+      console.error('❌ 我的學習預載入失敗:', error);
+      throw error;
+    }
+  },
+
+  // 預載入圖表資料
+  async preloadCharts() {
+    if (this.status.charts) {
+      console.log('⏭️ 圖表已預載入，跳過');
+      return this.data.charts;
+    }
+
+    try {
+      console.log('⏳ 預載入圖表...');
+      
+      const result = await callAPI('getChartData', {});
+
+      if (result && result.success) {
+        this.data.charts = result.data;
+        this.status.charts = true;
+        console.log('✅ 圖表預載入完成');
+        return this.data.charts;
+      } else {
+        throw new Error(result?.message || '載入失敗');
+      }
+    } catch (error) {
+      console.error('❌ 圖表預載入失敗:', error);
+      throw error;
+    }
+  },
+
+  // 開始預載入流程
+  async start() {
+    console.log('🎯 開始預載入流程...');
+    
+    // 階段一：立即載入
+    await this.stage1();
+
+    // 階段二：背景延遲載入（不等待完成）
+    this.stage2().catch(error => {
+      console.error('階段二背景載入失敗:', error);
+    });
+  },
+
+  // 重置預載入狀態（登出時使用）
+  reset() {
+    console.log('🔄 重置預載入狀態');
+    this.status = {
+      dashboard: false,
+      courses: false,
+      myLearning: false,
+      charts: false
+    };
+    this.data = {
+      dashboard: null,
+      courses: null,
+      myLearning: null,
+      charts: null
+    };
+  }
+};
+
 
     // ==================== 初始化 ==================== 
     document.addEventListener('DOMContentLoaded', function() {
@@ -3111,31 +3311,48 @@ async function callAPI(action, data = {}) {
 
 
     // ==================== 登入相關 ==================== 
-    async function handleLogin(e) {
-      e.preventDefault();
+async function handleLogin(e) {
+  e.preventDefault();
+
+  const empId = document.getElementById('empId').value.trim();
+  const password = document.getElementById('password').value;
+
+  if (!empId || !password) {
+    showAlert('請輸入工號和密碼', 'warning');
+    return;
+  }
+
+  showLoading();
+
+  try {
+    const result = await callAPI('login', { empId, password });
+
+    if (result && result.success) {
+      sessionToken = result.data.sessionToken;
+      currentUser = result.data.user;
       
-      const empId = document.getElementById('empId').value.trim();
-      const password = document.getElementById('password').value;
+      localStorage.setItem('sessionToken', sessionToken);
+      
+      showAlert('登入成功!', 'success');
 
-      if (!empId || !password) {
-        showAlert('請輸入工號和密碼', 'warning');
-        return;
-      }
+      // ✅ 新增：開始預載入流程
+      console.log('🎯 開始預載入資料...');
+      PreloadManager.start().catch(error => {
+        console.error('預載入失敗:', error);
+      });
 
-      const result = await callAPI('login', { empId, password });
-
-      if (result && result.success) {
-        sessionToken = result.data.sessionToken;
-        currentUser = result.data.user;
-        
-        localStorage.setItem('sessionToken', sessionToken);
-        
-        showAlert('登入成功!', 'success');
-        showApp();
-      } else {
-        showAlert(result?.message || '登入失敗', 'error');
-      }
+      showApp();
+    } else {
+      showAlert(result?.message || '登入失敗', 'error');
     }
+  } catch (error) {
+    console.error('Login error:', error);
+    showAlert('登入時發生錯誤，請稍後再試', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
 
 async function validateSession() {
   const result = await callAPI('validateSession');
@@ -3156,16 +3373,23 @@ async function validateSession() {
 }
 
 
-    function logout() {
-      sessionToken = null;
-      currentUser = null;
-      localStorage.removeItem('sessionToken');
-      
-      document.getElementById('loginPage').style.display = 'flex';
-      document.getElementById('appContainer').classList.remove('active');
-      
-      showAlert('已登出', 'info');
-    }
+function logout() {
+  // ✅ 新增：重置預載入狀態
+  PreloadManager.reset();
+  
+  // 清除快取
+  CacheManager.clear();
+  
+  sessionToken = null;
+  currentUser = null;
+  localStorage.removeItem('sessionToken');
+
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('appContainer').classList.remove('active');
+  
+  showAlert('已登出', 'info');
+}
+
 
 function showApp() {
   document.getElementById('loginPage').style.display = 'none';
@@ -3286,6 +3510,30 @@ async function loadDashboard(forceRefresh = false) {
     console.log('=== loadDashboard ===');
     console.log('forceRefresh:', forceRefresh);
     
+    // ✅ 檢查是否已預載入
+    if (!forceRefresh && PreloadManager.status.dashboard && PreloadManager.data.dashboard) {
+      console.log('⚡ 使用預載入的儀錶板資料');
+      const data = PreloadManager.data.dashboard;
+
+      // 直接渲染資料
+      document.getElementById('totalPoints').textContent = data.user.totalPoints;
+      document.getElementById('completedCount').textContent = data.completedCourses.length;
+      document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
+      document.getElementById('requiredCount').textContent = data.requiredCourses.length;
+
+      displayAnnouncements(data.announcements);
+      displayRequiredCourses(data.requiredCourses);
+      displayInProgressCourses(data.inProgressCourses);
+      
+      // 延遲載入圖表
+      setTimeout(() => {
+        loadCharts(forceRefresh);
+      }, 500);
+      
+      return;
+    }
+
+    // ✅ 原有的載入邏輯...
     if (forceRefresh) {
       CacheManager.clear('getPersonalDashboard_{}');
     }
@@ -3295,22 +3543,15 @@ async function loadDashboard(forceRefresh = false) {
     if (result && result.success) {
       const data = result.data;
 
-      // ✅ 更新統計卡片（使用後端返回的 totalPoints）
       document.getElementById('totalPoints').textContent = data.user.totalPoints;
       document.getElementById('completedCount').textContent = data.completedCourses.length;
       document.getElementById('inProgressCount').textContent = data.inProgressCourses.length;
       document.getElementById('requiredCount').textContent = data.requiredCourses.length;
 
-      // 顯示公告
       displayAnnouncements(data.announcements);
-
-      // 顯示待完成必修課程
       displayRequiredCourses(data.requiredCourses);
-
-      // 顯示進行中的課程
       displayInProgressCourses(data.inProgressCourses);
       
-      // 延遲載入圖表
       setTimeout(() => {
         loadCharts(forceRefresh);
       }, 500);
@@ -3321,6 +3562,7 @@ async function loadDashboard(forceRefresh = false) {
   }
 }
 
+
 /**
  * 載入圖表（使用快取）
  */
@@ -3329,12 +3571,24 @@ async function loadCharts(forceRefresh = false) {
   console.log('forceRefresh:', forceRefresh);
   
   try {
-    // ✅ 如果強制重新整理，清除快取
+    // ✅ 檢查是否已預載入
+    if (!forceRefresh && PreloadManager.status.charts && PreloadManager.data.charts) {
+      console.log('⚡ 使用預載入的圖表資料');
+      const chartData = PreloadManager.data.charts;
+      
+      drawMonthlyCoursesChart(chartData.monthlyCourses);
+      drawPointsTrendChart(chartData.pointsTrend);
+      drawDepartmentStatsChart(chartData.departmentStats);
+      
+      console.log('✅ 圖表繪製完成（使用預載入）');
+      return;
+    }
+
+    // ✅ 原有的載入邏輯...
     if (forceRefresh) {
       CacheManager.clear('getChartData_{}');
     }
     
-    // 取得圖表資料
     const result = await callAPIWithCache('getChartData', {}, !forceRefresh);
     
     if (result && result.success) {
@@ -3342,13 +3596,8 @@ async function loadCharts(forceRefresh = false) {
       
       console.log('✅ 圖表資料:', chartData);
       
-      // 繪製每月完成課程數圖表
       drawMonthlyCoursesChart(chartData.monthlyCourses);
-      
-      // 繪製累積點數趨勢圖表
       drawPointsTrendChart(chartData.pointsTrend);
-      
-      // 繪製部門完成率統計圖表
       drawDepartmentStatsChart(chartData.departmentStats);
       
       console.log('✅ 圖表繪製完成');
@@ -3359,6 +3608,7 @@ async function loadCharts(forceRefresh = false) {
     console.error('❌ loadCharts 失敗:', error);
   }
 }
+
 
 
     // ==================== 學習進度圖表（互動版）====================
@@ -3906,7 +4156,17 @@ async function loadCourses(forceRefresh = false) {
     console.log('=== loadCourses ===');
     console.log('forceRefresh:', forceRefresh);
     
-    // ✅ 如果強制重新整理，清除快取
+    // ✅ 檢查是否已預載入
+    if (!forceRefresh && PreloadManager.status.courses && PreloadManager.data.courses) {
+      console.log('⚡ 使用預載入的課程列表');
+      allCourses = PreloadManager.data.courses;
+      displayCourses(allCourses);
+      populateCourseCategoryFilter();
+      populateCourseGroupFilter();
+      return;
+    }
+
+    // ✅ 原有的載入邏輯...
     if (forceRefresh) {
       CacheManager.clear('getCourseList_{}');
     }
@@ -3916,8 +4176,6 @@ async function loadCourses(forceRefresh = false) {
     if (result && result.success) {
       allCourses = result.data;
       displayCourses(allCourses);
-      
-      // 為課程瀏覽頁面的下拉選單載入選項
       populateCourseCategoryFilter();
       populateCourseGroupFilter();
     }
@@ -3926,6 +4184,7 @@ async function loadCourses(forceRefresh = false) {
     showAlert('載入課程失敗', 'error');
   }
 }
+
 
 
     /**
@@ -5139,20 +5398,27 @@ async function loadMyLearning(forceRefresh = false) {
     console.log('=== loadMyLearning ===');
     console.log('forceRefresh:', forceRefresh);
     
-    // ✅ 如果強制重新整理，清除快取
+    // ✅ 檢查是否已預載入
+    if (!forceRefresh && PreloadManager.status.myLearning && PreloadManager.data.myLearning) {
+      console.log('⚡ 使用預載入的我的學習資料');
+      const { learningRecords, pointRecords } = PreloadManager.data.myLearning;
+      displayMyLearningRecords(learningRecords);
+      displayMyPointRecords(pointRecords);
+      return;
+    }
+
+    // ✅ 原有的載入邏輯...
     if (forceRefresh) {
       CacheManager.clear('getLearningRecords_{}');
       CacheManager.clear('getPointRecords_{"empId":"' + currentUser.empId + '"}');
     }
     
-    // 載入學習紀錄
     const recordsResult = await callAPIWithCache('getLearningRecords', {}, !forceRefresh);
     
     if (recordsResult && recordsResult.success) {
       displayMyLearningRecords(recordsResult.data);
     }
 
-    // 載入點數紀錄
     const pointsResult = await callAPIWithCache('getPointRecords', {
       empId: currentUser.empId
     }, !forceRefresh);
@@ -5165,6 +5431,7 @@ async function loadMyLearning(forceRefresh = false) {
     showAlert('載入學習紀錄失敗', 'error');
   }
 }
+
 
 function displayMyLearningRecords(records) {
   const tbody = document.getElementById('myLearningRecords');
