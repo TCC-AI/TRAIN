@@ -2451,86 +2451,126 @@
 
   <!-- ==================== Modals ==================== -->
   
-  <!-- 新增/編輯課程 Modal -->
-  <div id="courseModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title" id="courseModalTitle">新增課程</h3>
-        <button class="modal-close" onclick="closeCourseModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="courseForm">
-          <input type="hidden" id="courseFormId">
-          
-          <div class="form-group">
-  <label>課群 *</label>
-  <select id="courseFormCategory" required>  <!-- ✅ 改為 courseFormCategory -->
-    <option value="">請選擇</option>
-    <!-- 動態載入選項 -->
-  </select>
-</div>
+<!-- 新增/編輯課程 Modal -->
+<div id="courseModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title" id="courseModalTitle">新增課程</h3>
+      <button class="modal-close" onclick="closeCourseModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="courseForm">
+        <input type="hidden" id="courseFormId">
+        
+        <div class="form-group">
+          <label>課群 *</label>
+          <select id="courseFormCategory" required>
+            <option value="">請選擇</option>
+            <!-- 動態載入選項 -->
+          </select>
+        </div>
 
-<div class="form-group">
-  <label>課門 *</label>
-  <select id="courseFormSubject" required>  <!-- ✅ 改為 select -->
-    <option value="">請選擇</option>
-    <!-- 動態載入選項 -->
-  </select>
-</div>
-
+        <div class="form-group">
+          <label>課門 *</label>
+          <select id="courseFormSubject" required>
+            <option value="">請選擇</option>
+            <!-- 動態載入選項 -->
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>課程名稱 *</label>
+          <input type="text" id="courseFormName" placeholder="例如: 資訊安全基礎訓練" required>
+        </div>
+        
+        <div class="form-group">
+          <label>課程說明</label>
+          <textarea id="courseFormDesc" rows="3" placeholder="課程說明"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>影片連結(Google Drive) *</label>
+          <input type="url" id="courseFormVideo" placeholder="https://drive.google.com/..." required>
+        </div>
+        
+        <!-- ✅ 新增：必修對象（部門+個人）-->
+        <div class="form-group">
+          <label>必修對象</label>
           
-          <div class="form-group">
-            <label>課程名稱 *</label>
-            <input type="text" id="courseFormName" placeholder="例如: 資訊安全基礎訓練" required>
+          <!-- 部門輸入 -->
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select style="width: 100px;">
+              <option>部門</option>
+            </select>
+            <input type="text" id="courseFormRequiredDepts" placeholder="例如: IT,HR,Finance" style="flex: 1;">
           </div>
           
-          <div class="form-group">
-            <label>課程說明</label>
-            <textarea id="courseFormDesc" rows="3" placeholder="課程說明"></textarea>
+          <!-- 個人輸入 -->
+          <div style="display: flex; gap: 10px;">
+            <select style="width: 100px;">
+              <option>個人</option>
+            </select>
+            <input type="text" id="courseFormRequiredIndividuals" placeholder="例如: E001,E002,E003" style="flex: 1;">
           </div>
           
-          <div class="form-group">
-            <label>影片連結(Google Drive) *</label>
-            <input type="url" id="courseFormVideo" placeholder="https://drive.google.com/..." required>
+          <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 5px;">
+            💡 提示：部門和個人可以同時設定，系統會自動合併（聯集）
+          </small>
+        </div>
+        
+        <!-- ✅ 新增：選修對象（部門+個人）-->
+        <div class="form-group">
+          <label>選修對象</label>
+          
+          <!-- 部門輸入 -->
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select style="width: 100px;">
+              <option>部門</option>
+            </select>
+            <input type="text" id="courseFormOptionalDepts" placeholder="例如: Sales,Marketing" style="flex: 1;">
           </div>
           
-          <div class="form-group">
-            <label>必修對象(部門,逗號分隔)</label>
-            <input type="text" id="courseFormRequired" placeholder="例如: IT,HR,Finance">
+          <!-- 個人輸入 -->
+          <div style="display: flex; gap: 10px;">
+            <select style="width: 100px;">
+              <option>個人</option>
+            </select>
+            <input type="text" id="courseFormOptionalIndividuals" placeholder="例如: E004,E005" style="flex: 1;">
           </div>
           
-          <div class="form-group">
-            <label>選修對象(部門,逗號分隔)</label>
-            <input type="text" id="courseFormOptional" placeholder="例如: Sales,Marketing">
-          </div>
-          
-          <div class="form-group">
-            <label>開始時間 *</label>
-            <input type="date" id="courseFormStart" required>
-          </div>
-          
-          <div class="form-group">
-            <label>截止時間 *</label>
-            <input type="date" id="courseFormDeadline" required>
-          </div>
-          
-          <div class="form-group">
-            <label>點數 *</label>
-            <input type="number" id="courseFormPoints" min="0" value="10" required>
-          </div>
-          
-          <div class="form-group">
-            <label>前置課程ID</label>
-            <input type="text" id="courseFormPrerequisite" placeholder="選填">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeCourseModal()">取消</button>
-        <button class="btn btn-primary" onclick="saveCourse()">儲存</button>
-      </div>
+          <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 5px;">
+            💡 提示：部門和個人可以同時設定，系統會自動合併（聯集）
+          </small>
+        </div>
+        
+        <div class="form-group">
+          <label>開始時間 *</label>
+          <input type="date" id="courseFormStart" required>
+        </div>
+        
+        <div class="form-group">
+          <label>截止時間 *</label>
+          <input type="date" id="courseFormDeadline" required>
+        </div>
+        
+        <div class="form-group">
+          <label>點數 *</label>
+          <input type="number" id="courseFormPoints" min="0" value="10" required>
+        </div>
+        
+        <div class="form-group">
+          <label>前置課程ID</label>
+          <input type="text" id="courseFormPrerequisite" placeholder="選填">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCourseModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveCourse()">儲存</button>
     </div>
   </div>
+</div>
+
 
   <!-- 新增/編輯題目 Modal -->
   <div id="questionModal" class="modal">
@@ -2646,44 +2686,65 @@
     </div>
   </div>
 
-  <!-- 新增公告 Modal -->
-  <div id="announcementModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title">新增公告</h3>
-        <button class="modal-close" onclick="closeAnnouncementModal()">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="announcementForm">
-          <div class="form-group">
-            <label>公告內容 *</label>
-            <textarea id="announcementFormContent" rows="4" placeholder="請輸入公告內容" required></textarea>
+<!-- 新增公告 Modal -->
+<div id="announcementModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 class="modal-title">新增公告</h3>
+      <button class="modal-close" onclick="closeAnnouncementModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="announcementForm">
+        <div class="form-group">
+          <label>公告內容 *</label>
+          <textarea id="announcementFormContent" rows="4" placeholder="請輸入公告內容" required></textarea>
+        </div>
+        
+        <!-- ✅ 新增：發布對象（部門+個人）-->
+        <div class="form-group">
+          <label>發布對象</label>
+          
+          <!-- 部門輸入 -->
+          <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <select style="width: 100px;">
+              <option>部門</option>
+            </select>
+            <input type="text" id="announcementFormTargetDepts" placeholder="留空表示全公司，例如: IT,HR">
           </div>
           
-          <div class="form-group">
-            <label>發布對象(部門,逗號分隔)</label>
-            <input type="text" id="announcementFormTarget" placeholder="留空表示全公司,例如: IT,HR">
+          <!-- 個人輸入 -->
+          <div style="display: flex; gap: 10px;">
+            <select style="width: 100px;">
+              <option>個人</option>
+            </select>
+            <input type="text" id="announcementFormTargetIndividuals" placeholder="例如: E001,E002,E003">
           </div>
           
-          <div class="form-group">
-            <label>
-              <input type="checkbox" id="announcementFormPinned">
-              是否置頂
-            </label>
-          </div>
-          
-          <div class="form-group">
-            <label>有效期限</label>
-            <input type="date" id="announcementFormExpiry">
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeAnnouncementModal()">取消</button>
-        <button class="btn btn-primary" onclick="saveAnnouncement()">發布</button>
-      </div>
+          <small style="color: #6b7280; font-size: 12px; display: block; margin-top: 5px;">
+            💡 提示：留空表示發送給全公司，部門和個人可以同時設定
+          </small>
+        </div>
+        
+        <div class="form-group">
+          <label>
+            <input type="checkbox" id="announcementFormPinned">
+            是否置頂
+          </label>
+        </div>
+        
+        <div class="form-group">
+          <label>有效期限</label>
+          <input type="date" id="announcementFormExpiry">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeAnnouncementModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveAnnouncement()">發布</button>
     </div>
   </div>
+</div>
+
 
 <!-- 測驗結果 Modal -->
 <div id="examResultModal" class="modal">
@@ -2770,7 +2831,7 @@
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbyZcGLtWlDt7elXtjrOCO7chYIok1Z0KU6kNwiF5XW1R5trR6555yL6vjJbeR0LEAlsYg/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbyiA8idLncgXTIsG8iQWrWGprIJfK_tZCD4U356a-SfaUO_jekZYwPQB6k8WBOaDmVL/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -5729,77 +5790,110 @@ function displayAdminCourses(courses) {
 }
 
 
-        async function showAddCourseModal() {
-      document.getElementById('courseModalTitle').textContent = '新增課程';
-      document.getElementById('courseForm').reset();
-      document.getElementById('courseFormId').value = '';
-      
-      // ✅ 載入下拉選單選項
-      await loadCategoryOptions();
-      await loadSubjectOptions();
-      
-      document.getElementById('courseModal').classList.add('active');
-    }
+async function showAddCourseModal() {
+  document.getElementById('courseModalTitle').textContent = '新增課程';
+  document.getElementById('courseForm').reset();
+  document.getElementById('courseFormId').value = '';
+  
+  // ✅ 清空部門+個人輸入框
+  document.getElementById('courseFormRequiredDepts').value = '';
+  document.getElementById('courseFormRequiredIndividuals').value = '';
+  document.getElementById('courseFormOptionalDepts').value = '';
+  document.getElementById('courseFormOptionalIndividuals').value = '';
+  
+  // ✅ 載入下拉選單選項
+  await loadCategoryOptions();
+  await loadSubjectOptions();
+  
+  document.getElementById('courseModal').classList.add('active');
+}
 
 
-    async function editCourse(courseId) {
-      // ✅ 先載入下拉選單選項
-      await loadCategoryOptions();
-      await loadSubjectOptions();
-      
-      const result = await callAPI('getCourseDetail', { courseId });
 
-      if (result && result.success) {
-        const course = result.data;
-        
-        document.getElementById('courseModalTitle').textContent = '編輯課程';
-        document.getElementById('courseFormId').value = course.courseId;
-        document.getElementById('courseFormCategory').value = course.courseGroup;  // ✅ 課群代號
-        document.getElementById('courseFormSubject').value = course.courseCategory; // ✅ 課門代號
-        document.getElementById('courseFormName').value = course.courseName;
-        document.getElementById('courseFormDesc').value = course.courseDesc || '';
-        document.getElementById('courseFormVideo').value = course.videoUrl;
-        document.getElementById('courseFormRequired').value = course.requiredDepts || '';
-        document.getElementById('courseFormOptional').value = course.optionalDepts || '';
-        document.getElementById('courseFormStart').value = course.startDate ? course.startDate.split(' ')[0] : '';
-        document.getElementById('courseFormDeadline').value = course.deadline ? course.deadline.split(' ')[0] : '';
-        document.getElementById('courseFormPoints').value = course.points;
-        document.getElementById('courseFormPrerequisite').value = course.prerequisiteCourseId || '';
-        
-        document.getElementById('courseModal').classList.add('active');
-      }
-    }
+async function editCourse(courseId) {
+  // ✅ 先載入下拉選單選項
+  await loadCategoryOptions();
+  await loadSubjectOptions();
+  
+  const result = await callAPI('getCourseDetail', { courseId });
+
+  if (result && result.success) {
+    const course = result.data;
+    
+    document.getElementById('courseModalTitle').textContent = '編輯課程';
+    document.getElementById('courseFormId').value = course.courseId;
+    document.getElementById('courseFormCategory').value = course.courseGroup;
+    document.getElementById('courseFormSubject').value = course.courseCategory;
+    document.getElementById('courseFormName').value = course.courseName;
+    document.getElementById('courseFormDesc').value = course.courseDesc || '';
+    document.getElementById('courseFormVideo').value = course.videoUrl;
+    
+    // ✅ 解析必修對象（支援新舊格式）
+    const required = parseTargetAudienceFrontend(course.requiredDepts);
+    document.getElementById('courseFormRequiredDepts').value = required.departments.join(',');
+    document.getElementById('courseFormRequiredIndividuals').value = required.individuals.join(',');
+    
+    // ✅ 解析選修對象（支援新舊格式）
+    const optional = parseTargetAudienceFrontend(course.optionalDepts);
+    document.getElementById('courseFormOptionalDepts').value = optional.departments.join(',');
+    document.getElementById('courseFormOptionalIndividuals').value = optional.individuals.join(',');
+    
+    document.getElementById('courseFormStart').value = course.startDate ? course.startDate.split(' ')[0] : '';
+    document.getElementById('courseFormDeadline').value = course.deadline ? course.deadline.split(' ')[0] : '';
+    document.getElementById('courseFormPoints').value = course.points;
+    document.getElementById('courseFormPrerequisite').value = course.prerequisiteCourseID || '';
+    
+    document.getElementById('courseModal').classList.add('active');
+  }
+}
 
 
-    async function saveCourse() {
-      const courseId = document.getElementById('courseFormId').value;
-      const courseData = {
-        categoryCode: document.getElementById('courseFormCategory').value,  // ✅ 改為課群代號
-        subjectCode: document.getElementById('courseFormSubject').value,    // ✅ 改為課門代號
-        courseName: document.getElementById('courseFormName').value,
-        courseDesc: document.getElementById('courseFormDesc').value,
-        videoUrl: document.getElementById('courseFormVideo').value,
-        requiredDepts: document.getElementById('courseFormRequired').value,
-        optionalDepts: document.getElementById('courseFormOptional').value,
-        startDate: document.getElementById('courseFormStart').value,
-        deadline: document.getElementById('courseFormDeadline').value,
-        points: parseInt(document.getElementById('courseFormPoints').value),
-        prerequisiteCourseId: document.getElementById('courseFormPrerequisite').value
-      };
 
-      const action = courseId ? 'updateCourse' : 'createCourse';
-      const data = courseId ? { courseId, courseData: JSON.stringify(courseData) } : { courseData: JSON.stringify(courseData) };
+async function saveCourse() {
+  const courseId = document.getElementById('courseFormId').value;
+  
+  // ✅ 解析部門和個人輸入
+  const requiredDeptsInput = document.getElementById('courseFormRequiredDepts').value.trim();
+  const requiredIndividualsInput = document.getElementById('courseFormRequiredIndividuals').value.trim();
+  const optionalDeptsInput = document.getElementById('courseFormOptionalDepts').value.trim();
+  const optionalIndividualsInput = document.getElementById('courseFormOptionalIndividuals').value.trim();
+  
+  // ✅ 轉換為陣列
+  const requiredDepts = requiredDeptsInput ? requiredDeptsInput.split(',').map(d => d.trim()).filter(d => d) : [];
+  const requiredIndividuals = requiredIndividualsInput ? requiredIndividualsInput.split(',').map(i => i.trim()).filter(i => i) : [];
+  const optionalDepts = optionalDeptsInput ? optionalDeptsInput.split(',').map(d => d.trim()).filter(d => d) : [];
+  const optionalIndividuals = optionalIndividualsInput ? optionalIndividualsInput.split(',').map(i => i.trim()).filter(i => i) : [];
+  
+  const courseData = {
+    categoryCode: document.getElementById('courseFormCategory').value,
+    subjectCode: document.getElementById('courseFormSubject').value,
+    courseName: document.getElementById('courseFormName').value,
+    courseDesc: document.getElementById('courseFormDesc').value,
+    videoUrl: document.getElementById('courseFormVideo').value,
+    requiredDepts: requiredDepts,              // ✅ 新增
+    requiredIndividuals: requiredIndividuals,  // ✅ 新增
+    optionalDepts: optionalDepts,              // ✅ 新增
+    optionalIndividuals: optionalIndividuals,  // ✅ 新增
+    startDate: document.getElementById('courseFormStart').value,
+    deadline: document.getElementById('courseFormDeadline').value,
+    points: parseInt(document.getElementById('courseFormPoints').value),
+    prerequisiteCourseId: document.getElementById('courseFormPrerequisite').value
+  };
 
-      const result = await callAPI(action, data);
+  const action = courseId ? 'updateCourse' : 'createCourse';
+  const data = courseId ? { courseId, courseData: JSON.stringify(courseData) } : { courseData: JSON.stringify(courseData) };
 
-      if (result && result.success) {
-        showAlert(courseId ? '課程更新成功' : '課程新增成功', 'success');
-        closeCourseModal();
-        loadAdminCourses();
-      } else {
-        showAlert(result?.message || '操作失敗', 'error');
-      }
-    }
+  const result = await callAPI(action, data);
+
+  if (result && result.success) {
+    showAlert(courseId ? '課程更新成功' : '課程新增成功', 'success');
+    closeCourseModal();
+    loadAdminCourses();
+  } else {
+    showAlert(result?.message || '操作失敗', 'error');
+  }
+}
+
 
 
     async function deleteCourse(courseId) {
@@ -6356,55 +6450,86 @@ function closeQuestionModal() {
       }
     }
 
-    function displayAdminAnnouncements(announcements) {
-      const tbody = document.getElementById('adminAnnouncementsList');
-      
-      if (announcements.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center">尚無公告</td></tr>';
-        return;
-      }
+function displayAdminAnnouncements(announcements) {
+  const tbody = document.getElementById('adminAnnouncementsList');
+  
+  if (announcements.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center">尚無公告</td></tr>';
+    return;
+  }
 
-      tbody.innerHTML = announcements.map(ann => `
-        <tr>
-          <td>${ann.time}</td>
-          <td>${ann.content}</td>
-          <td>${ann.targetDepts || '全公司'}</td>
-          <td>${ann.isPinned ? '是' : '否'}</td>
-          <td>${ann.expiryDate || '無期限'}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="btn-icon btn-danger" onclick="deleteAnnouncement('${ann.time}')" title="刪除">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+  tbody.innerHTML = announcements.map(ann => {
+    // ✅ 顯示格式化的對象（支援新格式）
+    let targetDisplay = ann.targetDepts || '全公司';
+    
+    // 如果是新格式，解析後顯示
+    if (targetDisplay.includes('部門:') || targetDisplay.includes('個人:')) {
+      const parsed = parseTargetAudienceFrontend(targetDisplay);
+      const parts = [];
+      
+      if (parsed.departments.length > 0) {
+        parts.push('部門: ' + parsed.departments.join(', '));
+      }
+      if (parsed.individuals.length > 0) {
+        parts.push('個人: ' + parsed.individuals.join(', '));
+      }
+      
+      targetDisplay = parts.join(' | ') || '全公司';
     }
+    
+    return `
+      <tr>
+        <td>${ann.time}</td>
+        <td>${ann.content}</td>
+        <td>${targetDisplay}</td>
+        <td>${ann.isPinned ? '是' : '否'}</td>
+        <td>${ann.expiryDate || '無期限'}</td>
+        <td>
+          <div class="action-buttons">
+            <button class="btn-icon btn-danger" onclick="deleteAnnouncement('${ann.time}')" title="刪除">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
 
     function showAddAnnouncementModal() {
       document.getElementById('announcementForm').reset();
       document.getElementById('announcementModal').classList.add('active');
     }
 
-    async function saveAnnouncement() {
-      const announcementData = {
-        content: document.getElementById('announcementFormContent').value,
-        targetDepts: document.getElementById('announcementFormTarget').value || '全公司',
-        isPinned: document.getElementById('announcementFormPinned').checked,
-        expiryDate: document.getElementById('announcementFormExpiry').value
-      };
+async function saveAnnouncement() {
+  // ✅ 解析部門和個人輸入
+  const targetDeptsInput = document.getElementById('announcementFormTargetDepts').value.trim();
+  const targetIndividualsInput = document.getElementById('announcementFormTargetIndividuals').value.trim();
+  
+  // ✅ 轉換為陣列
+  const targetDepts = targetDeptsInput ? targetDeptsInput.split(',').map(d => d.trim()).filter(d => d) : [];
+  const targetIndividuals = targetIndividualsInput ? targetIndividualsInput.split(',').map(i => i.trim()).filter(i => i) : [];
+  
+  const announcementData = {
+    content: document.getElementById('announcementFormContent').value,
+    targetDepts: targetDepts,              // ✅ 新增
+    targetIndividuals: targetIndividuals,  // ✅ 新增
+    isPinned: document.getElementById('announcementFormPinned').checked,
+    expiryDate: document.getElementById('announcementFormExpiry').value
+  };
 
-      const result = await callAPI('createAnnouncement', announcementData);
+  const result = await callAPI('createAnnouncement', announcementData);
 
-      if (result && result.success) {
-        showAlert('公告發布成功', 'success');
-        closeAnnouncementModal();
-        loadAdminAnnouncements();
-      } else {
-        showAlert(result?.message || '發布失敗', 'error');
-      }
-    }
+  if (result && result.success) {
+    showAlert('公告發布成功', 'success');
+    closeAnnouncementModal();
+    loadAdminAnnouncements();
+  } else {
+    showAlert(result?.message || '發布失敗', 'error');
+  }
+}
+
 
     async function deleteAnnouncement(announcementId) {
       if (!confirm('確定要刪除此公告嗎?')) return;
@@ -6624,6 +6749,42 @@ function refreshDashboard() {
     showAlert('資料已更新', 'success');
   }, 1000);
 }
+    /**
+ * 前端解析對象字串（支援新舊格式）
+ * @param {string} targetString - 對象字串
+ * @return {Object} - { departments: [], individuals: [] }
+ */
+function parseTargetAudienceFrontend(targetString) {
+  if (!targetString || targetString.trim() === '') {
+    return { departments: [], individuals: [] };
+  }
+  
+  const result = { departments: [], individuals: [] };
+  
+  // ✅ 檢查是否為新格式
+  if (targetString.includes('部門:') || targetString.includes('個人:')) {
+    // 新格式: "部門:IT,HR;個人:E001,E002"
+    const parts = targetString.split(';');
+    
+    parts.forEach(part => {
+      part = part.trim();
+      
+      if (part.startsWith('部門:')) {
+        const depts = part.substring(3).split(',').map(d => d.trim()).filter(d => d);
+        result.departments = depts;
+      } else if (part.startsWith('個人:')) {
+        const individuals = part.substring(3).split(',').map(i => i.trim()).filter(i => i);
+        result.individuals = individuals;
+      }
+    });
+  } else {
+    // 舊格式: "IT,HR,Finance" (視為部門)
+    result.departments = targetString.split(',').map(d => d.trim()).filter(d => d);
+  }
+  
+  return result;
+}
+
 
   </script>
 </body>
