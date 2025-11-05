@@ -254,24 +254,17 @@ body {
   padding: 15px 0;
   position: sticky;
   top: 0;
-  z-index: 100000;
+  z-index: 1000;
   
   /* ✅ 玻璃擬態效果 */
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(15px) saturate(180%);
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  
-  /* ✅ 加強陰影 */
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-shadow: 
-    0 8px 16px -4px rgba(37, 99, 235, 0.15),
-    0 4px 8px -2px rgba(16, 185, 129, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-  
-  /* ✅ 加強底線 */
-  border-bottom: 2px solid rgba(37, 99, 235, 0.2);
+    0 4px 6px -1px rgba(37, 99, 235, 0.1),
+    0 2px 4px -1px rgba(16, 185, 129, 0.06);
+  border-bottom: 1px solid rgba(37, 99, 235, 0.1);
 }
-
-
 
     
     .navbar-content {
@@ -1207,7 +1200,7 @@ body {
   width: 100%;
   height: 100%;
   background: transparent; /* ✅ 移除灰色遮罩 */
-  z-index: 999;
+  z-index: 99999;
   justify-content: center;
   align-items: center;
   pointer-events: none; /* ✅ 允許點擊穿透 */
