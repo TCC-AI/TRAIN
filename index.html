@@ -160,6 +160,7 @@ body::before {
   opacity: 0.6;
   animation: borderFlow 3s ease-in-out infinite;
   pointer-events: none; /* ✅ 加入這行！讓點擊穿透 */
+  z-index: -1; /* ✅ 額外保險：確保在內容下方 */
 }
 
 @keyframes borderFlow {
