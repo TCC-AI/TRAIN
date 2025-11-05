@@ -159,6 +159,7 @@ body::before {
   mask-composite: exclude;
   opacity: 0.6;
   animation: borderFlow 3s ease-in-out infinite;
+  pointer-events: none; /* ✅ 加入這行！讓點擊穿透 */
 }
 
 @keyframes borderFlow {
