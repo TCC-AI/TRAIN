@@ -1892,6 +1892,19 @@ body::before {
   .navbar-user-info {
     text-align: left;
   }
+  /* 手機 (最大 768px) */
+@media (max-width: 768px) {
+  /* 隱藏 Logo 圖片 */
+  .navbar-brand img {
+    display: none;
+  }
+  
+  /* 隱藏歡迎圖片 */
+  .dashboard-header img {
+    display: none;
+  }
+}
+
   
   /* 儀錶板 */
   .dashboard-header {
