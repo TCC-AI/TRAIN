@@ -1894,16 +1894,18 @@ body::before {
   }
 /* 手機 (最大 768px) */
 @media (max-width: 768px) {
-  /* 隱藏歡迎圖片 */
+  /* 調整歡迎圖片大小 */
   .dashboard-header img {
-    display: none;
+    max-height: 120px !important; /* 縮小到 120px */
   }
   
   /* 調整文字區塊 */
   .dashboard-header {
     flex-direction: column !important;
+    text-align: center; /* 文字置中 */
   }
 }
+
 
 
   
