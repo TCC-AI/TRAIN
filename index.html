@@ -1892,18 +1892,19 @@ body::before {
   .navbar-user-info {
     text-align: left;
   }
-  /* 手機 (最大 768px) */
+/* 手機 (最大 768px) */
 @media (max-width: 768px) {
-  /* 隱藏 Logo 圖片 */
-  .navbar-brand img {
-    display: none;
-  }
-  
   /* 隱藏歡迎圖片 */
   .dashboard-header img {
     display: none;
   }
+  
+  /* 調整文字區塊 */
+  .dashboard-header {
+    flex-direction: column !important;
+  }
 }
+
 
   
   /* 儀錶板 */
@@ -2313,13 +2314,14 @@ body::before {
       
       <!-- ==================== 儀錶板頁面 ==================== -->
      <div id="dashboardPage" class="page-section active">
-  <div class="dashboard-header" style="position: relative;">
-    <div>
+  <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
+    <div style="flex: 1;">
       <h1 class="dashboard-welcome">歡迎回來,<span id="welcomeName"></span>!</h1>
       <p class="dashboard-subtitle">繼續您的學習旅程</p>
     </div>
-    <img src="R1.png" alt="Welcome" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); width: 200px; height: 200px; object-fit: contain;">
+    <img src="R1.png" alt="Welcome" style="height: 100%; max-height: 200px; width: auto; object-fit: contain; flex-shrink: 0;">
   </div>
+
 
         <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()" title="重新整理">
     <i class="fas fa-sync-alt"></i> 重新整理
