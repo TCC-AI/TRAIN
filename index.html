@@ -1263,7 +1263,424 @@ body::before {
     .result-detail-item:last-child {
       border-bottom: none;
     }
-    
+    /* ==================== Sophia學習沙龍樣式 ==================== */
+
+.sophia-header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sophia-filters {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+#customDateRange {
+  display: flex;
+  gap: 10px;
+}
+
+.sophia-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.sophia-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.sophia-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.sophia-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  transition: all 0.3s;
+}
+
+.sophia-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.sophia-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.sophia-card .card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sophia-card .card-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.sophia-card .card-body {
+  padding: 20px;
+}
+
+/* 停留時間分析 */
+.time-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.time-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: var(--gray-50);
+  border-radius: 10px;
+  transition: all 0.3s;
+}
+
+.time-stat-item:hover {
+  background: var(--gray-100);
+  transform: translateX(5px);
+}
+
+.time-stat-item .stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+}
+
+.time-stat-item .stat-info {
+  flex: 1;
+}
+
+.time-stat-item .stat-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 5px;
+}
+
+.time-stat-item .stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 排行榜標籤 */
+.ranking-tabs {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  background: white;
+  padding: 5px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.ranking-tab {
+  flex: 1;
+  padding: 10px 20px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all 0.3s;
+}
+
+.ranking-tab:hover {
+  background: var(--gray-100);
+}
+
+.ranking-tab.active {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+/* 排行榜列表 */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: var(--gray-50);
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.ranking-item:hover {
+  background: var(--gray-100);
+  transform: translateX(5px);
+}
+
+.ranking-item .rank {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+}
+
+.ranking-item .rank.top1 {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+}
+
+.ranking-item .rank.top2 {
+  background: linear-gradient(135deg, #C0C0C0, #808080);
+}
+
+.ranking-item .rank.top3 {
+  background: linear-gradient(135deg, #CD7F32, #8B4513);
+}
+
+.ranking-item .rank.other {
+  background: var(--gray-400);
+}
+
+.ranking-item .course-name {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.ranking-item .value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+/* 學習成效報表 */
+.report-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.report-stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px;
+  background: var(--gray-50);
+  border-radius: 8px;
+}
+
+.report-stat-item .stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.report-stat-item .stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.comparison-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.comparison-badge.positive {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+}
+
+.comparison-badge.negative {
+  background: rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+}
+
+/* 學習建議 */
+.advice-container {
+  padding: 20px;
+  background: var(--gray-50);
+  border-radius: 10px;
+  min-height: 150px;
+}
+
+.loading-advice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.advice-content {
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.advice-content h4 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.advice-content ul {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.advice-content li {
+  margin-bottom: 8px;
+}
+
+/* 成就系統 */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.achievement-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  background: white;
+  border-radius: 15px;
+  box-shadow: var(--shadow-md);
+  border: 2px solid transparent;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-badge.unlocked {
+  border-color: var(--success-color);
+}
+
+.achievement-badge.locked {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+.achievement-badge:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-xl);
+}
+
+.achievement-badge .badge-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  background: var(--gradient-primary);
+}
+
+.achievement-badge .badge-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.achievement-badge .badge-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.achievement-badge .unlock-date {
+  font-size: 11px;
+  color: var(--success-color);
+  margin-top: 5px;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .sophia-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .sophia-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #customDateRange {
+    flex-direction: column;
+  }
+  
+  .ranking-tabs {
+    flex-direction: column;
+  }
+  
+  .report-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .achievements-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+
     /* ==================== 管理後台 ==================== */
     .admin-tabs {
       display: flex;
@@ -2311,6 +2728,10 @@ body::before {
           <div class="navbar-item" data-page="mylearning">
             <i class="fas fa-chart-line"></i> 我的學習
           </div>
+          <div class="navbar-item" data-page="sophia">
+            <i class="fas fa-chart-pie"></i> Sophia的學習沙龍
+          </div>
+
           <div class="navbar-item admin-only hidden" data-page="admin">
             <i class="fas fa-cog"></i> 管理後台
           </div>
@@ -2723,6 +3144,426 @@ body::before {
           </table>
         </div>
       </div>
+
+      <!-- ==================== Sophia學習沙龍頁面 ==================== -->
+<div id="sophiaPage" class="page-section">
+  
+  <!-- 頁面標題 -->
+  <div class="sophia-header">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <img src="R1.png" alt="Sophia" style="width: 80px; height: 80px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <div>
+        <h1 style="font-size: 32px; font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px;">
+          Sophia 學習沙龍 📊
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 16px;">
+          深入分析您的學習數據，發現成長軌跡
+        </p>
+      </div>
+    </div>
+    
+    <!-- 時間範圍篩選器 -->
+    <div class="sophia-filters">
+      <div class="filter-group">
+        <label><i class="fas fa-calendar-alt"></i> 時間範圍</label>
+        <select id="sophiaTimeRange" onchange="loadSophiaData()">
+          <option value="3months">最近 3 個月</option>
+          <option value="1month">最近 1 個月</option>
+          <option value="6months">最近 6 個月</option>
+          <option value="1year">最近 1 年</option>
+          <option value="custom">自訂範圍</option>
+        </select>
+      </div>
+      
+      <!-- 自訂時間範圍 -->
+      <div id="customDateRange" style="display: none; gap: 10px;">
+        <div class="filter-group">
+          <label>開始日期</label>
+          <input type="date" id="sophiaStartDate">
+        </div>
+        <div class="filter-group">
+          <label>結束日期</label>
+          <input type="date" id="sophiaEndDate">
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="loadSophiaData()">
+          <i class="fas fa-search"></i> 查詢
+        </button>
+      </div>
+      
+      <button class="btn btn-secondary btn-sm" onclick="loadSophiaData()" title="重新整理">
+        <i class="fas fa-sync-alt"></i> 重新整理
+      </button>
+    </div>
+  </div>
+  
+  <!-- 儀錶板容器 -->
+  <div class="sophia-dashboard">
+    
+    <!-- 第一排：個人學習行為分析 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-user-chart"></i> 個人學習行為分析
+      </h2>
+      
+      <div class="sophia-grid">
+        <!-- 觀看時段分析 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-clock"></i> 觀看時段分析</h3>
+            <span class="card-badge">趨勢</span>
+          </div>
+          <div class="card-body">
+            <canvas id="watchTimeChart"></canvas>
+          </div>
+        </div>
+        
+        <!-- 停留時間分析 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-hourglass-half"></i> 停留時間分析</h3>
+            <span class="card-badge">統計</span>
+          </div>
+          <div class="card-body">
+            <div class="time-stats">
+              <div class="time-stat-item">
+                <div class="stat-icon" style="background: var(--gradient-primary);">
+                  <i class="fas fa-play"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-label">總停留時間</div>
+                  <div class="stat-value" id="totalStayTime">0 小時</div>
+                </div>
+              </div>
+              
+              <div class="time-stat-item">
+                <div class="stat-icon" style="background: var(--gradient-success);">
+                  <i class="fas fa-check"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-label">有效學習時間</div>
+                  <div class="stat-value" id="effectiveTime">0 小時</div>
+                </div>
+              </div>
+              
+              <div class="time-stat-item">
+                <div class="stat-icon" style="background: var(--gradient-warning);">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-label">平均每次學習時長</div>
+                  <div class="stat-value" id="avgSessionTime">0 分鐘</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 學習習慣分析 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-calendar-week"></i> 學習習慣分析</h3>
+            <span class="card-badge">習慣</span>
+          </div>
+          <div class="card-body">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div>
+                <canvas id="weekdayChart"></canvas>
+                <p style="text-align: center; margin-top: 10px; color: var(--text-secondary); font-size: 13px;">
+                  最常學習的星期幾
+                </p>
+              </div>
+              <div>
+                <canvas id="courseTypeChart"></canvas>
+                <p style="text-align: center; margin-top: 10px; color: var(--text-secondary); font-size: 13px;">
+                  最常學習的課程類型
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第二排：課程熱門度排行 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-fire"></i> 課程熱門度排行
+      </h2>
+      
+      <!-- 時間範圍切換 -->
+      <div class="ranking-tabs">
+        <button class="ranking-tab active" data-period="week" onclick="switchRankingPeriod('week')">
+          本週
+        </button>
+        <button class="ranking-tab" data-period="month" onclick="switchRankingPeriod('month')">
+          本月
+        </button>
+        <button class="ranking-tab" data-period="quarter" onclick="switchRankingPeriod('quarter')">
+          本季
+        </button>
+        <button class="ranking-tab" data-period="year" onclick="switchRankingPeriod('year')">
+          本年
+        </button>
+      </div>
+      
+      <div class="sophia-grid">
+        <!-- 觀看次數排行 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-eye"></i> 觀看次數排行</h3>
+            <span class="card-badge">TOP 10</span>
+          </div>
+          <div class="card-body">
+            <div id="viewCountRanking" class="ranking-list"></div>
+          </div>
+        </div>
+        
+        <!-- 完成率排行 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-check-circle"></i> 完成率排行</h3>
+            <span class="card-badge">TOP 10</span>
+          </div>
+          <div class="card-body">
+            <div id="completionRateRanking" class="ranking-list"></div>
+          </div>
+        </div>
+        
+        <!-- 平均分數排行 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-star"></i> 平均分數排行</h3>
+            <span class="card-badge">TOP 10</span>
+          </div>
+          <div class="card-body">
+            <div id="avgScoreRanking" class="ranking-list"></div>
+          </div>
+        </div>
+        
+        <!-- 學習時長排行 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-clock"></i> 學習時長排行</h3>
+            <span class="card-badge">TOP 10</span>
+          </div>
+          <div class="card-body">
+            <div id="studyTimeRanking" class="ranking-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第三排：學習成效報表 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-chart-bar"></i> 學習成效報表
+      </h2>
+      
+      <div class="sophia-grid">
+        <!-- 學習時數統計 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-clock"></i> 學習時數統計</h3>
+            <div class="comparison-badge" id="timeComparison">
+              <i class="fas fa-arrow-up"></i> +0%
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="report-stats">
+              <div class="report-stat-item">
+                <span class="stat-label">總時數</span>
+                <span class="stat-value" id="reportTotalHours">0 小時</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">平均每日時數</span>
+                <span class="stat-value" id="reportAvgDailyHours">0 小時</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">與上月比較</span>
+                <span class="stat-value" id="reportMonthComparison">-</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">與部門平均比較</span>
+                <span class="stat-value" id="reportDeptComparison">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 課程完成數 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-check-double"></i> 課程完成數</h3>
+            <div class="comparison-badge" id="courseComparison">
+              <i class="fas fa-arrow-up"></i> +0%
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="report-stats">
+              <div class="report-stat-item">
+                <span class="stat-label">已完成</span>
+                <span class="stat-value" id="reportCompleted">0 門</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">進行中</span>
+                <span class="stat-value" id="reportInProgress">0 門</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">未開始</span>
+                <span class="stat-value" id="reportNotStarted">0 門</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">必修完成率</span>
+                <span class="stat-value" id="reportRequiredRate">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 測驗成績統計 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-graduation-cap"></i> 測驗成績統計</h3>
+          </div>
+          <div class="card-body">
+            <div class="report-stats">
+              <div class="report-stat-item">
+                <span class="stat-label">平均分數</span>
+                <span class="stat-value" id="reportAvgScore">0 分</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">及格率</span>
+                <span class="stat-value" id="reportPassRate">0%</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">最高分</span>
+                <span class="stat-value" id="reportMaxScore">0 分</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">最低分</span>
+                <span class="stat-value" id="reportMinScore">0 分</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 點數累積 -->
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-trophy"></i> 點數累積</h3>
+            <div class="comparison-badge" id="pointsComparison">
+              <i class="fas fa-arrow-up"></i> +0%
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="report-stats">
+              <div class="report-stat-item">
+                <span class="stat-label">本月獲得點數</span>
+                <span class="stat-value" id="reportMonthPoints">0 點</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">累積總點數</span>
+                <span class="stat-value" id="reportTotalPoints">0 點</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">公司排名</span>
+                <span class="stat-value" id="reportRanking">-</span>
+              </div>
+              <div class="report-stat-item">
+                <span class="stat-label">部門排名</span>
+                <span class="stat-value" id="reportDeptRanking">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第四排：學習建議 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-lightbulb"></i> Sophia 的學習建議
+      </h2>
+      
+      <div class="sophia-card">
+        <div class="card-body">
+          <div id="learningAdvice" class="advice-container">
+            <div class="loading-advice">
+              <i class="fas fa-spinner fa-spin"></i> Sophia 正在分析您的學習數據...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 第五排：成就系統 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-medal"></i> 學習成就
+      </h2>
+      
+      <div class="achievements-grid" id="achievementsGrid">
+        <!-- 成就徽章將動態載入 -->
+      </div>
+    </div>
+    
+    <!-- 第六排：月報/季報生成 -->
+    <div class="sophia-section">
+      <h2 class="section-title">
+        <i class="fas fa-file-alt"></i> 報表生成
+      </h2>
+      
+      <div class="sophia-grid">
+        <div class="sophia-card">
+          <div class="card-header">
+            <h3><i class="fas fa-user"></i> 個人月報</h3>
+          </div>
+          <div class="card-body">
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">
+              生成您的個人學習月報，並寄送到您的 Email
+            </p>
+            <button class="btn btn-primary" onclick="generatePersonalMonthlyReport()">
+              <i class="fas fa-file-pdf"></i> 生成個人月報
+            </button>
+          </div>
+        </div>
+        
+        <div class="sophia-card dept-only">
+          <div class="card-header">
+            <h3><i class="fas fa-users"></i> 部門月報</h3>
+            <span class="card-badge">s2+</span>
+          </div>
+          <div class="card-body">
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">
+              生成部門整體學習月報（需要 s2 以上權限）
+            </p>
+            <button class="btn btn-secondary" onclick="generateDepartmentMonthlyReport()">
+              <i class="fas fa-file-pdf"></i> 生成部門月報
+            </button>
+          </div>
+        </div>
+        
+        <div class="sophia-card admin-only">
+          <div class="card-header">
+            <h3><i class="fas fa-building"></i> 公司季報</h3>
+            <span class="card-badge">s4</span>
+          </div>
+          <div class="card-body">
+            <p style="color: var(--text-secondary); margin-bottom: 15px;">
+              生成全公司學習季報（需要 s4 權限）
+            </p>
+            <button class="btn btn-warning" onclick="generateCompanyQuarterlyReport()">
+              <i class="fas fa-file-pdf"></i> 生成公司季報
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+  
+</div>
+
 
       <!-- ==================== 管理後台頁面 ==================== -->
       <div id="adminPage" class="page-section">
@@ -3354,9 +4195,6 @@ body::before {
   </div>
 </div>
 
-
-
-  <!-- ==================== JavaScript ==================== -->
   <script>
     // ==================== 過濾 Chrome 擴充功能錯誤 ====================
 (function() {
@@ -3378,7 +4216,7 @@ body::before {
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbzwW0BMkQfOfCv2_yFep_5MZ7IVmcJK0Usk7Oy4bcsM37beCeeocvwZxCYVIDOX8x88iw/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbz-RqdE23FHhysABfvjOwnn3bbzjXhEOUO3BfSa87F90DMnIZLN9ZcTfOe4LWFPyRHsew/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -6244,6 +7082,682 @@ function toggleLearningRecords() {
         showAlert('載入課門選項失敗', 'error');
       }
     }
+
+    // ==========================================
+// Sophia學習沙龍 - JavaScript 函數
+// ==========================================
+
+/**
+ * 當前選擇的排行榜時間範圍
+ */
+let currentRankingPeriod = 'week';
+
+/**
+ * 導航到 Sophia 頁面
+ */
+function navigateToSophia() {
+  navigateToPage('sophia');
+  loadSophiaData();
+}
+
+/**
+ * 載入 Sophia 頁面資料
+ */
+async function loadSophiaData() {
+  try {
+    Logger.log('=== loadSophiaData ===');
+    
+    showLoading();
+    
+    // 取得時間範圍
+    const timeRange = getTimeRange();
+    
+    Logger.log('時間範圍:', timeRange);
+    
+    // 並行載入所有資料
+    const [
+      behaviorData,
+      rankingData,
+      reportData,
+      achievementsData
+    ] = await Promise.all([
+      callAPI('getSophiaBehaviorData', timeRange),
+      callAPI('getSophiaRankingData', { period: currentRankingPeriod }),
+      callAPI('getSophiaReportData', timeRange),
+      callAPI('getSophiaAchievements', {})
+    ]);
+    
+    hideLoading();
+    
+    // 渲染各個區塊
+    if (behaviorData && behaviorData.success) {
+      renderBehaviorAnalysis(behaviorData.data);
+    }
+    
+    if (rankingData && rankingData.success) {
+      renderRankings(rankingData.data);
+    }
+    
+    if (reportData && reportData.success) {
+      renderReport(reportData.data);
+    }
+    
+    if (achievementsData && achievementsData.success) {
+      renderAchievements(achievementsData.data);
+    }
+    
+    // 生成學習建議
+    generateLearningAdvice(reportData.data);
+    
+  } catch(error) {
+    console.error('❌ loadSophiaData 失敗:', error);
+    hideLoading();
+    showAlert('載入資料失敗', 'error');
+  }
+}
+
+/**
+ * 取得時間範圍
+ */
+function getTimeRange() {
+  const timeRangeSelect = document.getElementById('sophiaTimeRange');
+  const selectedRange = timeRangeSelect.value;
+  
+  const now = new Date();
+  let startDate, endDate;
+  
+  switch(selectedRange) {
+    case '1month':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+      endDate = now;
+      break;
+      
+    case '3months':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+      endDate = now;
+      break;
+      
+    case '6months':
+      startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+      endDate = now;
+      break;
+      
+    case '1year':
+      startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+      endDate = now;
+      break;
+      
+    case 'custom':
+      const startInput = document.getElementById('sophiaStartDate').value;
+      const endInput = document.getElementById('sophiaEndDate').value;
+      
+      if (!startInput || !endInput) {
+        showAlert('請選擇開始和結束日期', 'warning');
+        return null;
+      }
+      
+      startDate = new Date(startInput);
+      endDate = new Date(endInput);
+      break;
+      
+    default:
+      startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+      endDate = now;
+  }
+  
+  return {
+    startDate: formatDate(startDate),
+    endDate: formatDate(endDate)
+  };
+}
+
+/**
+ * 渲染個人學習行為分析
+ */
+function renderBehaviorAnalysis(data) {
+  console.log('=== renderBehaviorAnalysis ===');
+  console.log('data:', data);
+  
+  // 1. 觀看時段分析（折線圖）
+  renderWatchTimeChart(data.watchTimeData);
+  
+  // 2. 停留時間分析
+  document.getElementById('totalStayTime').textContent = formatHours(data.totalStayTime);
+  document.getElementById('effectiveTime').textContent = formatHours(data.effectiveTime);
+  document.getElementById('avgSessionTime').textContent = formatMinutes(data.avgSessionTime);
+  
+  // 3. 學習習慣分析
+  renderWeekdayChart(data.weekdayData);
+  renderCourseTypeChart(data.courseTypeData);
+}
+
+/**
+ * 繪製觀看時段分析圖表
+ */
+function renderWatchTimeChart(data) {
+  const ctx = document.getElementById('watchTimeChart');
+  
+  if (window.watchTimeChartInstance) {
+    window.watchTimeChartInstance.destroy();
+  }
+  
+  window.watchTimeChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        label: '每日觀看時數（小時）',
+        data: data.values,
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 8,
+        pointBackgroundColor: '#2563eb',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          padding: 12,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          callbacks: {
+            label: function(context) {
+              return '觀看時數: ' + context.parsed.y.toFixed(1) + ' 小時';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return value + ' 小時';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 繪製星期幾分析圖表
+ */
+function renderWeekdayChart(data) {
+  const ctx = document.getElementById('weekdayChart');
+  
+  if (window.weekdayChartInstance) {
+    window.weekdayChartInstance.destroy();
+  }
+  
+  window.weekdayChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        backgroundColor: [
+          '#ef4444',
+          '#f59e0b',
+          '#10b981',
+          '#06b6d4',
+          '#6366f1',
+          '#8b5cf6',
+          '#ec4899'
+        ],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 10,
+            font: { size: 11 }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed / total) * 100).toFixed(1);
+              return context.label + ': ' + context.parsed + ' 次 (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 繪製課程類型分析圖表
+ */
+function renderCourseTypeChart(data) {
+  const ctx = document.getElementById('courseTypeChart');
+  
+  if (window.courseTypeChartInstance) {
+    window.courseTypeChartInstance.destroy();
+  }
+  
+  window.courseTypeChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: data.labels,
+      datasets: [{
+        data: data.values,
+        backgroundColor: [
+          '#2563eb',
+          '#10b981',
+          '#f59e0b',
+          '#ef4444',
+          '#8b5cf6',
+          '#06b6d4'
+        ],
+        borderWidth: 2,
+        borderColor: '#fff'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            padding: 10,
+            font: { size: 11 }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((context.parsed / total) * 100).toFixed(1);
+              return context.label + ': ' + context.parsed + ' 次 (' + percentage + '%)';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+/**
+ * 切換排行榜時間範圍
+ */
+function switchRankingPeriod(period) {
+  currentRankingPeriod = period;
+  
+  // 更新標籤樣式
+  document.querySelectorAll('.ranking-tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.dataset.period === period) {
+      tab.classList.add('active');
+    }
+  });
+  
+  // 重新載入排行榜
+  loadRankingData();
+}
+
+/**
+ * 載入排行榜資料
+ */
+async function loadRankingData() {
+  try {
+    showLoading();
+    
+    const result = await callAPI('getSophiaRankingData', { 
+      period: currentRankingPeriod 
+    });
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      renderRankings(result.data);
+    }
+  } catch(error) {
+    console.error('❌ loadRankingData 失敗:', error);
+    hideLoading();
+  }
+}
+
+/**
+ * 渲染排行榜
+ */
+function renderRankings(data) {
+  console.log('=== renderRankings ===');
+  console.log('data:', data);
+  
+  // 1. 觀看次數排行
+  renderRankingList('viewCountRanking', data.viewCount, (item) => item.count + ' 次');
+  
+  // 2. 完成率排行
+  renderRankingList('completionRateRanking', data.completionRate, (item) => item.rate + '%');
+  
+  // 3. 平均分數排行
+  renderRankingList('avgScoreRanking', data.avgScore, (item) => item.score + ' 分');
+  
+  // 4. 學習時長排行
+  renderRankingList('studyTimeRanking', data.studyTime, (item) => formatHours(item.hours));
+}
+
+/**
+ * 渲染單個排行榜列表
+ */
+function renderRankingList(containerId, data, valueFormatter) {
+  const container = document.getElementById(containerId);
+  
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">暫無資料</p>';
+    return;
+  }
+  
+  container.innerHTML = data.map((item, index) => {
+    const rank = index + 1;
+    let rankClass = 'other';
+    
+    if (rank === 1) rankClass = 'top1';
+    else if (rank === 2) rankClass = 'top2';
+    else if (rank === 3) rankClass = 'top3';
+    
+    return `
+      <div class="ranking-item">
+        <div class="rank ${rankClass}">${rank}</div>
+        <div class="course-name">${item.courseName}</div>
+        <div class="value">${valueFormatter(item)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * 渲染學習成效報表
+ */
+function renderReport(data) {
+  console.log('=== renderReport ===');
+  console.log('data:', data);
+  
+  // 1. 學習時數統計
+  document.getElementById('reportTotalHours').textContent = formatHours(data.totalHours);
+  document.getElementById('reportAvgDailyHours').textContent = formatHours(data.avgDailyHours);
+  document.getElementById('reportMonthComparison').textContent = formatComparison(data.monthComparison);
+  document.getElementById('reportDeptComparison').textContent = formatComparison(data.deptComparison);
+  
+  // 更新比較徽章
+  updateComparisonBadge('timeComparison', data.monthComparison);
+  
+  // 2. 課程完成數
+  document.getElementById('reportCompleted').textContent = data.completed + ' 門';
+  document.getElementById('reportInProgress').textContent = data.inProgress + ' 門';
+  document.getElementById('reportNotStarted').textContent = data.notStarted + ' 門';
+  document.getElementById('reportRequiredRate').textContent = data.requiredRate + '%';
+  
+  updateComparisonBadge('courseComparison', data.courseComparison);
+  
+  // 3. 測驗成績統計
+  document.getElementById('reportAvgScore').textContent = data.avgScore + ' 分';
+  document.getElementById('reportPassRate').textContent = data.passRate + '%';
+  document.getElementById('reportMaxScore').textContent = data.maxScore + ' 分';
+  document.getElementById('reportMinScore').textContent = data.minScore + ' 分';
+  
+  // 4. 點數累積
+  document.getElementById('reportMonthPoints').textContent = data.monthPoints + ' 點';
+  document.getElementById('reportTotalPoints').textContent = data.totalPoints + ' 點';
+  document.getElementById('reportRanking').textContent = data.ranking ? '第 ' + data.ranking + ' 名' : '-';
+  document.getElementById('reportDeptRanking').textContent = data.deptRanking ? '第 ' + data.deptRanking + ' 名' : '-';
+  
+  updateComparisonBadge('pointsComparison', data.pointsComparison);
+}
+
+/**
+ * 更新比較徽章
+ */
+function updateComparisonBadge(badgeId, value) {
+  const badge = document.getElementById(badgeId);
+  
+  if (value > 0) {
+    badge.className = 'comparison-badge positive';
+    badge.innerHTML = '<i class="fas fa-arrow-up"></i> +' + value + '%';
+  } else if (value < 0) {
+    badge.className = 'comparison-badge negative';
+    badge.innerHTML = '<i class="fas fa-arrow-down"></i> ' + value + '%';
+  } else {
+    badge.className = 'comparison-badge';
+    badge.innerHTML = '<i class="fas fa-minus"></i> 0%';
+  }
+}
+
+/**
+ * 生成學習建議（使用 ChatGPT API）
+ */
+async function generateLearningAdvice(reportData) {
+  try {
+    console.log('=== generateLearningAdvice ===');
+    
+    const adviceContainer = document.getElementById('learningAdvice');
+    adviceContainer.innerHTML = '<div class="loading-advice"><i class="fas fa-spinner fa-spin"></i> Sophia 正在分析您的學習數據...</div>';
+    
+    // 呼叫後端 API 生成建議
+    const result = await callAPI('generateLearningAdvice', {
+      reportData: JSON.stringify(reportData)
+    });
+    
+    if (result && result.success) {
+      adviceContainer.innerHTML = '<div class="advice-content">' + result.data.advice + '</div>';
+    } else {
+      adviceContainer.innerHTML = '<div class="advice-content"><p>⚠️ 無法生成學習建議，請稍後再試。</p></div>';
+    }
+    
+  } catch(error) {
+    console.error('❌ generateLearningAdvice 失敗:', error);
+    document.getElementById('learningAdvice').innerHTML = '<div class="advice-content"><p>⚠️ 無法生成學習建議，請稍後再試。</p></div>';
+  }
+}
+
+/**
+ * 渲染成就系統
+ */
+function renderAchievements(data) {
+  console.log('=== renderAchievements ===');
+  console.log('data:', data);
+  
+  const container = document.getElementById('achievementsGrid');
+  
+  if (!data || data.length === 0) {
+    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px; grid-column: 1/-1;">暫無成就</p>';
+    return;
+  }
+  
+  container.innerHTML = data.map(achievement => {
+    const isUnlocked = achievement.unlocked;
+    const badgeClass = isUnlocked ? 'unlocked' : 'locked';
+    
+    return `
+      <div class="achievement-badge ${badgeClass}">
+        <div class="badge-icon" style="background: ${achievement.color};">
+          <i class="${achievement.icon}"></i>
+        </div>
+        <div class="badge-name">${achievement.name}</div>
+        <div class="badge-desc">${achievement.description}</div>
+        ${isUnlocked ? '<div class="unlock-date">✅ ' + achievement.unlockDate + '</div>' : '<div class="unlock-date">🔒 尚未解鎖</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+/**
+ * 生成個人月報
+ */
+async function generatePersonalMonthlyReport() {
+  try {
+    if (!confirm('確定要生成個人月報並寄送到您的 Email 嗎？')) {
+      return;
+    }
+    
+    showLoading();
+    
+    const result = await callAPI('generatePersonalMonthlyReport', {});
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      showAlert('個人月報已生成並寄送到您的 Email！', 'success');
+    } else {
+      showAlert(result?.message || '生成失敗', 'error');
+    }
+    
+  } catch(error) {
+    console.error('❌ generatePersonalMonthlyReport 失敗:', error);
+    hideLoading();
+    showAlert('生成失敗', 'error');
+  }
+}
+
+/**
+ * 生成部門月報
+ */
+async function generateDepartmentMonthlyReport() {
+  try {
+    if (!checkPermission(sessionToken, PERMISSION_LEVELS.DEPT_MANAGER)) {
+      showAlert('您沒有權限生成部門月報（需要 s2 以上權限）', 'error');
+      return;
+    }
+    
+    if (!confirm('確定要生成部門月報並寄送到您的 Email 嗎？')) {
+      return;
+    }
+    
+    showLoading();
+    
+    const result = await callAPI('generateDepartmentMonthlyReport', {});
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      showAlert('部門月報已生成並寄送到您的 Email！', 'success');
+    } else {
+      showAlert(result?.message || '生成失敗', 'error');
+    }
+    
+  } catch(error) {
+    console.error('❌ generateDepartmentMonthlyReport 失敗:', error);
+    hideLoading();
+    showAlert('生成失敗', 'error');
+  }
+}
+
+/**
+ * 生成公司季報
+ */
+async function generateCompanyQuarterlyReport() {
+  try {
+    if (!checkPermission(sessionToken, PERMISSION_LEVELS.ADMIN)) {
+      showAlert('您沒有權限生成公司季報（需要 s4 權限）', 'error');
+      return;
+    }
+    
+    if (!confirm('確定要生成公司季報並寄送到您的 Email 嗎？')) {
+      return;
+    }
+    
+    showLoading();
+    
+    const result = await callAPI('generateCompanyQuarterlyReport', {});
+    
+    hideLoading();
+    
+    if (result && result.success) {
+      showAlert('公司季報已生成並寄送到您的 Email！', 'success');
+    } else {
+      showAlert(result?.message || '生成失敗', 'error');
+    }
+    
+  } catch(error) {
+    console.error('❌ generateCompanyQuarterlyReport 失敗:', error);
+    hideLoading();
+    showAlert('生成失敗', 'error');
+  }
+}
+
+/**
+ * 格式化小時數
+ */
+function formatHours(hours) {
+  if (!hours || hours === 0) return '0 小時';
+  
+  if (hours < 1) {
+    return Math.round(hours * 60) + ' 分鐘';
+  }
+  
+  return hours.toFixed(1) + ' 小時';
+}
+
+/**
+ * 格式化分鐘數
+ */
+function formatMinutes(minutes) {
+  if (!minutes || minutes === 0) return '0 分鐘';
+  
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    return hours + ' 小時 ' + mins + ' 分鐘';
+  }
+  
+  return Math.round(minutes) + ' 分鐘';
+}
+
+/**
+ * 格式化比較百分比
+ */
+function formatComparison(value) {
+  if (value > 0) {
+    return '↑ +' + value + '%';
+  } else if (value < 0) {
+    return '↓ ' + value + '%';
+  } else {
+    return '→ 0%';
+  }
+}
+
+/**
+ * 監聽時間範圍選擇器
+ */
+document.addEventListener('DOMContentLoaded', function() {
+  const timeRangeSelect = document.getElementById('sophiaTimeRange');
+  
+  if (timeRangeSelect) {
+    timeRangeSelect.addEventListener('change', function() {
+      const customDateRange = document.getElementById('customDateRange');
+      
+      if (this.value === 'custom') {
+        customDateRange.style.display = 'flex';
+      } else {
+        customDateRange.style.display = 'none';
+        loadSophiaData();
+      }
+    });
+  }
+});
 
     // ==================== 管理後台 ==================== 
     function switchAdminTab(tabName) {
