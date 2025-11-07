@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -4247,7 +4248,7 @@ function formatDateTime(date) {
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbzHTiWDxWNcGrZlrdTQA6eUcaTGNDbqix762XX5Naex5EuUMdWdlMhBxZJeiU-iDSodhQ/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwGmaVFEixjry7BySdlt8VVzT7UjcvvEd0mZiCl280PY_qtpZAKiSd0WJggYS3Fa9LlEA/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -7156,7 +7157,7 @@ function navigateToSophia() {
 }
 
 /**
- * 載入 Sophia 頁面資料（整合版）
+ * 載入 Sophia 頁面資料
  */
 async function loadSophiaData() {
   try {
@@ -7174,50 +7175,50 @@ async function loadSophiaData() {
     
     console.log('時間範圍:', timeRange);
     
-    // ✅ 1. 取得學習行為資料
-    const behaviorData = await getSophiaBehaviorData(
-      timeRange.startDate, 
-      timeRange.endDate
-    );
-    
-    if (behaviorData) {
-      console.log('✅ 學習行為資料:', behaviorData);
-      renderBehaviorAnalysis(behaviorData);
-    } else {
-      console.error('❌ 無法取得學習行為資料');
-    }
-    
-    // ✅ 2. 取得學習進度
-    const progressData = await getSophiaLearningProgress();
-    
-    if (progressData) {
-      console.log('✅ 學習進度:', progressData);
-      renderLearningProgress(progressData);
-    } else {
-      console.error('❌ 無法取得學習進度');
-    }
-    
-    // ✅ 3. 取得課程排行榜
-    const rankingData = await getSophiaCourseRanking('month', 'viewCount');
-    
-    if (rankingData) {
-      console.log('✅ 課程排行榜:', rankingData);
-      renderCourseRanking(rankingData);
-    } else {
-      console.error('❌ 無法取得課程排行榜');
-    }
-    
-    // ✅ 4. 取得成就
-    const achievementsData = await getSophiaAchievements();
-    
-    if (achievementsData) {
-      console.log('✅ 成就資料:', achievementsData);
-      renderAchievements(achievementsData);
-    } else {
-      console.error('❌ 無法取得成就資料');
-    }
+    // ✅ 並行載入所有資料
+    const [
+      behaviorData,
+      rankingData,
+      reportData,
+      achievementsData
+    ] = await Promise.all([
+      callAPI('getSophiaBehaviorData', {
+        startDate: timeRange.startDate,
+        endDate: timeRange.endDate
+      }),
+      callAPI('getSophiaRankingData', { 
+        period: currentRankingPeriod 
+      }),
+      callAPI('getSophiaReportData', {
+        startDate: timeRange.startDate,
+        endDate: timeRange.endDate
+      }),
+      callAPI('getSophiaAchievements', {})
+    ]);
     
     hideLoading();
+    
+    // ✅ 渲染各個區塊
+    if (behaviorData && behaviorData.success) {
+      renderBehaviorAnalysis(behaviorData.data);
+    }
+    
+    if (rankingData && rankingData.success) {
+      renderRankings(rankingData.data);
+    }
+    
+    if (reportData && reportData.success) {
+      renderReport(reportData.data);
+    }
+    
+    if (achievementsData && achievementsData.success) {
+      renderAchievements(achievementsData.data);
+    }
+    
+    // ✅ 生成學習建議
+    if (reportData && reportData.success) {
+      generateLearningAdviceUI(reportData.data);
+    }
     
   } catch(error) {
     console.error('❌ loadSophiaData 失敗:', error);
@@ -7225,7 +7226,6 @@ async function loadSophiaData() {
     showAlert('載入資料失敗', 'error');
   }
 }
-
 
 
 /**
@@ -7644,91 +7644,7 @@ async function generateLearningAdvice(reportData) {
     document.getElementById('learningAdvice').innerHTML = '<div class="advice-content"><p>⚠️ 無法生成學習建議，請稍後再試。</p></div>';
   }
 }
-// ==================== Sophia學習沙龍 - API 呼叫 ====================
 
-/**
- * 取得學習行為資料
- */
-async function getSophiaBehaviorData(startDate, endDate) {
-  try {
-    const result = await callAPI('getSophiaBehaviorData', {
-      startDate: startDate,
-      endDate: endDate
-    });
-    
-    if (result && result.success) {
-      return result.data;
-    } else {
-      console.error('取得學習行為資料失敗:', result?.message);
-      return null;
-    }
-  } catch(error) {
-    console.error('getSophiaBehaviorData 失敗:', error);
-    return null;
-  }
-}
-
-/**
- * 取得學習進度
- */
-async function getSophiaLearningProgress() {
-  try {
-    const result = await callAPI('getSophiaLearningProgress', {});
-    
-    if (result && result.success) {
-      return result.data;
-    } else {
-      console.error('取得學習進度失敗:', result?.message);
-      return null;
-    }
-  } catch(error) {
-    console.error('getSophiaLearningProgress 失敗:', error);
-    return null;
-  }
-}
-
-/**
- * 取得課程排行榜
- */
-async function getSophiaCourseRanking(period, rankType) {
-  try {
-    const result = await callAPI('getSophiaCourseRanking', {
-      period: period,
-      rankType: rankType
-    });
-    
-    if (result && result.success) {
-      return result.data;
-    } else {
-      console.error('取得課程排行榜失敗:', result?.message);
-      return null;
-    }
-  } catch(error) {
-    console.error('getSophiaCourseRanking 失敗:', error);
-    return null;
-  }
-}
-
-/**
- * 取得成就
- */
-async function getSophiaAchievements() {
-  try {
-    const result = await callAPI('getSophiaAchievements', {});
-    
-    if (result && result.success) {
-      return result.data;
-    } else {
-      console.error('取得成就失敗:', result?.message);
-      return null;
-    }
-  } catch(error) {
-    console.error('getSophiaAchievements 失敗:', error);
-    return null;
-  }
-}
-
-    
 /**
  * 渲染成就系統
  */
@@ -7914,72 +7830,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
-/**
- * 渲染學習進度
- */
-function renderLearningProgress(data) {
-  console.log('=== renderLearningProgress ===');
-  console.log('data:', data);
-  
-  if (!data || !data.summary) {
-    console.error('❌ 學習進度資料格式錯誤');
-    return;
-  }
-  
-  // 更新統計數字
-  const summary = data.summary;
-  
-  document.getElementById('reportCompleted').textContent = summary.completed + ' 門';
-  document.getElementById('reportInProgress').textContent = summary.inProgress + ' 門';
-  document.getElementById('reportNotStarted').textContent = summary.notStarted + ' 門';
-  document.getElementById('reportRequiredRate').textContent = summary.requiredRate + '%';
-  
-  console.log('✅ 學習進度渲染完成');
-}
-
-/**
- * 渲染課程排行榜
- */
-function renderCourseRanking(data) {
-  console.log('=== renderCourseRanking ===');
-  console.log('data:', data);
-  
-  if (!data || !data.ranking) {
-    console.error('❌ 課程排行榜資料格式錯誤');
-    return;
-  }
-  
-  const container = document.getElementById('viewCountRanking');
-  
-  if (!container) {
-    console.error('❌ 找不到排行榜容器');
-    return;
-  }
-  
-  if (data.ranking.length === 0) {
-    container.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 20px;">暫無資料</p>';
-    return;
-  }
-  
-  container.innerHTML = data.ranking.map((item, index) => {
-    const rank = index + 1;
-    let rankClass = 'other';
-    
-    if (rank === 1) rankClass = 'top1';
-    else if (rank === 2) rankClass = 'top2';
-    else if (rank === 3) rankClass = 'top3';
-    
-    return `
-      <div class="ranking-item">
-        <div class="rank ${rankClass}">${rank}</div>
-        <div class="course-name">${item.courseName}</div>
-        <div class="value">${item.viewCount} 次</div>
-      </div>
-    `;
-  }).join('');
-  
-  console.log('✅ 課程排行榜渲染完成');
-}
 
     // ==================== 管理後台 ==================== 
     function switchAdminTab(tabName) {
