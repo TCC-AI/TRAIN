@@ -2315,14 +2315,22 @@ body::before {
     <div class="main-content">
       
       <!-- ==================== 儀錶板頁面 ==================== -->
-     <div id="dashboardPage" class="page-section active">
+ <div id="dashboardPage" class="page-section active">
   <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
     <div style="flex: 1;">
       <h1 class="dashboard-welcome">嗨~歡迎回來,<span id="welcomeName"></span>!</h1>
       <p class="dashboard-subtitle">繼續您的昶青學習旅程</p>
     </div>
-    <img src="R1.png" alt="Welcome" style="height: 100%; max-height: 200px; width: auto; object-fit: contain; flex-shrink: 0;">
+    
+    <!-- ✅ 新增：圖片 + 文字容器 -->
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0;">
+      <img src="R1.png" alt="Welcome" style="max-height: 200px; width: auto; object-fit: contain;">
+      <div style="text-align: center; font-size: 14px; color: #6b7280; line-height: 1.5;">
+        昶青集團GAI智能職訓中心-數位主任<br>Sophia
+      </div>
+    </div>
   </div>
+
 
 
         <button class="btn btn-secondary btn-sm" onclick="refreshDashboard()" title="重新整理">
