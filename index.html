@@ -4196,6 +4196,37 @@ body::before {
 </div>
 
   <script>
+    /**
+ * 格式化日期為 YYYY-MM-DD
+ */
+function formatDate(date) {
+  if (!date) return '';
+  if (typeof date === 'string') date = new Date(date);
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * 格式化日期時間為 YYYY-MM-DD HH:MM:SS
+ */
+function formatDateTime(date) {
+  if (!date) return '';
+  if (typeof date === 'string') date = new Date(date);
+  
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
     // ==================== 過濾 Chrome 擴充功能錯誤 ====================
 (function() {
   const originalError = console.error;
@@ -4216,7 +4247,7 @@ body::before {
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbxvgjcpCwN3krRQ3GabJmB_6soNyZxFRtXF_0JIz7lCYdKXu4X-dL3nnJezCqH9QDnNGA/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbwMtDwP3YOncd3EiZaE7IPHiEn2Yv84VxFbMAPcQeQBC0oCKeivf08CnQLwwIciSTjoEA/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -6432,6 +6463,30 @@ async function updateProgressToServer(isComplete = false) {
       if (videoCheckInterval) clearInterval(videoCheckInterval);
       navigateToPage('courses');
     }
+/**
+ * 生成學習建議 UI
+ */
+async function generateLearningAdviceUI(reportData) {
+  try {
+    const adviceContainer = document.getElementById('learningAdvice');
+    adviceContainer.innerHTML = '<div class="loading-advice"><i class="fas fa-spinner fa-spin"></i> Sophia 正在分析您的學習數據...</div>';
+    
+    // ✅ 呼叫後端 API 生成建議
+    const result = await callAPI('generateLearningAdvice', {
+      reportData: JSON.stringify(reportData)
+    });
+    
+    if (result && result.success) {
+      adviceContainer.innerHTML = '<div class="advice-content">' + result.data.advice + '</div>';
+    } else {
+      adviceContainer.innerHTML = '<div class="advice-content"><p>⚠️ 無法生成學習建議，請稍後再試。</p></div>';
+    }
+    
+  } catch(error) {
+    console.error('❌ generateLearningAdviceUI 失敗:', error);
+    document.getElementById('learningAdvice').innerHTML = '<div class="advice-content"><p>⚠️ 無法生成學習建議，請稍後再試。</p></div>';
+  }
+}
 
 // ==================== 測驗 ==================== 
 
@@ -7109,27 +7164,40 @@ async function loadSophiaData() {
     
     showLoading();
     
-    // 取得時間範圍
+    // ✅ 取得時間範圍
     const timeRange = getTimeRange();
+    
+    if (!timeRange) {
+      hideLoading();
+      return;
+    }
     
     console.log('時間範圍:', timeRange);
     
-    // 並行載入所有資料
+    // ✅ 並行載入所有資料
     const [
       behaviorData,
       rankingData,
       reportData,
       achievementsData
     ] = await Promise.all([
-      callAPI('getSophiaBehaviorData', timeRange),
-      callAPI('getSophiaRankingData', { period: currentRankingPeriod }),
-      callAPI('getSophiaReportData', timeRange),
+      callAPI('getSophiaBehaviorData', {
+        startDate: timeRange.startDate,
+        endDate: timeRange.endDate
+      }),
+      callAPI('getSophiaRankingData', { 
+        period: currentRankingPeriod 
+      }),
+      callAPI('getSophiaReportData', {
+        startDate: timeRange.startDate,
+        endDate: timeRange.endDate
+      }),
       callAPI('getSophiaAchievements', {})
     ]);
     
     hideLoading();
     
-    // 渲染各個區塊
+    // ✅ 渲染各個區塊
     if (behaviorData && behaviorData.success) {
       renderBehaviorAnalysis(behaviorData.data);
     }
@@ -7146,8 +7214,10 @@ async function loadSophiaData() {
       renderAchievements(achievementsData.data);
     }
     
-    // 生成學習建議
-    generateLearningAdvice(reportData.data);
+    // ✅ 生成學習建議
+    if (reportData && reportData.success) {
+      generateLearningAdviceUI(reportData.data);
+    }
     
   } catch(error) {
     console.error('❌ loadSophiaData 失敗:', error);
@@ -7155,6 +7225,7 @@ async function loadSophiaData() {
     showAlert('載入資料失敗', 'error');
   }
 }
+
 
 /**
  * 取得時間範圍
