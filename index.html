@@ -2317,12 +2317,13 @@ body::before {
       <!-- ==================== 儀錶板頁面 ==================== -->
  <div id="dashboardPage" class="page-section active">
   <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; gap: 20px;">
-    <div style="flex: 1;">
+    <!-- ✅ 文字區塊（在左側空間中置中） -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;">
       <h1 class="dashboard-welcome">嗨~歡迎回來,<span id="welcomeName"></span>!</h1>
       <p class="dashboard-subtitle">繼續您的昶青學習旅程</p>
     </div>
     
-    <!-- ✅ 新增：圖片 + 文字容器 -->
+    <!-- ✅ 圖片 + 文字容器（保持在右側） -->
     <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0;">
       <img src="R1.png" alt="Welcome" style="max-height: 200px; width: auto; object-fit: contain;">
       <div style="text-align: center; font-size: 14px; color: #6b7280; line-height: 1.5;">
@@ -2330,6 +2331,7 @@ body::before {
       </div>
     </div>
   </div>
+
 
 
 
