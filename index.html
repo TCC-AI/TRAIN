@@ -4216,7 +4216,7 @@ body::before {
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbz-RqdE23FHhysABfvjOwnn3bbzjXhEOUO3BfSa87F90DMnIZLN9ZcTfOe4LWFPyRHsew/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbzyT9la9JWth9XaSVIj5PPhO7gEw42k2tbSw5rcFV2bu6B9VvOo9yD9E1Di9RffANmSaA/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -7105,14 +7105,14 @@ function navigateToSophia() {
  */
 async function loadSophiaData() {
   try {
-    Logger.log('=== loadSophiaData ===');
+    console.log('=== loadSophiaData ===');
     
     showLoading();
     
     // 取得時間範圍
     const timeRange = getTimeRange();
     
-    Logger.log('時間範圍:', timeRange);
+    console.log('時間範圍:', timeRange);
     
     // 並行載入所有資料
     const [
@@ -7626,7 +7626,7 @@ async function generatePersonalMonthlyReport() {
     }
     
   } catch(error) {
-    console.error('❌ generatePersonalMonthlyReport 失敗:', error);
+    console.error('❌ generatePersonalMonthlyReport 失敗:', error); 
     hideLoading();
     showAlert('生成失敗', 'error');
   }
