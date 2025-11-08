@@ -2664,6 +2664,93 @@ body::before {
   }
 }
 
+    /* ==================== 使用者下拉選單樣式 ==================== */
+
+/* 選單容器 */
+.user-menu-container {
+  position: relative;
+}
+
+/* 下拉選單 */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10000;
+}
+
+/* 顯示狀態 */
+.user-dropdown-menu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* 選單項目 */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background: var(--gray-100);
+  color: var(--primary-color);
+  transform: translateX(5px);
+}
+
+.dropdown-item i {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+/* 分隔線 */
+.dropdown-divider {
+  height: 1px;
+  background: var(--gray-200);
+  margin: 8px 0;
+}
+
+/* 登出按鈕調整 */
+.btn-logout {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* 手機版優化 */
+@media (max-width: 768px) {
+  .user-dropdown-menu {
+    min-width: 180px;
+    right: -10px;
+  }
+  
+  .dropdown-item {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+}
+
 
   </style>
 </head>
@@ -2740,22 +2827,35 @@ body::before {
           </div>
         </div>
         
- <div class="navbar-user">
+<div class="navbar-user">
   <div class="navbar-user-info">
     <div class="navbar-user-name" id="userName">使用者</div>
     <div class="navbar-user-dept" id="userDept">部門</div>
   </div>
   <div class="navbar-user-avatar" id="userAvatar">U</div>
   
-  <!-- ✅ 新增：修改密碼按鈕 -->
-  <button class="btn btn-warning btn-sm" onclick="showChangePasswordModal()" style="margin-right: 10px;">
-    <i class="fas fa-key"></i> 修改密碼
-  </button>
-  
-  <button class="btn-logout" onclick="logout()">
-    <i class="fas fa-sign-out-alt"></i> 登出
-  </button>
+  <!-- ✅ 新增：下拉選單容器 -->
+  <div class="user-menu-container">
+    <button class="btn-logout" onclick="toggleUserMenu(event)">
+      <i class="fas fa-sign-out-alt"></i> 登出
+      <i class="fas fa-chevron-down" style="margin-left: 5px; font-size: 12px;"></i>
+    </button>
+    
+    <!-- ✅ 下拉選單 -->
+    <div id="userDropdownMenu" class="user-dropdown-menu">
+      <div class="dropdown-item" onclick="showChangePasswordModal(); closeUserMenu();">
+        <i class="fas fa-key"></i>
+        <span>修改密碼</span>
+      </div>
+      <div class="dropdown-divider"></div>
+      <div class="dropdown-item" onclick="logout(); closeUserMenu();">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>登出</span>
+      </div>
+    </div>
+  </div>
 </div>
+
 
       </div>
     </nav>
@@ -9077,6 +9177,44 @@ function parseTargetAudienceFrontend(targetString) {
   
   return result;
 }
+
+    // ==================== 使用者下拉選單功能 ====================
+
+/**
+ * 切換下拉選單顯示/隱藏
+ */
+function toggleUserMenu(event) {
+  event.stopPropagation(); // 防止事件冒泡
+  
+  const menu = document.getElementById('userDropdownMenu');
+  
+  if (menu.classList.contains('active')) {
+    menu.classList.remove('active');
+  } else {
+    menu.classList.add('active');
+  }
+}
+
+/**
+ * 關閉下拉選單
+ */
+function closeUserMenu() {
+  const menu = document.getElementById('userDropdownMenu');
+  menu.classList.remove('active');
+}
+
+/**
+ * 點擊頁面其他地方時關閉選單
+ */
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('userDropdownMenu');
+  const container = document.querySelector('.user-menu-container');
+  
+  // 如果點擊的不是選單或按鈕，則關閉選單
+  if (menu && container && !container.contains(event.target)) {
+    menu.classList.remove('active');
+  }
+});
 
 
   </script>
