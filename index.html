@@ -174,15 +174,16 @@ body::before {
   margin-bottom: 40px;
 }
 
-.login-header i {
-  font-size: 64px;
-  background: var(--gradient-primary);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.login-header img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
   margin-bottom: 20px;
   display: inline-block;
   animation: iconFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1));
 }
+
 
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0); }
@@ -2680,10 +2681,11 @@ body::before {
   <div id="loginPage" class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <i class="fas fa-graduation-cap"></i>
-        <h1>昶青集團<br>GAI智能職訓中心</h1>
-        <p>請使用您的工號和密碼登入</p>
-      </div>
+  <img src="R0.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain; margin-bottom: 20px;">
+  <h1>昶青集團<br>GAI智能職訓中心</h1>
+  <p>請使用您的工號和密碼登入</p>
+</div>
+
       
       <form id="loginForm">
         <div class="form-group">
