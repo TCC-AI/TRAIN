@@ -376,6 +376,26 @@ body::before {
   box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
 
+/* ✅ 新增：教師資訊樣式 */
+.course-teacher {
+  font-size: 14px;
+  color: #6366f1;
+  margin: 8px 0;
+  padding: 6px 12px;
+  background: #eef2ff;
+  border-radius: 6px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* 如果沒有教師資訊，不顯示空白區域 */
+.course-teacher:empty {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+    
 /* ==================== 主應用程式 ==================== */
 .app-container {
   display: none;
@@ -4351,7 +4371,7 @@ function formatDateTime(date) {
 })();
 
     // ==================== 全域變數 ==================== 
-    let API_URL = 'https://script.google.com/macros/s/AKfycbwvb7ukFnIle1sGeoPNTAjcJ3Nfj9Vbs7jaaH6PFKKFBGcMpgdiR1o8QT2tXhWqEqft/exec';
+    let API_URL = 'https://script.google.com/macros/s/AKfycbz-KcianMRlikpaWaifMeSb8l-5OZhzj83almwjUL2J2hCh0s63PPesF6b8ndwfo-Ag/exec';
     let sessionToken = null;
     let currentUser = null;
     let currentCourse = null;
@@ -5841,6 +5861,11 @@ function displayCourses(courses) {
     const headerClass = course.isCompleted ? 'completed' : course.isRequired ? 'required' : '';
     const badgeText = course.isCompleted ? '已完成' : course.isRequired ? '必修' : '選修';
     
+    // ✅ 新增：教師資訊（如果有的話才顯示）
+    const teacherInfo = course.teacher 
+      ? `<p class="course-teacher">👨‍🏫 授課教師：${course.teacher}</p>` 
+      : '';
+    
     let deadlineHTML = '';
     if (course.deadline) {
       const daysLeft = calculateDaysLeft(course.deadline);
@@ -5863,6 +5888,7 @@ function displayCourses(courses) {
           <p class="course-id">${course.courseId}</p>
         </div>
         <div class="course-card-body">
+          ${teacherInfo}
           <p class="course-desc">${course.courseDesc || '暫無說明'}</p>
           <div class="course-meta">
             <span class="course-meta-item">
@@ -5888,6 +5914,7 @@ function displayCourses(courses) {
     `;
   }).join('');
 }
+
 
 
     function calculateDaysLeft(deadline) {
