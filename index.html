@@ -16,6 +16,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
   <style>
+/* ✅ 新增：教師資訊樣式 */
+.course-teacher {
+  font-size: 14px;
+  color: #6366f1;
+  margin: 8px 0;
+  padding: 6px 12px;
+  background: #eef2ff;
+  border-radius: 6px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+/* 如果沒有教師資訊，不顯示空白區域 */
+.course-teacher:empty {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
 /* ==================== 全域樣式 ==================== */
 * {
   margin: 0;
@@ -376,24 +395,7 @@ body::before {
   box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
 
-/* ✅ 新增：教師資訊樣式 */
-.course-teacher {
-  font-size: 14px;
-  color: #6366f1;
-  margin: 8px 0;
-  padding: 6px 12px;
-  background: #eef2ff;
-  border-radius: 6px;
-  display: inline-block;
-  font-weight: 500;
-}
 
-/* 如果沒有教師資訊，不顯示空白區域 */
-.course-teacher:empty {
-  display: none;
-  margin: 0;
-  padding: 0;
-}
 
     
 /* ==================== 主應用程式 ==================== */
@@ -5914,6 +5916,7 @@ function displayCourses(courses) {
     `;
   }).join('');
 }
+
 
 
 
